@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'me.piggypiglet'
+version '1.0.0'
+mainClassName = 'me.piggypiglet.helpdocs.HelpDocs'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://repo.piggypiglet.me/repository/maven-releases/'
+    }
+}
+
+dependencies {
+    compile 'me.piggypiglet:framework-core:+'
+    compile 'me.piggypiglet:framework-console:+'
+    compile 'me.piggypiglet:framework-logback:+'
+    compile 'me.piggypiglet:framework-http:+'
+    compile 'com.sxtanna:javadoctor:+'
+}
