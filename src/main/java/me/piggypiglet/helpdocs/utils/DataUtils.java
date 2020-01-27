@@ -1,10 +1,13 @@
 package me.piggypiglet.helpdocs.utils;
 
+import me.piggypiglet.helpdocs.data.Documentation;
+import me.piggypiglet.helpdocs.mappers.DocumentationMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 // ------------------------------
 public final class DataUtils {
     private static final Document HELPCHAT_DOCS;
+    private static final DocumentationMapper DOCUMENTATION_MAPPER = new DocumentationMapper();
 
     static {
         try {
@@ -23,8 +27,18 @@ public final class DataUtils {
         }
     }
 
-    public static Map<String, String> getUrls() {
-        return HELPCHAT_DOCS.select(".jumbotron .list-group").stream()
-                .collect(Collectors.toMap(Element::text, e -> e.absUrl("href")));
+    public static Map<String, Documentation> getDocuments() {
+        final Map<String, String> urls = HELPCHAT_DOCS.select(".jumbotron .list-group a").stream()
+                .collect(Collectors.toMap(Element::text, e -> e.absUrl("href") + "/allclasses-noframe.html"));
+
+        urls.forEach((ver, url) -> {
+            try {
+                DOCUMENTATION_MAPPER.generate(Jsoup.connect(url).get());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
 group 'me.piggypiglet'
@@ -16,9 +17,9 @@ repositories {
 }
 
 dependencies {
-    compile 'me.piggypiglet:framework-core:+'
-    compile 'me.piggypiglet:framework-console:+'
-    compile 'me.piggypiglet:framework-logback:+'
-    compile 'me.piggypiglet:framework-http:+'
+    compile 'me.piggypiglet:framework-core:1.8.36'
+    compile 'me.piggypiglet:framework-console:1.8.36'
+    compile 'me.piggypiglet:framework-logback:1.8.36'
+    compile 'me.piggypiglet:framework-http:1.8.36'
     compile 'com.sxtanna:javadoctor:+'
 }

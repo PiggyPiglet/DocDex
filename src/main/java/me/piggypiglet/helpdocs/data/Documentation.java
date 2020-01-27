@@ -2,14 +2,15 @@ package me.piggypiglet.helpdocs.data;
 
 import me.piggypiglet.framework.managers.implementations.SearchableManager;
 import me.piggypiglet.framework.managers.objects.KeyTypeInfo;
+import me.piggypiglet.framework.utils.annotations.reflection.Disabled;
 
-import java.util.HashMap;
 import java.util.Map;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
+@Disabled
 public final class Documentation extends SearchableManager<Type> {
     private final String version;
     private final Map<String, Type> types;
@@ -25,7 +26,10 @@ public final class Documentation extends SearchableManager<Type> {
 
     @Override
     protected KeyTypeInfo configure(KeyTypeInfo.Builder builder) {
-        return null;
+        return builder
+                .key(String.class)
+                    .map(types)
+                .build();
     }
 
     @Override

@@ -8,13 +8,11 @@ import me.piggypiglet.framework.utils.SearchUtils;
 // ------------------------------
 public final class Method implements SearchUtils.Searchable {
     private final String name;
-    private final String type;
-    private final String description;
+    private final Metadata metadata;
 
-    public Method(String name, String type, String description) {
+    public Method(String name, Metadata metadata) {
         this.name = name;
-        this.type = type;
-        this.description = description;
+        this.metadata = metadata;
     }
 
     @Override
@@ -22,11 +20,7 @@ public final class Method implements SearchUtils.Searchable {
         return name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getDescription() {
-        return description;
+    public Metadata getMetadata() {
+        return metadata;
     }
 }
