@@ -4,6 +4,8 @@ import com.google.inject.Singleton;
 import me.piggypiglet.docdex.file.annotations.File;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Config {
     private String host;
     private int port;
+    private Set<Javadoc> javadocs;
 
     @NotNull
     public String getHost() {
@@ -24,5 +27,10 @@ public final class Config {
 
     public int getPort() {
         return port;
+    }
+
+    @NotNull
+    public Set<Javadoc> getJavadocs() {
+        return javadocs;
     }
 }

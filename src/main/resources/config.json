@@ -1,4 +1,11 @@
 {
   "host": "0.0.0.0",
-  "port": 8800
+  "port": 8800,
+
+  "docs": [
+    {
+      "names": ["1.16.4", "latest"],
+      "link": "https://hub.spigotmc.org/javadocs/spigot"
+    }
+  ]
 }
