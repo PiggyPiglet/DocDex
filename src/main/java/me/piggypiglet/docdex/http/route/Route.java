@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
@@ -33,7 +34,12 @@ public abstract class Route {
     }
 
     @Nullable
-    public abstract Object respond(@NotNull final Request request);
+    protected abstract Object respond(@NotNull final Request request);
+
+    @NotNull
+    public String serve(@NotNull final Request request) {
+        return Optional.ofNullable(respond(request)).map(Object::toString).orElse("null");
+    }
 
     @NotNull
     public Predicate<String> getUriPattern() {

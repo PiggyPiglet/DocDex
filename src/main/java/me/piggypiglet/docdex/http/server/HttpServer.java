@@ -37,8 +37,7 @@ public final class HttpServer extends NanoHTTPD {
 
             if (!sanitisedUri.isEmpty() && !sanitisedUri.equals("/") && !sanitisedUri.startsWith("?")) continue;
 
-            final Object object = route.respond(Request.from(session));
-            final Response response = newFixedLengthResponse(object == null ? "null" : object.toString());
+            final Response response = newFixedLengthResponse(route.serve(Request.from(session)));
             route.getHeaders().forEach(response::addHeader);
 
             return response;
