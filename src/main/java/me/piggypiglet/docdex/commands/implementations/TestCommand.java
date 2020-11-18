@@ -20,6 +20,6 @@ public final class TestCommand extends Command {
 
     @Override
     public void execute() {
-        msg(config.getPort());
+        msg(config.getHost());
     }
 }

@@ -11,16 +11,13 @@ sourceCompatibility = 11
 
 repositories {
     mavenCentral()
-    maven {
-        url = "https://repo.piggypiglet.me/repository/maven-releases"
-    }
 }
 
 dependencies {
     implementation "com.google.inject:guice:4.2.3"
     implementation "com.google.code.gson:gson:2.8.6"
     implementation "org.nanohttpd:nanohttpd:2.3.1"
-    implementation "com.sxtanna:javadoctor:1.0.0"
+    implementation "org.jsoup:jsoup:1.13.1"
     implementation "ch.qos.logback:logback-classic:1.2.3"
 
     compileOnly "org.jetbrains:annotations:20.1.0"
