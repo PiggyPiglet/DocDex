@@ -25,7 +25,10 @@ public final class TypeDeserializer {
     @SuppressWarnings("DuplicatedCode")
     @Nullable
     public static DocumentedObject deserialize(@NotNull final Element descriptionElement, @Nullable final Element packageElement) {
-        final String packaj = Optional.ofNullable(packageElement).map(Element::text).orElse("");
+        final String packaj = Optional.ofNullable(packageElement)
+                .map(Element::text)
+                .map(text -> text.replace("Package ", ""))
+                .orElse("");
 
         DocumentedTypes type = null;
         String name = null;

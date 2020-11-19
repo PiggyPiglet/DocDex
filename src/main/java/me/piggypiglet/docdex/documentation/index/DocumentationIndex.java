@@ -24,8 +24,6 @@ public final class DocumentationIndex {
 
     public void populate(@NotNull final Javadoc javadoc, @NotNull final Set<DocumentedObject> objects) {
         javadoc.getNames().forEach(name -> objects.forEach(object -> {
-            docs.put(name.toLowerCase(), object.getName().toLowerCase(), object);
-
             switch (object.getType()) {
                 case CLASS:
                 case INTERFACE:
@@ -67,6 +65,9 @@ public final class DocumentationIndex {
         if (object != null) {
             return object;
         }
+
+        System.out.println(FuzzySearch.weightedRatio("block.data.attachable", "data.attachable"));
+        System.out.println(FuzzySearch.weightedRatio("attachable", "data.attachable"));
 
         //noinspection OptionalGetWithoutIsPresent
         return docs.row(lowerJavadoc).entrySet().stream()
