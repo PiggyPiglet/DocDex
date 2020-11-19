@@ -24,8 +24,8 @@ public final class TypeDeserializer {
 
     @SuppressWarnings("DuplicatedCode")
     @Nullable
-    public static DocumentedObject deserialize(@NotNull final Element descriptionElement, @NotNull final Element packageElement) {
-        final String packaj = packageElement.text();
+    public static DocumentedObject deserialize(@NotNull final Element descriptionElement, @Nullable final Element packageElement) {
+        final String packaj = Optional.ofNullable(packageElement).map(Element::text).orElse("");
 
         DocumentedTypes type = null;
         String name = null;
@@ -59,12 +59,7 @@ public final class TypeDeserializer {
 
             switch (i) {
                 case 0:
-                    try {
-                        type = DocumentedTypes.fromName(parts.get(parts.size() - 2));
-                    } catch (Exception e) {
-                        System.out.println(parts);
-                        e.printStackTrace();
-                    }
+                    type = DocumentedTypes.fromName(parts.get(parts.size() - 2));
                     name = parts.get(parts.size() - 1);
                     modifiers.addAll(parts.subList(0, parts.size() - 2));
                     break;

@@ -14,7 +14,7 @@ public final class JavadocUtils {
     @NotNull
     public static String appendUrl(@NotNull String javadocUrl, @NotNull final String appendment) {
         if (javadocUrl.endsWith("/") || javadocUrl.endsWith(".html")) {
-            javadocUrl = javadocUrl.substring(javadocUrl.lastIndexOf("/"));
+            javadocUrl = javadocUrl.substring(0, javadocUrl.lastIndexOf("/"));
         }
 
         javadocUrl = javadocUrl + '/' + appendment;

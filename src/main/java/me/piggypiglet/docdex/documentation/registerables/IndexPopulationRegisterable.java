@@ -7,7 +7,6 @@ import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.deserialization.JavadocPageDeserializer;
 import me.piggypiglet.docdex.documentation.index.DocumentationIndex;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.utils.JavadocUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,9 +48,25 @@ public final class IndexPopulationRegisterable extends Registerable {
         LOGGER.info("Attempting to index " + javadocs.size() + " javadoc(s).");
 
         javadocs.forEach(javadoc -> executor.execute(() -> {
-            final Document document = connect(JavadocUtils.appendUrl(javadoc.getLink(), "index-all.html"));
+            final Document mainDocument = connect(javadoc.getLink());
 
-            if (document == null) return;
+            if (mainDocument == null) {
+                return;
+            }
+
+            final Optional<Element> indexAnchor = mainDocument.select("ul.navList > li > a").stream()
+                    .filter(element -> element.text().equalsIgnoreCase("index"))
+                    .findAny();
+
+            if (indexAnchor.isEmpty()) {
+                return;
+            }
+
+            final Document document = connect(indexAnchor.get().absUrl("href"));
+
+            if (document == null) {
+                return;
+            }
 
             final Set<DocumentedObject> objects = new HashSet<>();
             final Elements types = document.select("dl > dt > a > span.typeNameLink");
@@ -67,7 +83,7 @@ public final class IndexPopulationRegisterable extends Registerable {
                     previousPercentage = percentage;
                 }
 
-                final Document page = connect(JavadocUtils.appendUrl(javadoc.getLink(), element.parent().attr("href")));
+                final Document page = connect(element.parent().absUrl("href"));
 
                 if (page == null) continue;
 
@@ -77,6 +93,8 @@ public final class IndexPopulationRegisterable extends Registerable {
             index.populate(javadoc, objects);
             LOGGER.info("Finished indexing " + javadoc.getLink());
         }));
+
+        executor.shutdown();
     }
 
     @Nullable

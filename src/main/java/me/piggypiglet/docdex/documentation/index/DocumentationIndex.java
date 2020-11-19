@@ -5,11 +5,13 @@ import com.google.common.collect.Table;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.metadata.TypeMetadata;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
 
 // ------------------------------
@@ -21,7 +23,26 @@ public final class DocumentationIndex {
     private final Table<String, String, DocumentedObject> docs = HashBasedTable.create();
 
     public void populate(@NotNull final Javadoc javadoc, @NotNull final Set<DocumentedObject> objects) {
-        javadoc.getNames().forEach(name -> objects.forEach(object -> docs.put(name.toLowerCase(), object.getName().toLowerCase(), object)));
+        javadoc.getNames().forEach(name -> objects.forEach(object -> {
+            docs.put(name.toLowerCase(), object.getName().toLowerCase(), object);
+
+            switch (object.getType()) {
+                case CLASS:
+                case INTERFACE:
+                case ANNOTATION:
+                case ENUM:
+                    docs.put(name.toLowerCase(), ((TypeMetadata) object.getMetadata()).getPackage() + "." + object.getName().toLowerCase(), object);
+                    break;
+
+                case METHOD:
+                    break;
+                case FIELD:
+                    break;
+                case PARAMETER:
+                    break;
+            }
+            docs.put(name.toLowerCase(), object.getName().toLowerCase(), object);
+        }));
     }
 
     @Nullable
@@ -48,8 +69,9 @@ public final class DocumentationIndex {
         }
 
         //noinspection OptionalGetWithoutIsPresent
-        return docs.row(lowerJavadoc).values().stream()
-                .max(Comparator.comparingInt(element -> FuzzySearch.weightedRatio(element.getName(), lowerQuery)))
+        return docs.row(lowerJavadoc).entrySet().stream()
+                .max(Comparator.comparingInt(entry -> FuzzySearch.weightedRatio(entry.getKey(), lowerQuery)))
+                .map(Map.Entry::getValue)
                 .get();
     }
 }
