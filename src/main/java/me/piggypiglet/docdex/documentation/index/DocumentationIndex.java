@@ -66,9 +66,6 @@ public final class DocumentationIndex {
             return object;
         }
 
-        System.out.println(FuzzySearch.weightedRatio("block.data.attachable", "data.attachable"));
-        System.out.println(FuzzySearch.weightedRatio("attachable", "data.attachable"));
-
         //noinspection OptionalGetWithoutIsPresent
         return docs.row(lowerJavadoc).entrySet().stream()
                 .max(Comparator.comparingInt(entry -> FuzzySearch.weightedRatio(entry.getKey(), lowerQuery)))
