@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.commands.registerables.CommandsRegisterable;
 import me.piggypiglet.docdex.commands.registerables.ConsoleCommandsRegisterable;
+import me.piggypiglet.docdex.documentation.registerables.IndexPopulationRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
 import me.piggypiglet.docdex.guice.ExceptionalInjector;
@@ -29,6 +30,8 @@ public final class DocDexBootstrap {
 
             CommandsRegisterable.class,
             ConsoleCommandsRegisterable.class,
+
+            IndexPopulationRegisterable.class,
 
             RoutesRegisterable.class,
             ServerRegisterable.class,

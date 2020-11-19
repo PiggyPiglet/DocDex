@@ -1,1 +1,2 @@
 # DocDex
+Documentation Index (DocDex) is a utility API which scans javadocs on the web, caches everything into memory, and provides a JSON API to easily access the information. Warning, don't run this on remote sites, it probably won't work, and you probably won't be able to access that site afterwards.

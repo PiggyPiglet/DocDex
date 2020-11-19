@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 // ------------------------------
 public final class RuleUtils {
     private RuleUtils() {
-        throw new AssertionError("This class cannot be initialized.");
+        throw new AssertionError("This class cannot be instantiated.");
     }
 
     public static boolean match(@NotNull final ElementWrapper element, @NotNull final Rules rules) {

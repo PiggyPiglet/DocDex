@@ -10,26 +10,31 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedObject {
-    private final Types type;
+    private final DocumentedTypes type;
     private final String name;
     private final String description;
+    private final Set<String> annotations;
     private final boolean deprecated;
     private final String deprecationMessage;
     private final Set<String> modifiers;
+    private final Object metadata;
 
-    public DocumentedObject(@NotNull final Types type, @NotNull final String name,
-                            @NotNull final String description, final boolean deprecated,
-                            @NotNull final String deprecationMessage, @NotNull final Set<String> modifiers) {
+    public DocumentedObject(@NotNull final DocumentedTypes type, @NotNull final String name,
+                            @Nullable final String description, @NotNull final Set<String> annotations,
+                            final boolean deprecated, @Nullable final String deprecationMessage,
+                            @NotNull final Set<String> modifiers, @NotNull final Object metadata) {
         this.type = type;
         this.name = name;
         this.description = description;
+        this.annotations = annotations;
         this.deprecated = deprecated;
         this.deprecationMessage = deprecationMessage;
         this.modifiers = modifiers;
+        this.metadata = metadata;
     }
 
     @NotNull
-    public Types getType() {
+    public DocumentedTypes getType() {
         return type;
     }
 
@@ -41,6 +46,11 @@ public final class DocumentedObject {
     @Nullable
     public String getDescription() {
         return description;
+    }
+
+    @NotNull
+    public Set<String> getAnnotations() {
+        return annotations;
     }
 
     public boolean isDeprecated() {
@@ -55,5 +65,10 @@ public final class DocumentedObject {
     @NotNull
     public Set<String> getModifiers() {
         return modifiers;
+    }
+
+    @NotNull
+    public Object getMetadata() {
+        return metadata;
     }
 }

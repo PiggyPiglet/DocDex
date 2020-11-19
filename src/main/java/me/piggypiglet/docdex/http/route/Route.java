@@ -4,7 +4,7 @@ import me.piggypiglet.docdex.http.request.Request;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -30,7 +30,7 @@ public abstract class Route {
     }
 
     protected Map<String, String> provideHeaders() {
-        return Collections.emptyMap();
+        return new HashMap<>();
     }
 
     @Nullable

@@ -2,9 +2,7 @@ package me.piggypiglet.docdex.documentation.index;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -12,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Set;
 
 // ------------------------------
@@ -23,10 +20,8 @@ import java.util.Set;
 public final class DocumentationIndex {
     private final Table<String, String, DocumentedObject> docs = HashBasedTable.create();
 
-    @Inject
-    public DocumentationIndex(@NotNull @Named("documentation") final Map<Javadoc, Set<DocumentedObject>> documentation) {
-        documentation.forEach((javadoc, objects) ->
-                javadoc.getNames().forEach(name -> objects.forEach(object -> docs.put(name.toLowerCase(), object.getName().toLowerCase(), object))));
+    public void populate(@NotNull final Javadoc javadoc, @NotNull final Set<DocumentedObject> objects) {
+        javadoc.getNames().forEach(name -> objects.forEach(object -> docs.put(name.toLowerCase(), object.getName().toLowerCase(), object)));
     }
 
     @Nullable
@@ -35,23 +30,26 @@ public final class DocumentationIndex {
             return null;
         }
 
-        if (!docs.containsRow(javadoc)) {
+        final String lowerJavadoc = javadoc.toLowerCase();
+        final String lowerQuery = query.toLowerCase();
+
+        if (!docs.containsRow(lowerJavadoc)) {
             return null;
         }
 
-        if (docs.row(javadoc).isEmpty()) {
+        if (docs.row(lowerJavadoc).isEmpty()) {
             return null;
         }
 
-        final DocumentedObject object = docs.get(javadoc, query);
+        final DocumentedObject object = docs.get(lowerJavadoc, lowerQuery);
 
         if (object != null) {
             return object;
         }
 
         //noinspection OptionalGetWithoutIsPresent
-        return docs.row(javadoc).values().stream()
-                .max(Comparator.comparingInt(element -> FuzzySearch.weightedRatio(element.getName(), query)))
+        return docs.row(lowerJavadoc).values().stream()
+                .max(Comparator.comparingInt(element -> FuzzySearch.weightedRatio(element.getName(), lowerQuery)))
                 .get();
     }
 }
