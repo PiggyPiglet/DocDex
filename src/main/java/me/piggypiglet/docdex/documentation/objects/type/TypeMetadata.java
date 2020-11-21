@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.objects.metadata;
+package me.piggypiglet.docdex.documentation.objects.type;
 
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;

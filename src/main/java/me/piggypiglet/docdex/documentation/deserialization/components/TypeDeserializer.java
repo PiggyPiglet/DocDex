@@ -2,15 +2,17 @@ package me.piggypiglet.docdex.documentation.deserialization.components;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
-import me.piggypiglet.docdex.documentation.objects.metadata.TypeMetadata;
+import me.piggypiglet.docdex.documentation.objects.type.DocumentedTypeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Element;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -21,35 +23,22 @@ public final class TypeDeserializer {
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
     private static final Pattern COLON_DELIMITER = Pattern.compile(": ");
     private static final Pattern LIST_DELIMITER = Pattern.compile(": ");
+    private static final Pattern ANCHOR_TITLE_PACKAGE_DELIMITER = Pattern.compile(" in ");
 
     @SuppressWarnings("DuplicatedCode")
-    @Nullable
-    public static DocumentedObject deserialize(@NotNull final Element descriptionElement, @Nullable final Element packageElement) {
-        final String packaj = Optional.ofNullable(packageElement)
+    @NotNull
+    public static DocumentedObject deserialize(@NotNull final Element description, @Nullable final Element packaj) {
+        final DocumentedTypeBuilder builder = new DocumentedTypeBuilder();
+
+        Optional.ofNullable(packaj)
                 .map(Element::text)
                 .map(text -> text.replace("Package ", ""))
-                .orElse("");
+                .ifPresent(builder::packaj);
 
-        DocumentedTypes type = null;
-        String name = null;
-        String description = null;
-        final Set<String> annotations = new HashSet<>();
-        boolean deprecated = false;
-        String deprecationMessage = null;
-        final Set<String> modifiers = new HashSet<>();
-
-        final Set<String> extensions = new HashSet<>();
-        final Set<String> implementations = new HashSet<>();
-        final Set<String> allImplementations = new HashSet<>();
-        final Set<String> superInterfaces = new HashSet<>();
-        final Set<String> subInterfaces = new HashSet<>();
-        final Set<String> subClasses = new HashSet<>();
-        final Set<String> implementingClasses = new HashSet<>();
-
-        final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(descriptionElement.selectFirst("pre").text()))
+        final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(description.selectFirst("pre").text()))
                 .filter(line -> {
                     if (line.startsWith("@")) {
-                        annotations.add(line);
+                        builder.annotations(line);
                         return false;
                     }
 
@@ -57,88 +46,82 @@ public final class TypeDeserializer {
                 })
                 .collect(Collectors.toList());
 
+        DocumentedTypes type = DocumentedTypes.UNKNOWN;
+
         for (int i = 0; i < declaration.size(); ++i) {
             final List<String> parts = Arrays.asList(SPACE_DELIMITER.split(declaration.get(i)));
 
             switch (i) {
                 case 0:
                     type = DocumentedTypes.fromName(parts.get(parts.size() - 2));
-                    name = parts.get(parts.size() - 1);
-                    modifiers.addAll(parts.subList(0, parts.size() - 2));
+                    builder.type(type)
+                            .name(parts.get(parts.size() - 1))
+                            .modifiers(parts.subList(0, parts.size() - 2));
                     break;
 
                 case 1:
                     if (type == DocumentedTypes.INTERFACE) {
                         for (final String extension : parts.subList(1, parts.size())) {
-                            extensions.add(extension.replace(",", ""));
+                            builder.extensions(extension.replace(",", ""));
                         }
                     } else {
-                        extensions.add(parts.get(1));
+                        builder.extensions(parts.get(1));
                     }
                     break;
 
                 case 2:
                     for (final String implementation : parts.subList(1, parts.size())) {
-                        implementations.add(implementation.replace(",", ""));
+                        builder.implementations(implementation.replace(",", ""));
                     }
                     break;
             }
         }
 
-        final Element descriptionBlock = descriptionElement.selectFirst(".block");
+        final Element descriptionBlock = description.selectFirst(".block");
 
         if (descriptionBlock != null) {
-            description = descriptionBlock.text();
+            builder.description(descriptionBlock.text());
         }
 
-        descriptionElement.select("dl").stream()
-                .map(Element::text)
-                .forEach(meta -> {
-                    final String[] items = LIST_DELIMITER.split(COLON_DELIMITER.split(meta)[1]);
+        description.select("dl").forEach(meta -> {
+            final String header = meta.selectFirst("dt").text();
+            final Set<String> items = meta.select("code > a").stream()
+                    .map(anchor -> ANCHOR_TITLE_PACKAGE_DELIMITER.split(anchor.attr("title"))[1] + '.' + anchor.text())
+                    .collect(Collectors.toSet());
 
-                    if (meta.startsWith("All Implemented Interfaces:")) {
-                        Collections.addAll(allImplementations, items);
-                    }
+            if (header.equalsIgnoreCase("all implemented interfaces:")) {
+                builder.allImplementations(items);
+            }
 
-                    if (meta.startsWith("All Known Superinterfaces:")) {
-                        Collections.addAll(superInterfaces, items);
-                    }
+            if (header.equalsIgnoreCase("all known superinterfaces:")) {
+                builder.superInterfaces(items);
+            }
 
-                    if (meta.startsWith("All Known Subinterfaces:")) {
-                        Collections.addAll(subInterfaces, items);
-                    }
+            if (header.equalsIgnoreCase("all known subinterfaces:")) {
+                builder.subInterfaces(items);
+            }
 
-                    if (meta.startsWith("Direct Known Subclasses:")) {
-                        Collections.addAll(subClasses, items);
-                    }
+            if (header.equalsIgnoreCase("direct known subclasses:")) {
+                builder.subClasses(items);
+            }
 
-                    if (meta.startsWith("All Known Implementing Classes:")) {
-                        Collections.addAll(implementingClasses, items);
-                    }
-                });
+            if (header.equalsIgnoreCase("all known implementing classes:")) {
+                builder.implementingClasses(items);
+            }
+        });
 
-        final Element nullableDeprecationBlock = descriptionElement.selectFirst(".deprecationBlock");
+        final Element deprecationBlock = description.selectFirst(".deprecationBlock");
 
-        if (nullableDeprecationBlock != null) {
-            deprecated = true;
+        if (deprecationBlock != null) {
+            builder.deprecated(true);
 
-            final Element nullableDeprecationMessage = nullableDeprecationBlock.selectFirst(".deprecationComment");
+            final Element deprecationMessage = deprecationBlock.selectFirst(".deprecationComment");
 
-            if (nullableDeprecationMessage != null) {
-                deprecationMessage = nullableDeprecationMessage.text();
+            if (deprecationMessage != null) {
+                builder.deprecationMessage(deprecationMessage.text());
             }
         }
 
-        if (Stream.of(type, name, packaj).anyMatch(Objects::isNull)) {
-            return null;
-        }
-
-        return new DocumentedObject(
-                type, name, description, annotations, deprecated, deprecationMessage, modifiers,
-                new TypeMetadata(
-                        packaj, extensions, implementations, allImplementations, superInterfaces, subInterfaces,
-                        subClasses, implementingClasses
-                )
-        );
+        return builder.build();
     }
 }

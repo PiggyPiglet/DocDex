@@ -26,7 +26,9 @@ public final class IndexRoute extends JsonRoute {
     protected Object respond(@NotNull final Request request) {
         final Multimap<String, String> params = request.getParams();
         final String javadoc = params.get("javadoc").stream().findAny().orElse(null);
-        final String query = params.get("query").stream().findAny().orElse(null);
+        final String query = params.get("query").stream().findAny()
+                .map(str -> str.replace("~", "#"))
+                .orElse(null);
 
         if (javadoc == null || query == null) {
             return null;
