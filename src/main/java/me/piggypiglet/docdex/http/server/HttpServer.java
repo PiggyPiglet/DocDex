@@ -25,6 +25,10 @@ public final class HttpServer extends NanoHTTPD {
         this.routes = routes;
     }
 
+    {
+        setAsyncRunner(new DefaultAsyncRunner());
+    }
+
     @NotNull
     @Override
     public Response serve(@NotNull final IHTTPSession session) {

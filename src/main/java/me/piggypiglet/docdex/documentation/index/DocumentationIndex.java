@@ -60,13 +60,47 @@ public final class DocumentationIndex {
                 }
             });
 
-            new HashSet<>(methods.row(javadocName).values()).forEach(method -> getInheritedOwners(javadocName, method).forEach(owner -> {
-                final String ownerName = owner.getName().toLowerCase();
-                final String methodName = method.getName();
-                final TypeMetadata ownerMetadata = ((TypeMetadata) owner.getMetadata());
+            new HashSet<>(types.row(javadocName).values()).forEach(type -> {
+                final TypeMetadata metadata = (TypeMetadata) type.getMetadata();
 
-                methods.put(javadocName, ownerName + '#' + methodName, method);
-                fqnMethods.put(javadocName, ownerMetadata.getPackage() + '.' + ownerName + '#' + methodName, method);
+                Stream.of(
+                        metadata.getExtensions(),
+                        metadata.getImplementingClasses(),
+                        metadata.getAllImplementations(),
+                        metadata.getSuperInterfaces(),
+                        metadata.getSubInterfaces(),
+                        metadata.getSubClasses(),
+                        metadata.getImplementingClasses()
+                )
+                        .forEach(set -> {
+                            //noinspection rawtypes,unchecked
+                            final Set<String> copy = new HashSet<String>((Set) set);
+                            set.clear();
+
+                            copy.stream()
+                                    .map(fqn -> {
+                                        final DocumentedObject obj = fqnTypes.get(javadocName, fqn.toLowerCase());
+
+                                        if (obj == null) {
+                                            System.out.println(fqn.toLowerCase());
+                                        }
+
+                                        return obj;
+                                    })
+                                    .forEach(set::add);
+                        });
+            });
+
+            new HashSet<>(types.row(javadocName).values()).forEach(type -> getChildren(type).forEach(owner -> {
+                final String ownerName = owner.getName().toLowerCase();
+
+                ((TypeMetadata) type.getMetadata()).getMethods().forEach(method -> {
+                    final String methodName = method.getName();
+                    final TypeMetadata ownerMetadata = ((TypeMetadata) owner.getMetadata());
+
+                    methods.put(javadocName, ownerName + '#' + methodName, method);
+                    fqnMethods.put(javadocName, ownerMetadata.getPackage() + '.' + ownerName + '#' + methodName, method);
+                });
             }));
         });
     }
@@ -110,23 +144,18 @@ public final class DocumentationIndex {
 
         //noinspection OptionalGetWithoutIsPresent
         return table.row(lowerJavadoc).entrySet().stream()
-                .max(Comparator.comparingInt(entry -> FuzzySearch.weightedRatio(entry.getKey(), lowerQuery)))
+                .max(Comparator.comparingInt(entry -> FuzzySearch.ratio(entry.getKey(), lowerQuery)))
                 .map(Map.Entry::getValue)
                 .get();
     }
 
     @NotNull
-    private Set<DocumentedObject> getInheritedOwners(@NotNull final String javadoc, @NotNull final DocumentedObject method) {
-        return getChildren(javadoc, ((MethodMetadata) method.getMetadata()).getOwner());
-    }
-
-    @NotNull
-    private Set<DocumentedObject> getChildren(@NotNull final String javadoc, @NotNull final DocumentedObject type) {
+    private Set<DocumentedObject> getChildren(@NotNull final DocumentedObject type) {
         final TypeMetadata typeMetadata = ((TypeMetadata) type.getMetadata());
 
-        final Set<String> subClasses = typeMetadata.getSubClasses();
-        final Set<String> subInterfaces = typeMetadata.getSubInterfaces();
-        final Set<String> implementingClasses = typeMetadata.getImplementingClasses();
+        final Set<DocumentedObject> subClasses = (Set) typeMetadata.getSubClasses();
+        final Set<DocumentedObject> subInterfaces = (Set) typeMetadata.getSubInterfaces();
+        final Set<DocumentedObject> implementingClasses = (Set) typeMetadata.getImplementingClasses();
 
         if (subClasses.isEmpty() && subInterfaces.isEmpty() && implementingClasses.isEmpty()) {
             return Collections.emptySet();
@@ -138,9 +167,12 @@ public final class DocumentationIndex {
                 implementingClasses
         )
                 .flatMap(Set::stream)
-                .map(heir -> get(javadoc, heir.toLowerCase()))
-                .filter(Objects::nonNull)
-                .flatMap(heir -> Stream.concat(Stream.of(heir), getChildren(javadoc, heir).stream()))
+                .peek(heir -> {
+                    if (heir == null) {
+                        System.out.println("test - " + type.getName());
+                    }
+                })
+                .flatMap(heir -> Stream.concat(Stream.of(heir), getChildren(heir).stream()))
                 .collect(Collectors.toSet());
     }
 }

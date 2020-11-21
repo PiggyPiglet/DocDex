@@ -3,6 +3,7 @@ package me.piggypiglet.docdex.documentation.deserialization;
 import me.piggypiglet.docdex.documentation.deserialization.components.TypeDeserializer;
 import me.piggypiglet.docdex.documentation.deserialization.components.method.MethodDeserializer;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Document;
 
@@ -29,10 +30,12 @@ public final class JavadocPageDeserializer {
         );
         objects.add(type);
 
-        objects.addAll(document.select(".methodDetails ul.blockList > li.blockList").stream()
+        final Set<DocumentedObject> methods = document.select(".methodDetails ul.blockList > li.blockList").stream()
                 .map(element -> MethodDeserializer.deserialize(element, type))
-                .collect(Collectors.toSet())
-        );
+                .collect(Collectors.toSet());
+        objects.addAll(methods);
+
+        ((TypeMetadata) type.getMetadata()).getMethods().addAll(methods);
 
         return objects;
     }

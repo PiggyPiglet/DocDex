@@ -3,7 +3,7 @@ package me.piggypiglet.docdex.documentation.objects.method;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.method.serialization.MethodOwnerSerializer;
+import me.piggypiglet.docdex.documentation.objects.serialization.TypeSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,7 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class MethodMetadata {
-    @JsonAdapter(MethodOwnerSerializer.class) private final DocumentedObject owner;
+    @JsonAdapter(TypeSerializer.class) private final DocumentedObject owner;
     private final Set<String> parameters;
     private final Map<String, String> parameterDescriptions;
     private final String returns;

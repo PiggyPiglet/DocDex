@@ -3,24 +3,23 @@ package me.piggypiglet.docdex.documentation.objects.type;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedTypeBuilder extends DocumentedObject.Builder<DocumentedTypeBuilder> {
+    private static final Comparator<Object> COMPARATOR = Comparator.comparingInt(Object::hashCode);
+
     private String packaj = "";
-    private final Set<String> extensions = new HashSet<>();
-    private final Set<String> implementations = new HashSet<>();
-    private final Set<String> allImplementations = new HashSet<>();
-    private final Set<String> superInterfaces = new HashSet<>();
-    private final Set<String> subInterfaces = new HashSet<>();
-    private final Set<String> subClasses = new HashSet<>();
-    private final Set<String> implementingClasses = new HashSet<>();
+    private final Set<String> extensions = new TreeSet<>(COMPARATOR);
+    private final Set<String> implementations = new TreeSet<>(COMPARATOR);
+    private final Set<String> allImplementations = new TreeSet<>(COMPARATOR);
+    private final Set<String> superInterfaces = new TreeSet<>(COMPARATOR);
+    private final Set<String> subInterfaces = new TreeSet<>(COMPARATOR);
+    private final Set<String> subClasses = new TreeSet<>(COMPARATOR);
+    private final Set<String> implementingClasses = new TreeSet<>(COMPARATOR);
 
     @NotNull
     public DocumentedTypeBuilder packaj(@NotNull final String value) {
@@ -112,9 +111,10 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public DocumentedObject build() {
-        return build(new TypeMetadata(packaj, extensions, implementations, allImplementations, superInterfaces,
-                subInterfaces, subClasses, implementingClasses));
+        return build(new TypeMetadata(packaj, (Set) extensions, (Set) implementations, (Set) allImplementations, (Set) superInterfaces,
+                (Set) subInterfaces, (Set) subClasses, (Set) implementingClasses));
     }
 }
