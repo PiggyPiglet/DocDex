@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.method.MethodMetadata;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
+import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +66,7 @@ public final class DocumentationIndex {
 
                 Stream.of(
                         metadata.getExtensions(),
+                        metadata.getImplementations(),
                         metadata.getImplementingClasses(),
                         metadata.getAllImplementations(),
                         metadata.getSuperInterfaces(),
@@ -73,20 +75,15 @@ public final class DocumentationIndex {
                         metadata.getImplementingClasses()
                 )
                         .forEach(set -> {
-                            //noinspection rawtypes,unchecked
-                            final Set<String> copy = new HashSet<String>((Set) set);
+                            final Set<PotentialObject> copy = new HashSet<>(set);
                             set.clear();
 
                             copy.stream()
-                                    .map(fqn -> {
-                                        final DocumentedObject obj = fqnTypes.get(javadocName, fqn.toLowerCase());
-
-                                        if (obj == null) {
-                                            System.out.println(fqn.toLowerCase());
-                                        }
-
-                                        return obj;
-                                    })
+                                    .map(potentialObject -> Optional.ofNullable(potentialObject.getFqn())
+                                            .map(String::toLowerCase)
+                                            .map(fqn -> fqnTypes.get(javadocName, fqn))
+                                            .map(PotentialObject::of)
+                                            .orElse(potentialObject))
                                     .forEach(set::add);
                         });
             });
@@ -153,9 +150,9 @@ public final class DocumentationIndex {
     private Set<DocumentedObject> getChildren(@NotNull final DocumentedObject type) {
         final TypeMetadata typeMetadata = ((TypeMetadata) type.getMetadata());
 
-        final Set<DocumentedObject> subClasses = (Set) typeMetadata.getSubClasses();
-        final Set<DocumentedObject> subInterfaces = (Set) typeMetadata.getSubInterfaces();
-        final Set<DocumentedObject> implementingClasses = (Set) typeMetadata.getImplementingClasses();
+        final Set<DocumentedObject> subClasses = convertFromPotential(typeMetadata.getSubClasses());
+        final Set<DocumentedObject> subInterfaces = convertFromPotential(typeMetadata.getSubInterfaces());
+        final Set<DocumentedObject> implementingClasses = convertFromPotential(typeMetadata.getImplementingClasses());
 
         if (subClasses.isEmpty() && subInterfaces.isEmpty() && implementingClasses.isEmpty()) {
             return Collections.emptySet();
@@ -167,12 +164,15 @@ public final class DocumentationIndex {
                 implementingClasses
         )
                 .flatMap(Set::stream)
-                .peek(heir -> {
-                    if (heir == null) {
-                        System.out.println("test - " + type.getName());
-                    }
-                })
                 .flatMap(heir -> Stream.concat(Stream.of(heir), getChildren(heir).stream()))
+                .collect(Collectors.toSet());
+    }
+
+    @NotNull
+    private static Set<DocumentedObject> convertFromPotential(@NotNull final Set<PotentialObject> potentialObjects) {
+        return potentialObjects.stream()
+                .map(PotentialObject::getObject)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 }

@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 public final class TypeDeserializer {
     private static final Pattern LINE_DELIMITER = Pattern.compile("\n");
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
-    private static final Pattern COLON_DELIMITER = Pattern.compile(": ");
-    private static final Pattern LIST_DELIMITER = Pattern.compile(": ");
     private static final Pattern ANCHOR_TITLE_PACKAGE_DELIMITER = Pattern.compile(" in ");
 
     @SuppressWarnings("DuplicatedCode")
@@ -93,7 +91,7 @@ public final class TypeDeserializer {
                 builder.allImplementations(items);
             }
 
-            if (header.equalsIgnoreCase("all known superinterfaces:")) {
+            if (header.equalsIgnoreCase("all superinterfaces:")) {
                 builder.superInterfaces(items);
             }
 

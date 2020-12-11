@@ -1,25 +1,26 @@
 package me.piggypiglet.docdex.documentation.objects.type;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedTypeBuilder extends DocumentedObject.Builder<DocumentedTypeBuilder> {
-    private static final Comparator<Object> COMPARATOR = Comparator.comparingInt(Object::hashCode);
-
     private String packaj = "";
-    private final Set<String> extensions = new TreeSet<>(COMPARATOR);
-    private final Set<String> implementations = new TreeSet<>(COMPARATOR);
-    private final Set<String> allImplementations = new TreeSet<>(COMPARATOR);
-    private final Set<String> superInterfaces = new TreeSet<>(COMPARATOR);
-    private final Set<String> subInterfaces = new TreeSet<>(COMPARATOR);
-    private final Set<String> subClasses = new TreeSet<>(COMPARATOR);
-    private final Set<String> implementingClasses = new TreeSet<>(COMPARATOR);
+    private final Set<PotentialObject> extensions = new HashSet<>();
+    private final Set<PotentialObject> implementations = new HashSet<>();
+    private final Set<PotentialObject> allImplementations = new HashSet<>();
+    private final Set<PotentialObject> superInterfaces = new HashSet<>();
+    private final Set<PotentialObject> subInterfaces = new HashSet<>();
+    private final Set<PotentialObject> subClasses = new HashSet<>();
+    private final Set<PotentialObject> implementingClasses = new HashSet<>();
 
     @NotNull
     public DocumentedTypeBuilder packaj(@NotNull final String value) {
@@ -29,92 +30,103 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
 
     @NotNull
     public DocumentedTypeBuilder extensions(@NotNull final String @NotNull ... values) {
-        Collections.addAll(extensions, values);
+        addAll(extensions, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder extensions(@NotNull final Collection<String> values) {
-        extensions.addAll(values);
+    public DocumentedTypeBuilder extensions(@NotNull final Set<String> values) {
+        addAll(extensions, values);
         return this;
     }
 
     @NotNull
     public DocumentedTypeBuilder implementations(@NotNull final String @NotNull ... values) {
-        Collections.addAll(implementations, values);
+        addAll(implementations, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder implementations(@NotNull final Collection<String> values) {
-        implementations.addAll(values);
+    public DocumentedTypeBuilder implementations(@NotNull final Set<String> values) {
+        addAll(implementations, values);
         return this;
     }
 
     @NotNull
     public DocumentedTypeBuilder allImplementations(@NotNull final String @NotNull ... values) {
-        Collections.addAll(allImplementations, values);
+        addAll(allImplementations, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder allImplementations(@NotNull final Collection<String> values) {
-        allImplementations.addAll(values);
+    public DocumentedTypeBuilder allImplementations(@NotNull final Set<String> values) {
+        addAll(allImplementations, values);
         return this;
     }
 
     @NotNull
     public DocumentedTypeBuilder superInterfaces(@NotNull final String @NotNull ... values) {
-        Collections.addAll(superInterfaces, values);
+        addAll(superInterfaces, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder superInterfaces(@NotNull final Collection<String> values) {
-        superInterfaces.addAll(values);
+    public DocumentedTypeBuilder superInterfaces(@NotNull final Set<String> values) {
+        addAll(superInterfaces, values);
         return this;
     }
 
     @NotNull
     public DocumentedTypeBuilder subInterfaces(@NotNull final String @NotNull ... values) {
-        Collections.addAll(subInterfaces, values);
+        addAll(subInterfaces, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder subInterfaces(@NotNull final Collection<String> values) {
-        subInterfaces.addAll(values);
+    public DocumentedTypeBuilder subInterfaces(@NotNull final Set<String> values) {
+        addAll(subInterfaces, values);
         return this;
     }
 
     @NotNull
     public DocumentedTypeBuilder subClasses(@NotNull final String @NotNull ... values) {
-        Collections.addAll(subClasses, values);
+        addAll(subClasses, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder subClasses(@NotNull final Collection<String> values) {
-        subClasses.addAll(values);
+    public DocumentedTypeBuilder subClasses(@NotNull final Set<String> values) {
+        addAll(subClasses, values);
         return this;
     }
 
     @NotNull
     public DocumentedTypeBuilder implementingClasses(@NotNull final String @NotNull ... values) {
-        Collections.addAll(implementingClasses, values);
+        addAll(implementingClasses, values);
         return this;
     }
 
     @NotNull
-    public DocumentedTypeBuilder implementingClasses(@NotNull final Collection<String> values) {
-        implementingClasses.addAll(values);
+    public DocumentedTypeBuilder implementingClasses(@NotNull final Set<String> values) {
+        addAll(implementingClasses, values);
         return this;
     }
-
-    @SuppressWarnings("unchecked")
+    
     @Override
     public DocumentedObject build() {
-        return build(new TypeMetadata(packaj, (Set) extensions, (Set) implementations, (Set) allImplementations, (Set) superInterfaces,
-                (Set) subInterfaces, (Set) subClasses, (Set) implementingClasses));
+        return build(new TypeMetadata(packaj, extensions, implementations, allImplementations, superInterfaces,
+                subInterfaces, subClasses, implementingClasses));
+    }
+
+    private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final String @NotNull [] values) {
+        Arrays.stream(values)
+                .map(PotentialObject::of)
+                .forEach(set::add);
+    }
+
+    private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final Set<String> values) {
+        values.stream()
+                .map(PotentialObject::of)
+                .forEach(set::add);
     }
 }

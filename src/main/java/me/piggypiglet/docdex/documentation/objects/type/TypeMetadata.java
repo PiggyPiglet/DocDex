@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.serialization.MethodSetSerializer;
 import me.piggypiglet.docdex.documentation.objects.serialization.TypeSetSerializer;
+import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -16,19 +17,19 @@ import java.util.Set;
 // ------------------------------
 public final class TypeMetadata {
     @SerializedName("package") private final String packaj;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> extensions;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> implementations;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> allImplementations;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> superInterfaces;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> subInterfaces;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> subClasses;
-    @JsonAdapter(TypeSetSerializer.class) private final Set<DocumentedObject> implementingClasses;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> extensions;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> implementations;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> allImplementations;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> superInterfaces;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> subInterfaces;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> subClasses;
+    @JsonAdapter(TypeSetSerializer.class) private final Set<PotentialObject> implementingClasses;
     @JsonAdapter(MethodSetSerializer.class) private final Set<DocumentedObject> methods = new HashSet<>();
 
-    public TypeMetadata(@NotNull final String packaj, @NotNull final Set<DocumentedObject> extensions,
-                        @NotNull final Set<DocumentedObject> implementations, @NotNull final Set<DocumentedObject> allImplementations,
-                        @NotNull final Set<DocumentedObject> superInterfaces, @NotNull final Set<DocumentedObject> subInterfaces,
-                        @NotNull final Set<DocumentedObject> subClasses, @NotNull final Set<DocumentedObject> implementingClasses) {
+    public TypeMetadata(@NotNull final String packaj, @NotNull final Set<PotentialObject> extensions,
+                        @NotNull final Set<PotentialObject> implementations, @NotNull final Set<PotentialObject> allImplementations,
+                        @NotNull final Set<PotentialObject> superInterfaces, @NotNull final Set<PotentialObject> subInterfaces,
+                        @NotNull final Set<PotentialObject> subClasses, @NotNull final Set<PotentialObject> implementingClasses) {
         this.packaj = packaj;
         this.extensions = extensions;
         this.implementations = implementations;
@@ -45,37 +46,37 @@ public final class TypeMetadata {
     }
 
     @NotNull
-    public Set<DocumentedObject> getExtensions() {
+    public Set<PotentialObject> getExtensions() {
         return extensions;
     }
 
     @NotNull
-    public Set<DocumentedObject> getImplementations() {
+    public Set<PotentialObject> getImplementations() {
         return implementations;
     }
 
     @NotNull
-    public Set<DocumentedObject> getAllImplementations() {
+    public Set<PotentialObject> getAllImplementations() {
         return allImplementations;
     }
 
     @NotNull
-    public Set<DocumentedObject> getSuperInterfaces() {
+    public Set<PotentialObject> getSuperInterfaces() {
         return superInterfaces;
     }
 
     @NotNull
-    public Set<DocumentedObject> getSubInterfaces() {
+    public Set<PotentialObject> getSubInterfaces() {
         return subInterfaces;
     }
 
     @NotNull
-    public Set<DocumentedObject> getSubClasses() {
+    public Set<PotentialObject> getSubClasses() {
         return subClasses;
     }
 
     @NotNull
-    public Set<DocumentedObject> getImplementingClasses() {
+    public Set<PotentialObject> getImplementingClasses() {
         return implementingClasses;
     }
 
