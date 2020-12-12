@@ -7,16 +7,12 @@ import me.piggypiglet.docdex.http.request.Request;
 import me.piggypiglet.docdex.http.route.json.JsonRoute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class IndexRoute extends JsonRoute {
-    private static final Logger LOGGER = LoggerFactory.getLogger("test");
-
     private final DocumentationIndex index;
 
     @Inject
@@ -37,8 +33,6 @@ public final class IndexRoute extends JsonRoute {
         if (javadoc == null || query == null) {
             return null;
         }
-
-        LOGGER.info("test");
 
         return index.get(javadoc, query);
     }

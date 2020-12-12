@@ -34,9 +34,9 @@ public enum DocumentedTypes {
     }
 
     @NotNull
-    public static DocumentedTypes fromName(@NotNull final String name) {
+    public static DocumentedTypes fromCode(@NotNull final String code) {
         for (final DocumentedTypes type : values()) {
-            if (type.name.equalsIgnoreCase(name)) {
+            if (type.code.equalsIgnoreCase(code)) {
                 return type;
             }
         }

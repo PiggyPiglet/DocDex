@@ -7,10 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Element;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -44,14 +41,25 @@ public final class TypeDeserializer {
                 })
                 .collect(Collectors.toList());
 
+
+        final List<String> declarationAnchors = Optional.ofNullable(description.selectFirst("pre").selectFirst("span"))
+                .map(Element::nextElementSiblings)
+                .map(Collection::stream)
+                .map(stream -> stream
+                        .filter(element -> element.tagName().equalsIgnoreCase("a"))
+                        .map(element -> ANCHOR_TITLE_PACKAGE_DELIMITER.split(element.attr("title"))[1] + '.' + element.text())
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
         DocumentedTypes type = DocumentedTypes.UNKNOWN;
 
+        int j = 0;
         for (int i = 0; i < declaration.size(); ++i) {
             final List<String> parts = Arrays.asList(SPACE_DELIMITER.split(declaration.get(i)));
 
             switch (i) {
                 case 0:
-                    type = DocumentedTypes.fromName(parts.get(parts.size() - 2));
+                    type = DocumentedTypes.fromCode(parts.get(parts.size() - 2));
                     builder.type(type)
                             .name(parts.get(parts.size() - 1))
                             .modifiers(parts.subList(0, parts.size() - 2));
@@ -59,17 +67,19 @@ public final class TypeDeserializer {
 
                 case 1:
                     if (type == DocumentedTypes.INTERFACE) {
-                        for (final String extension : parts.subList(1, parts.size())) {
-                            builder.extensions(extension.replace(",", ""));
+                        for (; j < parts.size() - 1; j++) {
+                            builder.extensions(declarationAnchors.get(j));
                         }
                     } else {
-                        builder.extensions(parts.get(1));
+                        builder.extensions(declarationAnchors.get(j++));
                     }
                     break;
 
                 case 2:
-                    for (final String implementation : parts.subList(1, parts.size())) {
-                        builder.implementations(implementation.replace(",", ""));
+                    if (parts.isEmpty()) break;
+
+                    for (int k = j; j < (k + parts.size()) - 1; j++) {
+                        builder.extensions(declarationAnchors.get(j));
                     }
                     break;
             }
