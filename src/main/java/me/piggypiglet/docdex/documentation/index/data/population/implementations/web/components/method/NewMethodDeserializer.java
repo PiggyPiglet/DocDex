@@ -1,6 +1,6 @@
-package me.piggypiglet.docdex.documentation.deserialization.components.method;
+package me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method;
 
-import com.google.common.collect.Maps;
+import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.utils.DeserializationUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.method.DocumentedMethodBuilder;
@@ -11,7 +11,7 @@ import org.jsoup.select.Elements;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.piggypiglet.docdex.documentation.deserialization.components.method.MethodDeserializer.*;
+import static me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method.MethodDeserializer.*;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -23,19 +23,31 @@ public final class NewMethodDeserializer {
     }
 
     @NotNull
-    static DocumentedObject deserialize(@NotNull final Element details, @NotNull final DocumentedObject owner) {
-        final DocumentedMethodBuilder builder = new DocumentedMethodBuilder(owner);
+    static DocumentedObject deserialize(@NotNull final Element details, @NotNull final String packaj,
+                                        @NotNull final String owner) {
+        final DocumentedMethodBuilder builder = new DocumentedMethodBuilder(packaj, owner);
 
         builder.type(DocumentedTypes.METHOD);
         builder.name(details.selectFirst("h3").text());
 
         final Element signature = details.selectFirst(".memberSignature");
+        Optional.ofNullable(signature.selectFirst(".annotations"))
+                .map(annotations -> annotations.select("a").stream())
+                .map(annotations -> annotations.map(element -> element.text(element.text().substring(1))))
+                .map(annotations -> annotations.map(DeserializationUtils::generateFqn))
+                .ifPresent(annotations -> annotations.forEach(annotation -> builder.annotations('@' + annotation)));
         Optional.ofNullable(signature.selectFirst(".returnType")).ifPresent(returnType ->
                 builder.returns(returnType.text()));
-        Optional.ofNullable(signature.selectFirst(".annotations")).ifPresent(annotations ->
-                builder.annotations(SPACE_DELIMITER.split(annotations.text())));
         Optional.ofNullable(signature.selectFirst(".arguments")).ifPresent(arguments ->
                 builder.parameters(LIST_DELIMITER.split(LINE_DELIMITER.matcher(arguments.text()).replaceAll(" "))));
+
+        Optional.ofNullable(details.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
+            builder.deprecated(true);
+
+            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment -> {
+                builder.deprecationMessage(deprecationComment.text());
+            });
+        });
 
         Optional.ofNullable(details.selectFirst(".block")).ifPresent(description ->
                 builder.description(description.text()));
@@ -44,19 +56,14 @@ public final class NewMethodDeserializer {
             final Elements elements = dl.children();
             final Map<String, Set<String>> meta = new HashMap<>();
 
-            String dt = null;
             Set<String> dd = new HashSet<>();
             for (final Element element : elements) {
                 final String tag = element.tagName();
                 final String text = element.text();
 
                 if (tag.equalsIgnoreCase("dt")) {
-                    if (dt != null) {
-                        meta.put(dt.toLowerCase(), dd);
-                    }
-
-                    dt = text;
                     dd = new HashSet<>();
+                    meta.put(text, dd);
                 }
 
                 if (tag.equalsIgnoreCase("dd")) {
@@ -65,7 +72,7 @@ public final class NewMethodDeserializer {
             }
 
             meta.forEach((label, content) -> {
-                switch (label) {
+                switch (label.toLowerCase()) {
                     case "parameters:":
                         builder.parameterDescriptions(content.stream()
                                 .map(CONTENT_DELIMITER::split)
@@ -75,7 +82,7 @@ public final class NewMethodDeserializer {
                     case "throws:":
                         builder.throwing(content.stream()
                                 .map(CONTENT_DELIMITER::split)
-                                .map(array -> Maps.immutableEntry(array[0], array[1]))
+                                .map(array -> Map.entry(array[0], array.length == 2 ? array[1] : ""))
                                 .collect(Collectors.toSet()));
                         break;
 

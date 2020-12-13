@@ -1,6 +1,5 @@
 package me.piggypiglet.docdex.documentation.objects.method;
 
-import com.google.common.collect.Maps;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +10,8 @@ import java.util.*;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedMethodBuilder extends DocumentedObject.Builder<DocumentedMethodBuilder> {
-    private final DocumentedObject owner;
+    private final String packaj;
+    private final String owner;
 
     private final Set<String> parameters = new HashSet<>();
     private final Map<String, String> parameterDescriptions = new HashMap<>();
@@ -19,7 +19,8 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
     private String returnsDescription = null;
     private final Set<Map.Entry<String, String>> throwing = new HashSet<>();
 
-    public DocumentedMethodBuilder(@NotNull final DocumentedObject owner) {
+    public DocumentedMethodBuilder(@NotNull final String packaj, @NotNull final String owner) {
+        this.packaj = packaj;
         this.owner = owner;
     }
 
@@ -61,7 +62,7 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
 
     @NotNull
     public DocumentedMethodBuilder throwing(@NotNull final String type, @NotNull final String description) {
-        throwing.add(Maps.immutableEntry(type, description));
+        throwing.add(Map.entry(type, description));
         return this;
     }
 
@@ -73,6 +74,8 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
 
     @Override
     public DocumentedObject build() {
-        return build(new MethodMetadata(owner, parameters, parameterDescriptions, returns, returnsDescription, throwing));
+        return build(new MethodMetadata(
+                packaj, owner, parameters, parameterDescriptions, returns, returnsDescription, throwing
+        ));
     }
 }

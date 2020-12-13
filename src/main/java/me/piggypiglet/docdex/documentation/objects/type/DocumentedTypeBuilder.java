@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -119,13 +120,15 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
     }
 
     private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final String @NotNull [] values) {
-        Arrays.stream(values)
-                .map(PotentialObject::of)
-                .forEach(set::add);
+        addAll(set, Arrays.stream(values));
     }
 
     private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final Set<String> values) {
-        values.stream()
+        addAll(set, values.stream());
+    }
+
+    private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final Stream<String> values) {
+        values
                 .map(PotentialObject::of)
                 .forEach(set::add);
     }

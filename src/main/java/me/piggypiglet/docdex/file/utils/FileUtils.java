@@ -1,7 +1,6 @@
 package me.piggypiglet.docdex.file.utils;
 
 import com.google.common.io.Resources;
-import me.piggypiglet.docdex.bootstrap.DocDexBootstrap;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -10,14 +9,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class FileUtils {
-    private static final Class<DocDexBootstrap> MAIN = DocDexBootstrap.class;
+    private static final Pattern LINE_DELIMITER = Pattern.compile("\n");
 
     private FileUtils() {
         throw new AssertionError("This class cannot be instantiated.");
@@ -53,5 +55,10 @@ public final class FileUtils {
     @NotNull
     public static String readFile(@NotNull final File file) throws IOException {
         return String.join("\n", Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
+    }
+
+    public static void writeFile(@NotNull final File file, @NotNull final String content) throws IOException {
+        Files.write(file.toPath(), Arrays.asList(LINE_DELIMITER.split(content)), StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING);
     }
 }

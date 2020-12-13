@@ -45,18 +45,14 @@ public final class DocumentationIndex {
                         break;
 
                     case METHOD:
-                        final MethodMetadata methodMetadata = ((MethodMetadata) metadata);
-                        final DocumentedObject owner = methodMetadata.getOwner();
-                        final TypeMetadata ownerMetadata = ((TypeMetadata) owner.getMetadata());
-                        final String ownerName = methodMetadata.getOwner().getName().toLowerCase();
+                        final MethodMetadata methodMetadata = (MethodMetadata) metadata;
+                        final String ownerName = methodMetadata.getOwner().toLowerCase();
 
                         methods.put(javadocName, ownerName + '#' + objectName, object);
-                        fqnMethods.put(javadocName, ownerMetadata.getPackage() + '.' + ownerName + '#' + objectName, object);
+                        fqnMethods.put(javadocName, methodMetadata.getPackage().toLowerCase() + '.' + ownerName + '#' + objectName, object);
                         break;
 
                     case FIELD:
-                        break;
-                    case PARAMETER:
                         break;
                 }
             });
@@ -92,11 +88,11 @@ public final class DocumentationIndex {
                 final String ownerName = owner.getName().toLowerCase();
 
                 ((TypeMetadata) type.getMetadata()).getMethods().forEach(method -> {
-                    final String methodName = method.getName();
+                    final String methodName = method.getName().toLowerCase();
                     final TypeMetadata ownerMetadata = ((TypeMetadata) owner.getMetadata());
 
                     methods.put(javadocName, ownerName + '#' + methodName, method);
-                    fqnMethods.put(javadocName, ownerMetadata.getPackage() + '.' + ownerName + '#' + methodName, method);
+                    fqnMethods.put(javadocName, ownerMetadata.getPackage().toLowerCase() + '.' + ownerName + '#' + methodName, method);
                 });
             }));
         });

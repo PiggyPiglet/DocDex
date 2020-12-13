@@ -12,8 +12,6 @@ public enum DocumentedTypes {
 
     FIELD("Field"),
 
-    PARAMETER("Parameter"),
-
     UNKNOWN("Unknown");
 
     private final String name;

@@ -18,11 +18,11 @@ import java.util.function.UnaryOperator;
 public abstract class JsonRoute extends Route {
     private final Gson gson = provideGson();
 
-    protected JsonRoute(final @NotNull String route) {
+    protected JsonRoute(@NotNull final String route) {
         super(route);
     }
 
-    protected JsonRoute(final @NotNull Predicate<String> uriPattern, final @NotNull UnaryOperator<String> sanitiser) {
+    protected JsonRoute(@NotNull final Predicate<String> uriPattern, @NotNull final UnaryOperator<String> sanitiser) {
         super(uriPattern, sanitiser);
     }
 

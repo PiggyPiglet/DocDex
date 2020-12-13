@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.deserialization.components.method;
+package me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;

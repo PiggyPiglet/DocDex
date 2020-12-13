@@ -2,8 +2,7 @@ package me.piggypiglet.docdex.documentation.objects.method;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.serialization.TypeSerializer;
+import me.piggypiglet.docdex.documentation.objects.adaptation.EntrySetAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,16 +14,19 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class MethodMetadata {
-    @JsonAdapter(TypeSerializer.class) private final DocumentedObject owner;
+    @SerializedName("package") private final String packaj;
+    private final String owner;
     private final Set<String> parameters;
     private final Map<String, String> parameterDescriptions;
     private final String returns;
     private final String returnsDescription;
-    @SerializedName("throws") private final Set<Map.Entry<String, String>> throwing;
+    @SerializedName("throws") @JsonAdapter(EntrySetAdapter.class) private final Set<Map.Entry<String, String>> throwing;
 
-    MethodMetadata(@NotNull final DocumentedObject owner, @NotNull final Set<String> parameters,
-                   @NotNull final Map<String, String> parameterDescriptions, @Nullable final String returns,
-                   @Nullable final String returnsDescription, @NotNull final Set<Map.Entry<String, String>> throwing) {
+    MethodMetadata(@NotNull final String packaj, @NotNull final String owner,
+                   @NotNull final Set<String> parameters, @NotNull final Map<String, String> parameterDescriptions,
+                   @Nullable final String returns, @Nullable final String returnsDescription,
+                   @NotNull final Set<Map.Entry<String, String>> throwing) {
+        this.packaj = packaj;
         this.owner = owner;
         this.parameters = parameters;
         this.parameterDescriptions = parameterDescriptions;
@@ -34,7 +36,12 @@ public final class MethodMetadata {
     }
 
     @NotNull
-    public DocumentedObject getOwner() {
+    public String getPackage() {
+        return packaj;
+    }
+
+    @NotNull
+    public String getOwner() {
         return owner;
     }
 

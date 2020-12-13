@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.deserialization.components.method;
+package me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +23,10 @@ public final class MethodDeserializer {
     }
 
     @Nullable
-    public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final DocumentedObject owner) {
+    public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String packaj,
+                                               @NotNull final String owner) {
         return Optional.ofNullable(method.selectFirst(".detail"))
-                .map(element -> NewMethodDeserializer.deserialize(method, owner))
+                .map(element -> NewMethodDeserializer.deserialize(method, packaj, owner))
                 .orElseGet(() -> {
 //                    System.out.println(owner + "#" + method.selectFirst("h3"));
                     return OldMethodDeserializer.deserialize(method);

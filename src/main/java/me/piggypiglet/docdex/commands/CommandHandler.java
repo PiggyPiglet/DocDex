@@ -7,6 +7,8 @@ import me.piggypiglet.docdex.commands.implementations.HelpCommand;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -14,6 +16,8 @@ import java.util.Set;
 // ------------------------------
 @Singleton
 public final class CommandHandler {
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(2);
+
     private final Set<Command> commands;
     private final Command unknownCommand;
 
@@ -30,7 +34,7 @@ public final class CommandHandler {
                 .filter(cmd -> cmd.getPrefix().equalsIgnoreCase(text))
                 .findAny().orElse(unknownCommand);
 
-        command.execute();
+        EXECUTOR.submit(command::execute);
     }
 
     @NotNull

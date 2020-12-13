@@ -1,5 +1,7 @@
 package me.piggypiglet.docdex.documentation.objects;
 
+import com.google.gson.annotations.JsonAdapter;
+import me.piggypiglet.docdex.documentation.objects.adaptation.MetadataAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +22,7 @@ public final class DocumentedObject {
     private final boolean deprecated;
     private final String deprecationMessage;
     private final Set<String> modifiers;
-    private final Object metadata;
+    @JsonAdapter(MetadataAdapter.class) private final Object metadata;
 
     private DocumentedObject(@NotNull final DocumentedTypes type, @NotNull final String name,
                              @Nullable final String description, @NotNull final Set<String> annotations,

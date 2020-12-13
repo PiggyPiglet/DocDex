@@ -31,7 +31,7 @@ public final class CommandsRegisterable extends Registerable {
 
     @SuppressWarnings({"unchecked", "Convert2Diamond"})
     @Override
-    protected void execute(final @NotNull Injector injector) {
+    protected void execute(@NotNull final Injector injector) {
         addBinding(new TypeLiteral<Set<Command>>() {}, COMMANDS,
                 (Set<Command>) new HashSet<>(scanner.getClasses(Rules.builder().typeExtends(Command.class).disallowMutableClasses().build())
                         .map(injector::getInstance)

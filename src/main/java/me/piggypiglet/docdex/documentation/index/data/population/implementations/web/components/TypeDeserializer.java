@@ -1,5 +1,6 @@
-package me.piggypiglet.docdex.documentation.deserialization.components;
+package me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components;
 
+import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.utils.DeserializationUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.type.DocumentedTypeBuilder;
@@ -18,38 +19,35 @@ import java.util.stream.Collectors;
 public final class TypeDeserializer {
     private static final Pattern LINE_DELIMITER = Pattern.compile("\n");
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
-    private static final Pattern ANCHOR_TITLE_PACKAGE_DELIMITER = Pattern.compile(" in ");
 
     @SuppressWarnings("DuplicatedCode")
     @NotNull
     public static DocumentedObject deserialize(@NotNull final Element description, @Nullable final Element packaj) {
         final DocumentedTypeBuilder builder = new DocumentedTypeBuilder();
 
-        Optional.ofNullable(packaj)
-                .map(Element::text)
-                .map(text -> text.replace("Package ", ""))
-                .ifPresent(builder::packaj);
+        Optional.ofNullable(packaj).ifPresent(packageElement ->
+                builder.packaj(packageElement.text().replace("Package ", "")));
 
-        final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(description.selectFirst("pre").text()))
-                .filter(line -> {
-                    if (line.startsWith("@")) {
-                        builder.annotations(line);
-                        return false;
-                    }
-
-                    return true;
-                })
+        final Element pre = description.selectFirst("pre");
+        final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(pre.text()))
+                .filter(line -> !line.startsWith("@"))
+                .collect(Collectors.toList());
+        final List<String> declarationAnchors = Optional.ofNullable(pre.selectFirst("span"))
+                .map(Element::nextElementSiblings)
+                .map(elements -> elements.select("a"))
+                .stream()
+                .flatMap(Collection::stream)
+                .map(DeserializationUtils::generateFqn)
                 .collect(Collectors.toList());
 
-
-        final List<String> declarationAnchors = Optional.ofNullable(description.selectFirst("pre").selectFirst("span"))
-                .map(Element::nextElementSiblings)
-                .map(Collection::stream)
-                .map(stream -> stream
-                        .filter(element -> element.tagName().equalsIgnoreCase("a"))
-                        .map(element -> ANCHOR_TITLE_PACKAGE_DELIMITER.split(element.attr("title"))[1] + '.' + element.text())
-                        .collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
+        Optional.ofNullable(pre.selectFirst("span"))
+                .map(Element::previousElementSiblings)
+                .map(elements -> elements.select("a"))
+                .stream()
+                .flatMap(Collection::stream)
+                .map(element -> element.text(element.text().substring(1)))
+                .map(element -> '@' + DeserializationUtils.generateFqn(element))
+                .forEach(builder::annotations);
 
         DocumentedTypes type = DocumentedTypes.UNKNOWN;
 
@@ -85,16 +83,13 @@ public final class TypeDeserializer {
             }
         }
 
-        final Element descriptionBlock = description.selectFirst(".block");
-
-        if (descriptionBlock != null) {
-            builder.description(descriptionBlock.text());
-        }
+        Optional.ofNullable(description.selectFirst(".block")).ifPresent(descriptionBlock ->
+                builder.description(descriptionBlock.text()));
 
         description.select("dl").forEach(meta -> {
             final String header = meta.selectFirst("dt").text();
             final Set<String> items = meta.select("code > a").stream()
-                    .map(anchor -> ANCHOR_TITLE_PACKAGE_DELIMITER.split(anchor.attr("title"))[1] + '.' + anchor.text())
+                    .map(DeserializationUtils::generateFqn)
                     .collect(Collectors.toSet());
 
             if (header.equalsIgnoreCase("all implemented interfaces:")) {
@@ -118,17 +113,13 @@ public final class TypeDeserializer {
             }
         });
 
-        final Element deprecationBlock = description.selectFirst(".deprecationBlock");
-
-        if (deprecationBlock != null) {
+        Optional.ofNullable(description.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
             builder.deprecated(true);
 
-            final Element deprecationMessage = deprecationBlock.selectFirst(".deprecationComment");
-
-            if (deprecationMessage != null) {
-                builder.deprecationMessage(deprecationMessage.text());
-            }
-        }
+            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment -> {
+                builder.deprecationMessage(deprecationComment.text());
+            });
+        });
 
         return builder.build();
     }
