@@ -29,3 +29,6 @@ When requesting from the index with a query, it'll first attempt to find a perfe
 /index?javadoc=1.16.4&query=commandexecutor
 ```
 > Queries are case insensitive.
+
+### Contact
+Join either [HelpChat](https://helpch.at/discord), or my personal [discord](https://piggypiglet.me/discord).
