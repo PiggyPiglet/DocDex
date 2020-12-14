@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedTypeBuilder extends DocumentedObject.Builder<DocumentedTypeBuilder> {
-    private String packaj = "";
     private final Set<PotentialObject> extensions = new HashSet<>();
     private final Set<PotentialObject> implementations = new HashSet<>();
     private final Set<PotentialObject> allImplementations = new HashSet<>();
@@ -22,12 +21,6 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
     private final Set<PotentialObject> subInterfaces = new HashSet<>();
     private final Set<PotentialObject> subClasses = new HashSet<>();
     private final Set<PotentialObject> implementingClasses = new HashSet<>();
-
-    @NotNull
-    public DocumentedTypeBuilder packaj(@NotNull final String value) {
-        packaj = value;
-        return this;
-    }
 
     @NotNull
     public DocumentedTypeBuilder extensions(@NotNull final String @NotNull ... values) {
@@ -115,7 +108,7 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
     
     @Override
     public DocumentedObject build() {
-        return build(new TypeMetadata(packaj, extensions, implementations, allImplementations, superInterfaces,
+        return build(new TypeMetadata(extensions, implementations, allImplementations, superInterfaces,
                 subInterfaces, subClasses, implementingClasses));
     }
 

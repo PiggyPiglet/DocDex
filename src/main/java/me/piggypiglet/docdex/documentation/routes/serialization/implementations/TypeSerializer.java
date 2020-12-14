@@ -1,8 +1,8 @@
 package me.piggypiglet.docdex.documentation.routes.serialization.implementations;
 
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
-import me.piggypiglet.docdex.documentation.objects.method.MethodMetadata;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import me.piggypiglet.docdex.documentation.routes.serialization.JsonSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -37,11 +37,7 @@ public final class TypeSerializer implements JsonSerializer {
         final Map<String, Object> rawMetadata = (Map<String, Object>) map.get("metadata");
 
         rawMetadata.put(METHODS_KEY, METHODS_GETTER.apply(metadata).stream()
-                .map(obj -> {
-                    final MethodMetadata methodMetadata = (MethodMetadata) obj.getMetadata();
-
-                    return methodMetadata.getPackage() + '.' + methodMetadata.getOwner() + '#' + obj.getName();
-                })
+                .map(DataUtils::getFqn)
                 .collect(Collectors.toSet()));
     }
 }

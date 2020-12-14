@@ -10,7 +10,6 @@ import java.util.*;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedMethodBuilder extends DocumentedObject.Builder<DocumentedMethodBuilder> {
-    private final String packaj;
     private final String owner;
 
     private final Set<String> parameters = new HashSet<>();
@@ -19,8 +18,7 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
     private String returnsDescription = null;
     private final Set<Map.Entry<String, String>> throwing = new HashSet<>();
 
-    public DocumentedMethodBuilder(@NotNull final String packaj, @NotNull final String owner) {
-        this.packaj = packaj;
+    public DocumentedMethodBuilder(@NotNull final String owner) {
         this.owner = owner;
     }
 
@@ -75,7 +73,7 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
     @Override
     public DocumentedObject build() {
         return build(new MethodMetadata(
-                packaj, owner, parameters, parameterDescriptions, returns, returnsDescription, throwing
+                owner, parameters, parameterDescriptions, returns, returnsDescription, throwing
         ));
     }
 }

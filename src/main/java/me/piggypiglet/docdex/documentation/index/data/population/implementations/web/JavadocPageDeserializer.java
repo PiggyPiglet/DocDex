@@ -49,7 +49,7 @@ public final class JavadocPageDeserializer {
                     return methods.get().parent().select("ul > li.blockList").stream();
                 });
         final Set<DocumentedObject> methods = elements
-                .map(element -> MethodDeserializer.deserialize(element, typeMetadata.getPackage(), type.getName()))
+                .map(element -> MethodDeserializer.deserialize(element, type.getPackage(), type.getName()))
                 .collect(Collectors.toSet());
         objects.addAll(methods);
 

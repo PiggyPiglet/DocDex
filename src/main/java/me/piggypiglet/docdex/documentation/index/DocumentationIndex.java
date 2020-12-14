@@ -4,8 +4,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.method.MethodMetadata;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -32,8 +32,8 @@ public final class DocumentationIndex {
             final String javadocName = name.toLowerCase();
 
             objects.forEach(object -> {
-                final Object metadata = object.getMetadata();
-                final String objectName = object.getName().toLowerCase();
+                final String objectName = DataUtils.getName(object).toLowerCase();
+                final String objectFqn = DataUtils.getFqn(object).toLowerCase();
 
                 switch (object.getType()) {
                     case CLASS:
@@ -41,15 +41,12 @@ public final class DocumentationIndex {
                     case ANNOTATION:
                     case ENUM:
                         types.put(javadocName, objectName, object);
-                        fqnTypes.put(javadocName, ((TypeMetadata) metadata).getPackage() + '.' + objectName, object);
+                        fqnTypes.put(javadocName, objectFqn, object);
                         break;
 
                     case METHOD:
-                        final MethodMetadata methodMetadata = (MethodMetadata) metadata;
-                        final String ownerName = methodMetadata.getOwner().toLowerCase();
-
-                        methods.put(javadocName, ownerName + '#' + objectName, object);
-                        fqnMethods.put(javadocName, methodMetadata.getPackage().toLowerCase() + '.' + ownerName + '#' + objectName, object);
+                        methods.put(javadocName, objectName, object);
+                        fqnMethods.put(javadocName, objectFqn, object);
                         break;
 
                     case FIELD:
@@ -85,14 +82,9 @@ public final class DocumentationIndex {
             });
 
             new HashSet<>(types.row(javadocName).values()).forEach(type -> getChildren(type).forEach(owner -> {
-                final String ownerName = owner.getName().toLowerCase();
-
                 ((TypeMetadata) type.getMetadata()).getMethods().forEach(method -> {
-                    final String methodName = method.getName().toLowerCase();
-                    final TypeMetadata ownerMetadata = ((TypeMetadata) owner.getMetadata());
-
-                    methods.put(javadocName, ownerName + '#' + methodName, method);
-                    fqnMethods.put(javadocName, ownerMetadata.getPackage().toLowerCase() + '.' + ownerName + '#' + methodName, method);
+                    methods.put(javadocName, DataUtils.getName(method).toLowerCase(), method);
+                    fqnMethods.put(javadocName, DataUtils.getFqn(method).toLowerCase(), method);
                 });
             }));
         });

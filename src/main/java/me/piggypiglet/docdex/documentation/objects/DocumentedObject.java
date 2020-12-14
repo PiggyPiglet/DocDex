@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.documentation.objects;
 
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.objects.adaptation.MetadataAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +17,7 @@ import java.util.Set;
 // ------------------------------
 public final class DocumentedObject {
     private final DocumentedTypes type;
+    @SerializedName("package") private final String packaj;
     private final String name;
     private final String description;
     private final Set<String> annotations;
@@ -24,11 +26,13 @@ public final class DocumentedObject {
     private final Set<String> modifiers;
     @JsonAdapter(MetadataAdapter.class) private final Object metadata;
 
-    private DocumentedObject(@NotNull final DocumentedTypes type, @NotNull final String name,
-                             @Nullable final String description, @NotNull final Set<String> annotations,
-                             final boolean deprecated, @Nullable final String deprecationMessage,
-                             @NotNull final Set<String> modifiers, @NotNull final Object metadata) {
+    private DocumentedObject(@NotNull final DocumentedTypes type, @NotNull final String packaj,
+                             @NotNull final String name, @Nullable final String description,
+                             @NotNull final Set<String> annotations, final boolean deprecated,
+                             @Nullable final String deprecationMessage, @NotNull final Set<String> modifiers,
+                             @NotNull final Object metadata) {
         this.type = type;
+        this.packaj = packaj;
         this.name = name;
         this.description = description;
         this.annotations = annotations;
@@ -41,6 +45,11 @@ public final class DocumentedObject {
     @NotNull
     public DocumentedTypes getType() {
         return type;
+    }
+
+    @NotNull
+    public String getPackage() {
+        return packaj;
     }
 
     @NotNull
@@ -97,6 +106,7 @@ public final class DocumentedObject {
         private final T instance = (T) this;
 
         private DocumentedTypes type;
+        private String packaj;
         private String name;
         private String description = null;
         private final Set<String> annotations = new HashSet<>();
@@ -109,6 +119,12 @@ public final class DocumentedObject {
         @NotNull
         public T type(@NotNull final DocumentedTypes value) {
             type = value;
+            return instance;
+        }
+
+        @NotNull
+        public T packaj(@NotNull final String value) {
+            packaj = value;
             return instance;
         }
 
@@ -164,8 +180,8 @@ public final class DocumentedObject {
 
         @NotNull
         protected final DocumentedObject build(@NotNull final Object metadata) {
-            return new DocumentedObject(type, name, description, annotations, deprecated, deprecationMessage,
-                    modifiers, metadata);
+            return new DocumentedObject(type, packaj, name, description, annotations, deprecated,
+                    deprecationMessage, modifiers, metadata);
         }
     }
 }

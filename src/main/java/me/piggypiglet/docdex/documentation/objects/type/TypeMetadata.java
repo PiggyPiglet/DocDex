@@ -1,6 +1,5 @@
 package me.piggypiglet.docdex.documentation.objects.type;
 
-import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,6 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class TypeMetadata {
-    @SerializedName("package") private final String packaj;
     private final Set<PotentialObject> extensions;
     private final Set<PotentialObject> implementations;
     private final Set<PotentialObject> allImplementations;
@@ -23,11 +21,10 @@ public final class TypeMetadata {
     private final Set<PotentialObject> implementingClasses;
     private final Set<DocumentedObject> methods = new HashSet<>();
 
-    public TypeMetadata(@NotNull final String packaj, @NotNull final Set<PotentialObject> extensions,
-                        @NotNull final Set<PotentialObject> implementations, @NotNull final Set<PotentialObject> allImplementations,
-                        @NotNull final Set<PotentialObject> superInterfaces, @NotNull final Set<PotentialObject> subInterfaces,
-                        @NotNull final Set<PotentialObject> subClasses, @NotNull final Set<PotentialObject> implementingClasses) {
-        this.packaj = packaj;
+    public TypeMetadata(@NotNull final Set<PotentialObject> extensions, @NotNull final Set<PotentialObject> implementations,
+                        @NotNull final Set<PotentialObject> allImplementations, @NotNull final Set<PotentialObject> superInterfaces,
+                        @NotNull final Set<PotentialObject> subInterfaces, @NotNull final Set<PotentialObject> subClasses,
+                        @NotNull final Set<PotentialObject> implementingClasses) {
         this.extensions = extensions;
         this.implementations = implementations;
         this.allImplementations = allImplementations;
@@ -35,11 +32,6 @@ public final class TypeMetadata {
         this.subInterfaces = subInterfaces;
         this.subClasses = subClasses;
         this.implementingClasses = implementingClasses;
-    }
-
-    @NotNull
-    public String getPackage() {
-        return packaj;
     }
 
     @NotNull
@@ -85,8 +77,7 @@ public final class TypeMetadata {
     @Override
     public String toString() {
         return "TypeMetadata{" +
-                "package='" + packaj + '\'' +
-                ", extensions=" + extensions +
+                "extensions=" + extensions +
                 ", implementations=" + implementations +
                 ", allImplementations=" + allImplementations +
                 ", superInterfaces=" + superInterfaces +

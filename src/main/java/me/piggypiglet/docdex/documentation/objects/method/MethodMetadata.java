@@ -14,7 +14,6 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class MethodMetadata {
-    @SerializedName("package") private final String packaj;
     private final String owner;
     private final Set<String> parameters;
     private final Map<String, String> parameterDescriptions;
@@ -22,22 +21,15 @@ public final class MethodMetadata {
     private final String returnsDescription;
     @SerializedName("throws") @JsonAdapter(EntrySetAdapter.class) private final Set<Map.Entry<String, String>> throwing;
 
-    MethodMetadata(@NotNull final String packaj, @NotNull final String owner,
-                   @NotNull final Set<String> parameters, @NotNull final Map<String, String> parameterDescriptions,
-                   @Nullable final String returns, @Nullable final String returnsDescription,
-                   @NotNull final Set<Map.Entry<String, String>> throwing) {
-        this.packaj = packaj;
+    MethodMetadata(@NotNull final String owner, @NotNull final Set<String> parameters,
+                   @NotNull final Map<String, String> parameterDescriptions, @Nullable final String returns,
+                   @Nullable final String returnsDescription, @NotNull final Set<Map.Entry<String, String>> throwing) {
         this.owner = owner;
         this.parameters = parameters;
         this.parameterDescriptions = parameterDescriptions;
         this.returns = returns;
         this.returnsDescription = returnsDescription;
         this.throwing = throwing;
-    }
-
-    @NotNull
-    public String getPackage() {
-        return packaj;
     }
 
     @NotNull
@@ -73,8 +65,7 @@ public final class MethodMetadata {
     @Override
     public String toString() {
         return "MethodMetadata{" +
-                "package='" + packaj + '\'' +
-                ", owner='" + owner + '\'' +
+                "owner='" + owner + '\'' +
                 ", parameters=" + parameters +
                 ", parameterDescriptions=" + parameterDescriptions +
                 ", returns='" + returns + '\'' +
