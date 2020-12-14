@@ -5,7 +5,7 @@ Documentation Index (DocDex) is a utility API which scans javadocs on the web, c
 ```bash
 ./gradlew shadowJar
 ```
-Archive will be in build/libs/
+> Archive will be in build/libs/
 
 ### Usage
 Requirements:
