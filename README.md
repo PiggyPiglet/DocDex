@@ -22,7 +22,7 @@ Once population has finished, there's two storage methods. DocDex will attempt t
 
 When running the jar, a web server will be spun up on the port & host specified in the config. The route `/index` will then be made available. Two parameters are required to receive a non-null response from this route, javadoc and query. Javadoc refers to one of the names inside your config.json, and the query is one of the objects from the javadoc (e.g. a class or method).
 
-Both methods (methods, constructors) and types (classes, interfaces, enums, annotations) have two identifiers. The first is their name, e.g. CommandExecutor (name) or CommandExecutor#onCommand (method). Additionally, there's also FQN identifiers in the event of duplicate names, e.g. org.bukkit.command.CommandExecutor & org.bukkit.command.CommandExecutor#onCommand.
+Both methods (methods, constructors) and types (classes, interfaces, enums, annotations) have two identifiers. The first is their name, e.g. `CommandExecutor` (name) or `CommandExecutor#onCommand` (method). Additionally, there's also FQN identifiers in the event of duplicate names, e.g. `org.bukkit.command.CommandExecutor` & `org.bukkit.command.CommandExecutor#onCommand`.
 
 When requesting from the index with a query, it'll first attempt to find a perfect match for the query (two possible matches, name or fqn). If it can't find one, it'll use a ratio of the levenshtein distance of the algorithm, and either the name or fqn (determined by whether the query contains periods) of every object in that javadoc. e.g.
 ```
