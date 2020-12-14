@@ -1,9 +1,9 @@
 package me.piggypiglet.docdex.shutdown;
 
 import com.google.inject.Inject;
+import com.mongodb.MongoClient;
 import fi.iki.elonen.NanoHTTPD;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // ------------------------------
@@ -11,18 +11,21 @@ import org.slf4j.LoggerFactory;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class ShutdownHook extends Thread {
-    private static final Logger HTTP_LOGGER = LoggerFactory.getLogger("HTTP");
-
     private final NanoHTTPD server;
+    private final MongoClient client;
 
     @Inject
-    public ShutdownHook(@NotNull final NanoHTTPD server) {
+    public ShutdownHook(@NotNull final NanoHTTPD server, @NotNull final MongoClient client) {
         this.server = server;
+        this.client = client;
     }
 
     @Override
     public void run() {
         server.stop();
-        HTTP_LOGGER.info("Shutting down HTTP server.");
+        LoggerFactory.getLogger("HTTP").info("Shutting down HTTP server.");
+
+        client.close();
+        LoggerFactory.getLogger("Mongo").info("Shutting down Mongo connection.");
     }
 }

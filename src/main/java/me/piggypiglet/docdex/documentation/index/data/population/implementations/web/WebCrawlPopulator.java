@@ -3,12 +3,12 @@ package me.piggypiglet.docdex.documentation.index.data.population.implementation
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -25,6 +27,10 @@ import java.util.Set;
 // ------------------------------
 public final class WebCrawlPopulator implements IndexPopulator {
     private static final Logger LOGGER = LoggerFactory.getLogger("WebCrawlPopulator");
+    private static final Set<String> TYPE_NAMES = Stream.of(
+            DocumentedTypes.CLASS, DocumentedTypes.INTERFACE,
+            DocumentedTypes.ANNOTATION, DocumentedTypes.ENUM
+    ).map(DocumentedTypes::getName).map(String::toLowerCase).collect(Collectors.toSet());
 
     @Override
     public boolean shouldPopulate(final @NotNull Javadoc javadoc) {
@@ -55,7 +61,9 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         final Set<DocumentedObject> objects = new HashSet<>();
-        final Elements types = document.select("dl > dt > a > span.typeNameLink");
+        final Set<Element> types = document.select("dl > dt > a").stream()
+                .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
+                .collect(Collectors.toSet());
 
         LOGGER.info("Indexing " + types.size() + " types for " + javadoc.getLink());
 
@@ -69,7 +77,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 previousPercentage = percentage;
             }
 
-            final Document page = connect(element.parent().absUrl("href"));
+            final Document page = connect(element.absUrl("href"));
 
             if (page == null) continue;
 

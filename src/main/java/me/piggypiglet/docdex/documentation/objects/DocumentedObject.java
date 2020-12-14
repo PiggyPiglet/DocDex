@@ -77,6 +77,20 @@ public final class DocumentedObject {
         return metadata;
     }
 
+    @Override
+    public String toString() {
+        return "DocumentedObject{" +
+                "type=" + type +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", annotations=" + annotations +
+                ", deprecated=" + deprecated +
+                ", deprecationMessage='" + deprecationMessage + '\'' +
+                ", modifiers=" + modifiers +
+                ", metadata=" + metadata +
+                '}';
+    }
+
     @SuppressWarnings("UnusedReturnValue")
     public static abstract class Builder<T extends Builder<T>> {
         @SuppressWarnings("unchecked")
@@ -89,11 +103,8 @@ public final class DocumentedObject {
         private boolean deprecated = false;
         private String deprecationMessage = null;
         private final Set<String> modifiers = new HashSet<>();
-        protected Object metadata = null;
 
-        protected Builder() {
-
-        }
+        protected Builder() {}
 
         @NotNull
         public T type(@NotNull final DocumentedTypes value) {

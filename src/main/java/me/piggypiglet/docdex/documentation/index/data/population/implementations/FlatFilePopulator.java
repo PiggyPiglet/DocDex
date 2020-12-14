@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 // ------------------------------
@@ -28,6 +29,7 @@ public final class FlatFilePopulator implements IndexPopulator {
         return new File("docs", String.join("-", javadoc.getNames()) + ".json").exists();
     }
 
+    @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
     @NotNull
     @Override
     public Set<DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
@@ -37,12 +39,15 @@ public final class FlatFilePopulator implements IndexPopulator {
         LOGGER.info("Loading pre-built index from " + fileName);
 
         try {
-            return GSON.fromJson(FileUtils.readFile(file), Types.setOf(DocumentedObject.class));
+            return Optional.of((Set<DocumentedObject>) GSON.fromJson(FileUtils.readFile(file), Types.setOf(DocumentedObject.class)))
+                    .stream()
+                    // i don't like this but gotta get that log lol
+                    .peek(set -> LOGGER.info("Finished loading " + fileName))
+                    .findAny()
+                    .get();
         } catch (IOException exception) {
             LOGGER.error("Something went wrong when loading " + fileName, exception);
         }
-
-        LOGGER.info("Finished loading " + fileName);
 
         return Collections.emptySet();
     }

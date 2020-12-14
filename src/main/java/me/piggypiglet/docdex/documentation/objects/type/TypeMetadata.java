@@ -81,4 +81,19 @@ public final class TypeMetadata {
     public Set<DocumentedObject> getMethods() {
         return methods;
     }
+
+    @Override
+    public String toString() {
+        return "TypeMetadata{" +
+                "package='" + packaj + '\'' +
+                ", extensions=" + extensions +
+                ", implementations=" + implementations +
+                ", allImplementations=" + allImplementations +
+                ", superInterfaces=" + superInterfaces +
+                ", subInterfaces=" + subInterfaces +
+                ", subClasses=" + subClasses +
+                ", implementingClasses=" + implementingClasses +
+                ", methods=" + methods +
+                '}';
+    }
 }

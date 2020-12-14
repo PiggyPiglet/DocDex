@@ -7,7 +7,7 @@ import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.DocumentationIndex;
 import me.piggypiglet.docdex.documentation.index.data.population.IndexPopulator;
-import me.piggypiglet.docdex.documentation.index.data.storage.FlatFileStorage;
+import me.piggypiglet.docdex.documentation.index.data.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -27,17 +27,17 @@ public final class IndexPopulationRegisterable extends Registerable {
     private final Set<Javadoc> javadocs;
     private final Set<IndexPopulator> populators;
     private final DocumentationIndex index;
-    private final FlatFileStorage storage;
+    private final Set<IndexStorage> storageMechanisms;
 
     private final ExecutorService executor;
 
     @Inject
     public IndexPopulationRegisterable(@NotNull final Config config, @NotNull @Named("populators") final Set<IndexPopulator> populators,
-                                       @NotNull final DocumentationIndex index, @NotNull final FlatFileStorage storage) {
+                                       @NotNull final DocumentationIndex index, @NotNull @Named("storage") final Set<IndexStorage> storageMechanisms) {
         this.javadocs = config.getJavadocs();
         this.index = index;
         this.populators = populators;
-        this.storage = storage;
+        this.storageMechanisms = storageMechanisms;
 
         this.executor = Executors.newFixedThreadPool(javadocs.size());
     }
@@ -51,7 +51,7 @@ public final class IndexPopulationRegisterable extends Registerable {
                         populators.stream().filter(populator -> populator.shouldPopulate(javadoc)).findAny().ifPresent(populator -> {
                             final Set<DocumentedObject> documentedObjects = populator.provideObjects(javadoc);
 
-                            storage.save(javadoc, documentedObjects);
+                            storageMechanisms.forEach(storage -> storage.save(javadoc, documentedObjects));
                             index.populate(javadoc, documentedObjects);
                         })
                 )

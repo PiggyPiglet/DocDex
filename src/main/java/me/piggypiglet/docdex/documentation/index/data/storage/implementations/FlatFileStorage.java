@@ -1,7 +1,8 @@
-package me.piggypiglet.docdex.documentation.index.data.storage;
+package me.piggypiglet.docdex.documentation.index.data.storage.implementations;
 
 import com.google.gson.Gson;
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.data.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.file.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +17,11 @@ import java.util.Set;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class FlatFileStorage {
+public final class FlatFileStorage implements IndexStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger("FlatFileStorage");
     private static final Gson GSON = new Gson();
 
+    @Override
     public void save(@NotNull final Javadoc javadoc, @NotNull final Set<DocumentedObject> objects) {
         final String fileName = String.join("-", javadoc.getNames()) + ".json";
         final File file = new File("docs", fileName);

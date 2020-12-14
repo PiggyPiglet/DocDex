@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Element;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -19,6 +22,14 @@ import java.util.stream.Collectors;
 public final class TypeDeserializer {
     private static final Pattern LINE_DELIMITER = Pattern.compile("\n");
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
+
+    private static final Map<String, BiConsumer<DocumentedTypeBuilder, Set<String>>> HEADER_SETTERS = Map.of(
+            "all implemented interfaces:", DocumentedTypeBuilder::allImplementations,
+            "all superinterfaces:", DocumentedTypeBuilder::superInterfaces,
+            "all known subinterfaces:", DocumentedTypeBuilder::subInterfaces,
+            "direct known subclasses:", DocumentedTypeBuilder::subClasses,
+            "all known implementing classes:", DocumentedTypeBuilder::implementingClasses
+    );
 
     @SuppressWarnings("DuplicatedCode")
     @NotNull
@@ -52,6 +63,7 @@ public final class TypeDeserializer {
         DocumentedTypes type = DocumentedTypes.UNKNOWN;
 
         int j = 0;
+        final AtomicInteger extensionCount = new AtomicInteger(0);
         for (int i = 0; i < declaration.size(); ++i) {
             final List<String> parts = Arrays.asList(SPACE_DELIMITER.split(declaration.get(i)));
 
@@ -64,20 +76,28 @@ public final class TypeDeserializer {
                     break;
 
                 case 1:
+                    final List<String> extensions = parts.subList(1, parts.size());
+                    final Function<Integer, String> extension = k ->
+                            declarationAnchors.size() > k ? declarationAnchors.get(k) : extensions.get(k);
+
                     if (type == DocumentedTypes.INTERFACE) {
                         for (; j < parts.size() - 1; j++) {
-                            builder.extensions(declarationAnchors.get(j));
+                            builder.extensions(extension.apply(j));
+                            extensionCount.incrementAndGet();
                         }
                     } else {
-                        builder.extensions(declarationAnchors.get(j++));
+                        builder.extensions(extension.apply(j++));
+                        extensionCount.incrementAndGet();
                     }
                     break;
 
                 case 2:
-                    if (parts.isEmpty()) break;
+                    final List<String> implementations = parts.subList(1, parts.size());
+                    final Function<Integer, String> implementation = k ->
+                            declarationAnchors.size() > k ? declarationAnchors.get(k) : implementations.get(k - extensionCount.get());
 
                     for (int k = j; j < (k + parts.size()) - 1; j++) {
-                        builder.extensions(declarationAnchors.get(j));
+                        builder.implementations(implementation.apply(j));
                     }
                     break;
             }
@@ -87,38 +107,19 @@ public final class TypeDeserializer {
                 builder.description(descriptionBlock.text()));
 
         description.select("dl").forEach(meta -> {
-            final String header = meta.selectFirst("dt").text();
-            final Set<String> items = meta.select("code > a").stream()
-                    .map(DeserializationUtils::generateFqn)
-                    .collect(Collectors.toSet());
+            final String header = meta.selectFirst("dt").text().toLowerCase();
 
-            if (header.equalsIgnoreCase("all implemented interfaces:")) {
-                builder.allImplementations(items);
-            }
-
-            if (header.equalsIgnoreCase("all superinterfaces:")) {
-                builder.superInterfaces(items);
-            }
-
-            if (header.equalsIgnoreCase("all known subinterfaces:")) {
-                builder.subInterfaces(items);
-            }
-
-            if (header.equalsIgnoreCase("direct known subclasses:")) {
-                builder.subClasses(items);
-            }
-
-            if (header.equalsIgnoreCase("all known implementing classes:")) {
-                builder.implementingClasses(items);
-            }
+            Optional.ofNullable(HEADER_SETTERS.get(header)).ifPresent(setter ->
+                    setter.accept(builder, meta.select("dd a").stream()
+                            .map(DeserializationUtils::generateFqn)
+                            .collect(Collectors.toSet())));
         });
 
         Optional.ofNullable(description.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
             builder.deprecated(true);
 
-            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment -> {
-                builder.deprecationMessage(deprecationComment.text());
-            });
+            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment ->
+                    builder.deprecationMessage(deprecationComment.text()));
         });
 
         return builder.build();

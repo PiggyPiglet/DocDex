@@ -6,10 +6,13 @@ import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -32,7 +35,20 @@ public final class JavadocPageDeserializer {
 
         // we pass the owner as a string here to ensure there's no cyclic dependencies during the population process.
         final TypeMetadata typeMetadata = (TypeMetadata) type.getMetadata();
-        final Set<DocumentedObject> methods = document.select(".methodDetails ul.blockList > li.blockList").stream()
+        final Stream<Element> elements = Optional.ofNullable(document.selectFirst(".methodDetails ul.blockList > li.blockList"))
+                .map(element -> document.select(".methodDetails ul.blockList > li.blockList").stream())
+                .orElseGet(() -> {
+                    final Optional<Element> methods = document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
+                            .filter(element -> element.text().equalsIgnoreCase("method detail"))
+                            .findAny();
+
+                    if (methods.isEmpty()) {
+                        return Stream.empty();
+                    }
+
+                    return methods.get().parent().select("ul > li.blockList").stream();
+                });
+        final Set<DocumentedObject> methods = elements
                 .map(element -> MethodDeserializer.deserialize(element, typeMetadata.getPackage(), type.getName()))
                 .collect(Collectors.toSet());
         objects.addAll(methods);

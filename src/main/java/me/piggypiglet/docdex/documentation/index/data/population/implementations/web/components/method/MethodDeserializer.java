@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 // ------------------------------
 public final class MethodDeserializer {
     static final Pattern LINE_DELIMITER = Pattern.compile("\n");
-    static final Pattern LIST_DELIMITER = Pattern.compile(", ");
+    static final Pattern LIST_DELIMITER = Pattern.compile(",");
     static final Pattern CONTENT_DELIMITER = Pattern.compile(" - ");
 
     private MethodDeserializer() {
@@ -27,18 +27,20 @@ public final class MethodDeserializer {
     @NotNull
     public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String packaj,
                                                @NotNull final String owner) {
-        final Element details = method.selectFirst(".detail");
+        final Element details = Optional.ofNullable(method.selectFirst(".detail"))
+                .orElse(method);
         final DocumentedMethodBuilder builder = new DocumentedMethodBuilder(packaj, owner);
 
         final boolean old = details.selectFirst("h3") == null;
+        final String name = Optional.ofNullable(details.selectFirst("h3"))
+                .orElse(details.selectFirst("h4"))
+                .text();
 
         builder.type(DocumentedTypes.METHOD);
-        builder.name(Optional.ofNullable(details.selectFirst("h3"))
-                .orElse(details.selectFirst("h4"))
-                .text());
+        builder.name(name);
 
         if (old) {
-            OldSignatureDeserializer.deserialize(details, builder);
+            OldSignatureDeserializer.deserialize(details, builder, name);
         } else {
             NewSignatureDeserializer.deserialize(details, builder);
         }
@@ -46,9 +48,8 @@ public final class MethodDeserializer {
         Optional.ofNullable(details.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
             builder.deprecated(true);
 
-            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment -> {
-                builder.deprecationMessage(deprecationComment.text());
-            });
+            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment ->
+                    builder.deprecationMessage(deprecationComment.text()));
         });
 
         Optional.ofNullable(details.selectFirst(".block")).ifPresent(description ->
@@ -78,7 +79,7 @@ public final class MethodDeserializer {
                     case "parameters:":
                         builder.parameterDescriptions(content.stream()
                                 .map(CONTENT_DELIMITER::split)
-                                .collect(Collectors.toMap(array -> array[0], array -> array[1])));
+                                .collect(Collectors.toMap(array -> array[0], array -> array.length > 1 ? array[1] : "")));
                         break;
 
                     case "throws:":

@@ -28,12 +28,13 @@ public final class IndexPopulatorRegisterable extends Registerable {
         this.scanner = scanner;
     }
 
-    @SuppressWarnings({"Convert2Diamond", "unchecked"})
+    @SuppressWarnings({"Convert2Diamond"})
     @Override
     protected void execute(final @NotNull Injector injector) {
         addBinding(new TypeLiteral<Set<IndexPopulator>>() {}, POPULATORS,
-                (Set<IndexPopulator>) scanner.getClasses(Rules.builder().typeExtends(IndexPopulator.class).disallowMutableClasses().build())
+                scanner.getClasses(Rules.builder().typeExtends(IndexPopulator.class).disallowMutableClasses().build())
                         .map(injector::getInstance)
+                        .map(IndexPopulator.class::cast)
                         .collect(Collectors.toSet()));
     }
 }

@@ -5,6 +5,7 @@ import me.piggypiglet.docdex.documentation.objects.method.DocumentedMethodBuilde
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method.MethodDeserializer.LINE_DELIMITER;
@@ -29,6 +30,8 @@ public final class NewSignatureDeserializer {
         Optional.ofNullable(signature.selectFirst(".returnType")).ifPresent(returnType ->
                 builder.returns(returnType.text()));
         Optional.ofNullable(signature.selectFirst(".arguments")).ifPresent(arguments ->
-                builder.parameters(LIST_DELIMITER.split(LINE_DELIMITER.matcher(arguments.text().replace(")", "")).replaceAll(" "))));
+                Arrays.stream(LIST_DELIMITER.split(LINE_DELIMITER.matcher(arguments.text().replace(")", "")).replaceAll(" ")))
+                        .map(String::trim)
+                        .forEach(builder::parameters));
     }
 }

@@ -69,4 +69,17 @@ public final class MethodMetadata {
     public Set<Map.Entry<String, String>> getThrows() {
         return throwing;
     }
+
+    @Override
+    public String toString() {
+        return "MethodMetadata{" +
+                "package='" + packaj + '\'' +
+                ", owner='" + owner + '\'' +
+                ", parameters=" + parameters +
+                ", parameterDescriptions=" + parameterDescriptions +
+                ", returns='" + returns + '\'' +
+                ", returnsDescription='" + returnsDescription + '\'' +
+                ", throws=" + throwing +
+                '}';
+    }
 }
