@@ -18,7 +18,7 @@
     {
       "names":["1.16.3"],
       "link":"http://localhost/docs/1.16.3"
-    }/*,
+    },
     {
       "names": ["1.16.2"],
       "link": "http://localhost/docs/1.16.2"
@@ -114,11 +114,11 @@
     {
       "names": ["1.9"],
       "link": "http://localhost/docs/1.9/overview-summary.html"
-    }*//*,
+    },
     {
       "names": ["1.8.8"],
       "link": "http://localhost/docs/1.8.8/overview-summary.html"
-    }*//*,
+    },
     {
       "names": ["1.8.7"],
       "link": "http://localhost/docs/1.8.7/overview-summary.html"
@@ -146,6 +146,6 @@
     {
       "names": ["1.7.10"],
       "link": "http://localhost/docs/1.7.10/overview-summary.html"
-    }*/
+    }
   ]
 }

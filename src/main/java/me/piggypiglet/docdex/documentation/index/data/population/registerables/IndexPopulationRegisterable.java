@@ -23,6 +23,9 @@ import java.util.concurrent.Executors;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class IndexPopulationRegisterable extends Registerable {
+    private static final double BYTE_PER_MB = 1_000_000;
+    private static final double MB_PER_DOC = 100;
+
     private static final Logger LOGGER = LoggerFactory.getLogger("Indexer");
 
     private final Set<Javadoc> javadocs;
@@ -40,7 +43,10 @@ public final class IndexPopulationRegisterable extends Registerable {
         this.populators = populators;
         this.storageMechanisms = storageMechanisms;
 
-        this.executor = Executors.newFixedThreadPool(javadocs.size());
+        final double memory = (Runtime.getRuntime().totalMemory() / BYTE_PER_MB);
+        final int threads = Math.min(javadocs.size(), (int) Math.ceil(memory / MB_PER_DOC));
+        this.executor = Executors.newFixedThreadPool(threads);
+        LOGGER.info("Spinning up thread pool with " + threads + " thread(s) for population.");
     }
 
     @Override
