@@ -10,7 +10,6 @@ import me.piggypiglet.docdex.db.registerables.MongoRegisterable;
 import me.piggypiglet.docdex.documentation.index.data.population.registerables.IndexPopulationRegisterable;
 import me.piggypiglet.docdex.documentation.index.data.population.registerables.IndexPopulatorRegisterable;
 import me.piggypiglet.docdex.documentation.index.data.storage.registerables.IndexStorageRegisterable;
-import me.piggypiglet.docdex.documentation.routes.serialization.registerables.JsonSerializerRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
 import me.piggypiglet.docdex.guice.ExceptionalInjector;
@@ -40,8 +39,6 @@ public final class DocDexBootstrap {
             IndexStorageRegisterable.class,
             IndexPopulatorRegisterable.class,
             IndexPopulationRegisterable.class,
-
-            JsonSerializerRegisterable.class,
 
             RoutesRegisterable.class,
             ServerRegisterable.class,

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 // ------------------------------
@@ -72,5 +73,18 @@ public final class MethodMetadata {
                 ", returnsDescription='" + returnsDescription + '\'' +
                 ", throws=" + throwing +
                 '}';
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final MethodMetadata that = (MethodMetadata) o;
+        return owner.equals(that.owner) && parameters.equals(that.parameters) && parameterDescriptions.equals(that.parameterDescriptions) && returns.equals(that.returns) && returnsDescription.equals(that.returnsDescription) && throwing.equals(that.throwing);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(owner, parameters, parameterDescriptions, returns, returnsDescription, throwing);
     }
 }

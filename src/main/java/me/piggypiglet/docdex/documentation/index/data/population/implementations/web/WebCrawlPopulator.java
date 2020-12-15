@@ -2,8 +2,10 @@ package me.piggypiglet.docdex.documentation.index.data.population.implementation
 
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.population.IndexPopulator;
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
+import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
@@ -14,10 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,11 +38,12 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
     @NotNull
     @Override
-    public Set<DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
+    public Map<String, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
+        final String javadocName = DataUtils.getName(javadoc);
         final Document mainDocument = connect(javadoc.getLink());
 
         if (mainDocument == null) {
-            return Collections.emptySet();
+            return Collections.emptyMap();
         }
 
         final Optional<Element> indexAnchor = mainDocument.select("ul.navList > li > a").stream()
@@ -51,13 +51,13 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 .findAny();
 
         if (indexAnchor.isEmpty()) {
-            return Collections.emptySet();
+            return Collections.emptyMap();
         }
 
         final Document document = connect(indexAnchor.get().absUrl("href"));
 
         if (document == null) {
-            return Collections.emptySet();
+            return Collections.emptyMap();
         }
 
         final Set<DocumentedObject> objects = new HashSet<>();
@@ -65,7 +65,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
                 .collect(Collectors.toSet());
 
-        LOGGER.info("Indexing " + types.size() + " types for " + javadoc.getLink());
+        LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
 
         int i = 0;
         int previousPercentage = 0;
@@ -73,7 +73,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
             final int percentage = (int) ((100D / types.size()) * i++);
 
             if (percentage % 10 == 0 && percentage != previousPercentage) {
-                LOGGER.info(percentage + "% done on " + javadoc.getLink());
+                LOGGER.info(percentage + "% done on type indexing for " + javadocName);
                 previousPercentage = percentage;
             }
 
@@ -84,8 +84,44 @@ public final class WebCrawlPopulator implements IndexPopulator {
             objects.addAll(JavadocPageDeserializer.deserialize(page));
         }
 
-        LOGGER.info("Finished indexing " + javadoc.getLink());
-        return objects;
+        final Map<String, DocumentedObject> map = new HashMap<>();
+
+        objects.forEach(object -> {
+            map.put(DataUtils.getFqn(object).toLowerCase(), object);
+            map.put(DataUtils.getName(object).toLowerCase(), object);
+        });
+
+        LOGGER.info("Indexing type children with parent methods for " + javadocName);
+
+        i = 0;
+        previousPercentage = 0;
+        for (final DocumentedObject type : objects) {
+            final int percentage = (int) ((100D / objects.size()) * i++);
+
+            if (percentage % 10 == 0 && percentage != previousPercentage) {
+                LOGGER.info(percentage + "% done on child method indexing for " + javadocName);
+                previousPercentage = percentage;
+            }
+
+            if (!DataUtils.isType(type)) {
+                continue;
+            }
+
+            getChildren(map, type).forEach(heir -> {
+                ((TypeMetadata) type.getMetadata()).getMethods().stream()
+                        .map(String::toLowerCase)
+                        .map(map::get)
+                        .forEach(method -> {
+                            final String addendum = '#' + method.getName().toLowerCase();
+
+                            map.put(DataUtils.getFqn(heir).toLowerCase() + addendum, method);
+                            map.put(DataUtils.getName(heir).toLowerCase() + addendum, method);
+                        });
+            });
+        }
+
+        LOGGER.info("Finished indexing " + javadocName);
+        return map;
     }
 
     @Nullable
@@ -97,5 +133,37 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         return null;
+    }
+
+    @NotNull
+    private static Set<DocumentedObject> getChildren(@NotNull final Map<String, DocumentedObject> map, @NotNull final DocumentedObject object) {
+        final TypeMetadata typeMetadata = (TypeMetadata) object.getMetadata();
+
+        final Set<DocumentedObject> subClasses = convertFromFqn(map, typeMetadata.getSubClasses());
+        final Set<DocumentedObject> subInterfaces = convertFromFqn(map, typeMetadata.getSubInterfaces());
+        final Set<DocumentedObject> implementingClasses = convertFromFqn(map, typeMetadata.getImplementingClasses());
+
+        if (subClasses.isEmpty() && subInterfaces.isEmpty() && implementingClasses.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        return Stream.of(
+                subClasses,
+                subInterfaces,
+                implementingClasses
+        )
+                .flatMap(Set::stream)
+                .flatMap(heir -> Stream.concat(Stream.of(heir), getChildren(map, heir).stream()))
+                .collect(Collectors.toSet());
+    }
+
+    @NotNull
+    private static Set<DocumentedObject> convertFromFqn(@NotNull final Map<String, DocumentedObject> map,
+                                                        @NotNull final Set<String> fqns) {
+        return fqns.stream()
+                .map(String::toLowerCase)
+                .map(map::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 }

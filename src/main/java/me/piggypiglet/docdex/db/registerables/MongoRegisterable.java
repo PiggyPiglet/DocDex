@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.config.Config;
@@ -44,9 +46,24 @@ public final class MongoRegisterable extends Registerable {
                         CodecRegistries.fromCodecs(new ArrayList<>(codecs))
                 ))
                 .build();
-        final MongoClient client = new MongoClient(mongo.getHost() + ':' + mongo.getPort(), options);
+        final MongoClient client = create(mongo, options);
 
         addBinding(MongoClient.class, client);
         addBinding(MongoDatabase.class, client.getDatabase(mongo.getDatabase()));
+    }
+
+    @NotNull
+    private static MongoClient create(@NotNull final MongoConfig config, @NotNull final MongoClientOptions options) {
+        final String host = config.getHost() + ':' + config.getPort();
+
+        if (!config.getUsername().isEmpty()) {
+            return new MongoClient(
+                    new ServerAddress(host),
+                    MongoCredential.createCredential(config.getUsername(), config.getDatabase(), config.getPassword().toCharArray()),
+                    options
+            );
+        }
+
+        return new MongoClient(host, options);
     }
 }

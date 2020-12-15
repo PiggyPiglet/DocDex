@@ -2,14 +2,12 @@ package me.piggypiglet.docdex.documentation.objects;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.adaptation.MetadataAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -87,6 +85,23 @@ public final class DocumentedObject {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final DocumentedObject object = (DocumentedObject) o;
+        return deprecated == object.deprecated && type == object.type &&
+                packaj.equals(object.packaj) && name.equals(object.name) &&
+                description.equals(object.description) && annotations.equals(object.annotations) &&
+                deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) &&
+                metadata.equals(object.metadata);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, packaj, name, description, annotations, deprecated, deprecationMessage, modifiers, metadata);
+    }
+
+    @Override
     public String toString() {
         return "DocumentedObject{" +
                 "type=" + type +
@@ -108,10 +123,10 @@ public final class DocumentedObject {
         private DocumentedTypes type;
         private String packaj;
         private String name;
-        private String description = null;
+        private String description = "";
         private final Set<String> annotations = new HashSet<>();
         private boolean deprecated = false;
-        private String deprecationMessage = null;
+        private String deprecationMessage = "";
         private final Set<String> modifiers = new HashSet<>();
 
         protected Builder() {}
@@ -130,7 +145,7 @@ public final class DocumentedObject {
 
         @NotNull
         public T name(@NotNull final String value) {
-            name = value;
+            name = DataUtils.removeTypeParams(value);
             return instance;
         }
 

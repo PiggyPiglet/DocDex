@@ -4,7 +4,7 @@ import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.util.Map;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -14,5 +14,5 @@ public interface IndexPopulator {
     boolean shouldPopulate(@NotNull final Javadoc javadoc);
 
     @NotNull
-    Set<DocumentedObject> provideObjects(@NotNull final Javadoc javadoc);
+    Map<String, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc);
 }

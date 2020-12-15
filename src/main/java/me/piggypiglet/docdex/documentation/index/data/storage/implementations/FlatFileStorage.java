@@ -3,6 +3,7 @@ package me.piggypiglet.docdex.documentation.index.data.storage.implementations;
 import com.google.gson.Gson;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.storage.IndexStorage;
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.file.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.Map;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -22,8 +23,8 @@ public final class FlatFileStorage implements IndexStorage {
     private static final Gson GSON = new Gson();
 
     @Override
-    public void save(@NotNull final Javadoc javadoc, @NotNull final Set<DocumentedObject> objects) {
-        final String fileName = String.join("-", javadoc.getNames()) + ".json";
+    public void save(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
+        final String fileName = DataUtils.getName(javadoc) + ".json";
         final File file = new File("docs", fileName);
 
         LOGGER.info("Attempting to save " + fileName);

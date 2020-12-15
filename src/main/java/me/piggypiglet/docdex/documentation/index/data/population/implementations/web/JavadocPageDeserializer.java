@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.documentation.index.data.population.implementation
 
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.TypeDeserializer;
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method.MethodDeserializer;
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,6 @@ public final class JavadocPageDeserializer {
         objects.add(type);
 
         // we pass the owner as a string here to ensure there's no cyclic dependencies during the population process.
-        final TypeMetadata typeMetadata = (TypeMetadata) type.getMetadata();
         final Stream<Element> elements = Optional.ofNullable(document.selectFirst(".methodDetails ul.blockList > li.blockList"))
                 .map(element -> document.select(".methodDetails ul.blockList > li.blockList").stream())
                 .orElseGet(() -> {
@@ -53,7 +53,9 @@ public final class JavadocPageDeserializer {
                 .collect(Collectors.toSet());
         objects.addAll(methods);
 
-        ((TypeMetadata) type.getMetadata()).getMethods().addAll(methods);
+        ((TypeMetadata) type.getMetadata()).getMethods().addAll(methods.stream()
+                .map(DataUtils::getFqn)
+                .collect(Collectors.toSet()));
 
         return objects;
     }

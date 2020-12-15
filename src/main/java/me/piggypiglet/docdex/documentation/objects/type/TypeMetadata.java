@@ -1,10 +1,9 @@
 package me.piggypiglet.docdex.documentation.objects.type;
 
-import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 // ------------------------------
@@ -12,19 +11,19 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class TypeMetadata {
-    private final Set<PotentialObject> extensions;
-    private final Set<PotentialObject> implementations;
-    private final Set<PotentialObject> allImplementations;
-    private final Set<PotentialObject> superInterfaces;
-    private final Set<PotentialObject> subInterfaces;
-    private final Set<PotentialObject> subClasses;
-    private final Set<PotentialObject> implementingClasses;
-    private final Set<DocumentedObject> methods = new HashSet<>();
+    private final Set<String> extensions;
+    private final Set<String> implementations;
+    private final Set<String> allImplementations;
+    private final Set<String> superInterfaces;
+    private final Set<String> subInterfaces;
+    private final Set<String> subClasses;
+    private final Set<String> implementingClasses;
+    private final Set<String> methods = new HashSet<>();
 
-    public TypeMetadata(@NotNull final Set<PotentialObject> extensions, @NotNull final Set<PotentialObject> implementations,
-                        @NotNull final Set<PotentialObject> allImplementations, @NotNull final Set<PotentialObject> superInterfaces,
-                        @NotNull final Set<PotentialObject> subInterfaces, @NotNull final Set<PotentialObject> subClasses,
-                        @NotNull final Set<PotentialObject> implementingClasses) {
+    public TypeMetadata(@NotNull final Set<String> extensions, @NotNull final Set<String> implementations,
+                        @NotNull final Set<String> allImplementations, @NotNull final Set<String> superInterfaces,
+                        @NotNull final Set<String> subInterfaces, @NotNull final Set<String> subClasses,
+                        @NotNull final Set<String> implementingClasses) {
         this.extensions = extensions;
         this.implementations = implementations;
         this.allImplementations = allImplementations;
@@ -35,42 +34,42 @@ public final class TypeMetadata {
     }
 
     @NotNull
-    public Set<PotentialObject> getExtensions() {
+    public Set<String> getExtensions() {
         return extensions;
     }
 
     @NotNull
-    public Set<PotentialObject> getImplementations() {
+    public Set<String> getImplementations() {
         return implementations;
     }
 
     @NotNull
-    public Set<PotentialObject> getAllImplementations() {
+    public Set<String> getAllImplementations() {
         return allImplementations;
     }
 
     @NotNull
-    public Set<PotentialObject> getSuperInterfaces() {
+    public Set<String> getSuperInterfaces() {
         return superInterfaces;
     }
 
     @NotNull
-    public Set<PotentialObject> getSubInterfaces() {
+    public Set<String> getSubInterfaces() {
         return subInterfaces;
     }
 
     @NotNull
-    public Set<PotentialObject> getSubClasses() {
+    public Set<String> getSubClasses() {
         return subClasses;
     }
 
     @NotNull
-    public Set<PotentialObject> getImplementingClasses() {
+    public Set<String> getImplementingClasses() {
         return implementingClasses;
     }
 
     @NotNull
-    public Set<DocumentedObject> getMethods() {
+    public Set<String> getMethods() {
         return methods;
     }
 
@@ -86,5 +85,18 @@ public final class TypeMetadata {
                 ", implementingClasses=" + implementingClasses +
                 ", methods=" + methods +
                 '}';
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final TypeMetadata that = (TypeMetadata) o;
+        return extensions.equals(that.extensions) && implementations.equals(that.implementations) && allImplementations.equals(that.allImplementations) && superInterfaces.equals(that.superInterfaces) && subInterfaces.equals(that.subInterfaces) && subClasses.equals(that.subClasses) && implementingClasses.equals(that.implementingClasses) && methods.equals(that.methods);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(extensions, implementations, allImplementations, superInterfaces, subInterfaces, subClasses, implementingClasses, methods);
     }
 }

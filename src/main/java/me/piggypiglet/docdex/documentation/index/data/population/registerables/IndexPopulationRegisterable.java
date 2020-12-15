@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,10 +50,9 @@ public final class IndexPopulationRegisterable extends Registerable {
         javadocs.forEach(javadoc ->
                 executor.execute(() ->
                         populators.stream().filter(populator -> populator.shouldPopulate(javadoc)).findAny().ifPresent(populator -> {
-                            final Set<DocumentedObject> documentedObjects = populator.provideObjects(javadoc);
-
-                            storageMechanisms.forEach(storage -> storage.save(javadoc, documentedObjects));
-                            index.populate(javadoc, documentedObjects);
+                            final Map<String, DocumentedObject> objects = populator.provideObjects(javadoc);
+                            storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
+                            index.populate(javadoc, objects);
                         })
                 )
         );

@@ -1,7 +1,7 @@
 package me.piggypiglet.docdex.documentation.objects.type;
 
+import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -14,13 +14,13 @@ import java.util.stream.Stream;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedTypeBuilder extends DocumentedObject.Builder<DocumentedTypeBuilder> {
-    private final Set<PotentialObject> extensions = new HashSet<>();
-    private final Set<PotentialObject> implementations = new HashSet<>();
-    private final Set<PotentialObject> allImplementations = new HashSet<>();
-    private final Set<PotentialObject> superInterfaces = new HashSet<>();
-    private final Set<PotentialObject> subInterfaces = new HashSet<>();
-    private final Set<PotentialObject> subClasses = new HashSet<>();
-    private final Set<PotentialObject> implementingClasses = new HashSet<>();
+    private final Set<String> extensions = new HashSet<>();
+    private final Set<String> implementations = new HashSet<>();
+    private final Set<String> allImplementations = new HashSet<>();
+    private final Set<String> superInterfaces = new HashSet<>();
+    private final Set<String> subInterfaces = new HashSet<>();
+    private final Set<String> subClasses = new HashSet<>();
+    private final Set<String> implementingClasses = new HashSet<>();
 
     @NotNull
     public DocumentedTypeBuilder extensions(@NotNull final String @NotNull ... values) {
@@ -112,17 +112,17 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
                 subInterfaces, subClasses, implementingClasses));
     }
 
-    private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final String @NotNull [] values) {
+    private static void addAll(@NotNull final Set<String> set, @NotNull final String @NotNull [] values) {
         addAll(set, Arrays.stream(values));
     }
 
-    private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final Set<String> values) {
+    private static void addAll(@NotNull final Set<String> set, @NotNull final Set<String> values) {
         addAll(set, values.stream());
     }
 
-    private static void addAll(@NotNull final Set<PotentialObject> set, @NotNull final Stream<String> values) {
+    private static void addAll(@NotNull final Set<String> set, @NotNull final Stream<String> values) {
         values
-                .map(PotentialObject::of)
+                .map(DataUtils::removeTypeParams)
                 .forEach(set::add);
     }
 }

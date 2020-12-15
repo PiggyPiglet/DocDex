@@ -1,20 +1,18 @@
 package me.piggypiglet.docdex.documentation.index;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.Javadoc;
-import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
+import me.piggypiglet.docdex.documentation.index.data.storage.implementations.MongoStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
-import me.piggypiglet.docdex.documentation.objects.util.PotentialObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Comparator;
+import java.util.Map;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -22,145 +20,81 @@ import java.util.stream.Stream;
 // ------------------------------
 @Singleton
 public final class DocumentationIndex {
-    private final Table<String, String, DocumentedObject> types = HashBasedTable.create();
-    private final Table<String, String, DocumentedObject> fqnTypes = HashBasedTable.create();
-    private final Table<String, String, DocumentedObject> methods = HashBasedTable.create();
-    private final Table<String, String, DocumentedObject> fqnMethods = HashBasedTable.create();
+    private final Multimap<Javadoc, String> types = HashMultimap.create();
+    private final Multimap<Javadoc, String> fqnTypes = HashMultimap.create();
+    private final Multimap<Javadoc, String> methods = HashMultimap.create();
+    private final Multimap<Javadoc, String> fqnMethods = HashMultimap.create();
 
-    public void populate(@NotNull final Javadoc javadoc, @NotNull final Set<DocumentedObject> objects) {
-        javadoc.getNames().forEach(name -> {
-            final String javadocName = name.toLowerCase();
+    private final MongoStorage storage;
 
-            objects.forEach(object -> {
-                final String objectName = DataUtils.getName(object).toLowerCase();
-                final String objectFqn = DataUtils.getFqn(object).toLowerCase();
+    @Inject
+    public DocumentationIndex(@NotNull final MongoStorage storage) {
+        this.storage = storage;
+    }
 
-                switch (object.getType()) {
-                    case CLASS:
-                    case INTERFACE:
-                    case ANNOTATION:
-                    case ENUM:
-                        types.put(javadocName, objectName, object);
-                        fqnTypes.put(javadocName, objectFqn, object);
-                        break;
+    public void populate(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
+        for (final Map.Entry<String, DocumentedObject> entry : objects.entrySet()) {
+            final String key = entry.getKey();
+            final DocumentedObject object = entry.getValue();
+            final Multimap<Javadoc, String> names;
+            final Multimap<Javadoc, String> fqns;
 
-                    case METHOD:
-                        methods.put(javadocName, objectName, object);
-                        fqnMethods.put(javadocName, objectFqn, object);
-                        break;
+            switch (object.getType()) {
+                case CLASS:
+                case INTERFACE:
+                case ANNOTATION:
+                case ENUM:
+                    names = types;
+                    fqns = fqnTypes;
+                    break;
 
-                    case FIELD:
-                        break;
-                }
-            });
+                case METHOD:
+                    names = methods;
+                    fqns = fqnMethods;
+                    break;
 
-            new HashSet<>(types.row(javadocName).values()).forEach(type -> {
-                final TypeMetadata metadata = (TypeMetadata) type.getMetadata();
+                default:
+                    continue;
+            }
 
-                Stream.of(
-                        metadata.getExtensions(),
-                        metadata.getImplementations(),
-                        metadata.getImplementingClasses(),
-                        metadata.getAllImplementations(),
-                        metadata.getSuperInterfaces(),
-                        metadata.getSubInterfaces(),
-                        metadata.getSubClasses(),
-                        metadata.getImplementingClasses()
-                )
-                        .forEach(set -> {
-                            final Set<PotentialObject> copy = new HashSet<>(set);
-                            set.clear();
-
-                            copy.stream()
-                                    .map(potentialObject -> Optional.ofNullable(potentialObject.getFqn())
-                                            .map(String::toLowerCase)
-                                            .map(fqn -> fqnTypes.get(javadocName, fqn))
-                                            .map(PotentialObject::of)
-                                            .orElse(potentialObject))
-                                    .forEach(set::add);
-                        });
-            });
-
-            new HashSet<>(types.row(javadocName).values()).forEach(type -> getChildren(type).forEach(owner -> {
-                ((TypeMetadata) type.getMetadata()).getMethods().forEach(method -> {
-                    methods.put(javadocName, DataUtils.getName(method).toLowerCase(), method);
-                    fqnMethods.put(javadocName, DataUtils.getFqn(method).toLowerCase(), method);
-                });
-            }));
-        });
+            if (key.contains(".")) {
+                fqns.put(javadoc, key);
+            } else {
+                names.put(javadoc, key);
+            }
+        }
     }
 
     @Nullable
-    public DocumentedObject get(@NotNull final String javadoc, @NotNull final String query) {
-        final Table<String, String, DocumentedObject> table;
+    public DocumentedObject get(@NotNull final Javadoc javadoc, @NotNull final String query) {
+        final Multimap<Javadoc, String> map;
 
         if (query.contains(".")) {
             if (query.contains("#")) {
-                table = fqnMethods;
+                map = fqnMethods;
             } else {
-                table = fqnTypes;
+                map = fqnTypes;
             }
         } else if (query.contains("#")) {
-            table = methods;
+            map = methods;
         } else {
-            table = types;
+            map = types;
         }
 
-        if (table.isEmpty()) {
+        if (map.isEmpty()) {
             return null;
         }
 
-        final String lowerJavadoc = javadoc.toLowerCase();
         final String lowerQuery = query.toLowerCase();
-
-        if (!table.containsRow(lowerJavadoc)) {
-            return null;
-        }
-
-        if (table.row(lowerJavadoc).isEmpty()) {
-            return null;
-        }
-
-        final DocumentedObject object = table.get(lowerJavadoc, lowerQuery);
+        final DocumentedObject object = map.get(javadoc).contains(lowerQuery) ? storage.get(javadoc, lowerQuery).orElse(null) : null;
 
         if (object != null) {
             return object;
         }
 
-        //noinspection OptionalGetWithoutIsPresent
-        return table.row(lowerJavadoc).entrySet().stream()
-                .max(Comparator.comparingInt(entry -> FuzzySearch.ratio(entry.getKey(), lowerQuery)))
-                .map(Map.Entry::getValue)
-                .get();
-    }
-
-    @NotNull
-    private Set<DocumentedObject> getChildren(@NotNull final DocumentedObject type) {
-        final TypeMetadata typeMetadata = ((TypeMetadata) type.getMetadata());
-
-        final Set<DocumentedObject> subClasses = convertFromPotential(typeMetadata.getSubClasses());
-        final Set<DocumentedObject> subInterfaces = convertFromPotential(typeMetadata.getSubInterfaces());
-        final Set<DocumentedObject> implementingClasses = convertFromPotential(typeMetadata.getImplementingClasses());
-
-        if (subClasses.isEmpty() && subInterfaces.isEmpty() && implementingClasses.isEmpty()) {
-            return Collections.emptySet();
-        }
-
-        return Stream.of(
-                subClasses,
-                subInterfaces,
-                implementingClasses
-        )
-                .flatMap(Set::stream)
-                .flatMap(heir -> Stream.concat(Stream.of(heir), getChildren(heir).stream()))
-                .collect(Collectors.toSet());
-    }
-
-    @NotNull
-    private static Set<DocumentedObject> convertFromPotential(@NotNull final Set<PotentialObject> potentialObjects) {
-        return potentialObjects.stream()
-                .map(PotentialObject::getObject)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        return map.get(javadoc).stream()
+                .max(Comparator.comparingInt(name -> FuzzySearch.ratio(name, lowerQuery)))
+                .flatMap(name -> storage.get(javadoc, name))
+                .orElse(null);
     }
 }

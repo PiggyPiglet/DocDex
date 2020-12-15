@@ -70,9 +70,25 @@ public final class TypeDeserializer {
             switch (i) {
                 case 0:
                     type = DocumentedTypes.fromCode(parts.get(parts.size() - 2));
+
+                    int nameIndex = parts.size() - 2;
+                    for (int k = 0; k < parts.size(); ++k) {
+                        final String part = parts.get(k);
+
+                        if (k == parts.size() - 1) {
+                            builder.name(part);
+                            break;
+                        }
+
+                        if (part.contains("<")) {
+                            builder.name(part.substring(0, part.indexOf('<')));
+                            nameIndex = k;
+                            break;
+                        }
+                    }
+
                     builder.type(type)
-                            .name(parts.get(parts.size() - 1))
-                            .modifiers(parts.subList(0, parts.size() - 2));
+                            .modifiers(parts.subList(0, nameIndex));
                     break;
 
                 case 1:

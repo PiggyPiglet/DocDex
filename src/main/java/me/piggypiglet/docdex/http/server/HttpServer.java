@@ -23,9 +23,7 @@ public final class HttpServer extends NanoHTTPD {
     public HttpServer(@NotNull final Config config, @NotNull @Named("routes") final Set<Route> routes) {
         super(config.getHost(), config.getPort());
         this.routes = routes;
-    }
 
-    {
         setAsyncRunner(new DefaultAsyncRunner());
     }
 

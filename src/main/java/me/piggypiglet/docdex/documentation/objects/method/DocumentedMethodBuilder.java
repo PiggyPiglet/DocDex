@@ -14,8 +14,8 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
 
     private final Set<String> parameters = new HashSet<>();
     private final Map<String, String> parameterDescriptions = new HashMap<>();
-    private String returns = null;
-    private String returnsDescription = null;
+    private String returns = "";
+    private String returnsDescription = "";
     private final Set<Map.Entry<String, String>> throwing = new HashSet<>();
 
     public DocumentedMethodBuilder(@NotNull final String owner) {

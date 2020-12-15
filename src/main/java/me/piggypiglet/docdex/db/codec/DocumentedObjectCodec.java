@@ -5,10 +5,7 @@ import com.google.inject.util.Types;
 import com.mongodb.MongoClient;
 import me.piggypiglet.docdex.db.objects.MongoDocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import org.bson.BsonReader;
-import org.bson.BsonValue;
-import org.bson.BsonWriter;
-import org.bson.Document;
+import org.bson.*;
 import org.bson.codecs.Codec;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
@@ -31,12 +28,12 @@ public final class DocumentedObjectCodec implements CollectibleCodec<MongoDocume
 
     @Override
     public boolean documentHasId(@NotNull final MongoDocumentedObject document) {
-        return false;
+        return true;
     }
 
     @Override
     public BsonValue getDocumentId(@NotNull final MongoDocumentedObject document) {
-        throw new IllegalStateException("This document does not have an _id.");
+        return new BsonString(document.getName());
     }
 
     @Override
@@ -44,7 +41,7 @@ public final class DocumentedObjectCodec implements CollectibleCodec<MongoDocume
         final Document document = DOCUMENT_CODEC.decode(reader, decoderContext);
 
         return new MongoDocumentedObject(
-                document.getString("name"), document.getString("fqn"),
+                document.getString("name"),
                 GSON.fromJson(GSON.toJsonTree(document.get("object")), DocumentedObject.class)
         );
     }
