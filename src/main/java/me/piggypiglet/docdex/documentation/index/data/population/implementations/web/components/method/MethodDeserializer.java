@@ -26,16 +26,19 @@ public final class MethodDeserializer {
 
     @NotNull
     public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String packaj,
-                                               @NotNull final String owner) {
+                                               @NotNull final String owner, final boolean old) {
         final Element details = Optional.ofNullable(method.selectFirst(".detail"))
                 .orElse(method);
         final DocumentedMethodBuilder builder = new DocumentedMethodBuilder(owner);
         builder.packaj(packaj);
 
-        final boolean old = details.selectFirst("h3") == null;
-        final String name = Optional.ofNullable(details.selectFirst("h3"))
-                .orElse(details.selectFirst("h4"))
-                .text();
+        final String name;
+
+        if (old) {
+            name = details.selectFirst("h4").text();
+        } else {
+            name = details.selectFirst("h3").text();
+        }
 
         builder.type(DocumentedTypes.METHOD);
         builder.name(name);

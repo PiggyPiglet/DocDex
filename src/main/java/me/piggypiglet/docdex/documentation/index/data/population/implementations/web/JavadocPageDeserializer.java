@@ -35,21 +35,27 @@ public final class JavadocPageDeserializer {
         objects.add(type);
 
         // we pass the owner as a string here to ensure there's no cyclic dependencies during the population process.
-        final Stream<Element> elements = Optional.ofNullable(document.selectFirst(".methodDetails ul.blockList > li.blockList"))
-                .map(element -> document.select(".methodDetails ul.blockList > li.blockList").stream())
-                .orElseGet(() -> {
-                    final Optional<Element> methods = document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
-                            .filter(element -> element.text().equalsIgnoreCase("method detail"))
-                            .findAny();
+        final Element possibleElements = document.selectFirst(".methodDetails ul.blockList > li.blockList");
+        final boolean old = possibleElements == null;
 
-                    if (methods.isEmpty()) {
-                        return Stream.empty();
-                    }
+        final Stream<Element> elements;
 
-                    return methods.get().parent().select("ul > li.blockList").stream();
-                });
+        if (old) {
+            final Optional<Element> methods = document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
+                    .filter(element -> element.text().equalsIgnoreCase("method detail"))
+                    .findAny();
+
+            if (methods.isEmpty()) {
+                elements = Stream.empty();
+            } else {
+                elements = methods.get().parent().select("ul > li.blockList").stream();
+            }
+        } else {
+            elements = document.select(".methodDetails ul.blockList > li.blockList").stream();
+        }
+
         final Set<DocumentedObject> methods = elements
-                .map(element -> MethodDeserializer.deserialize(element, type.getPackage(), type.getName()))
+                .map(element -> MethodDeserializer.deserialize(element, type.getPackage(), type.getName(), old))
                 .collect(Collectors.toSet());
         objects.addAll(methods);
 

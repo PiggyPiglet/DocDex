@@ -1,14 +1,12 @@
 package me.piggypiglet.docdex.documentation.index.data.storage.implementations;
 
 import com.google.inject.Inject;
-import com.mongodb.MongoClient;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexModel;
 import com.mongodb.client.model.Indexes;
-import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.db.objects.MongoDocumentedObject;
 import me.piggypiglet.docdex.documentation.index.data.storage.IndexStorage;
@@ -35,19 +33,16 @@ public final class MongoStorage implements IndexStorage {
             .map(IndexModel::new)
             .collect(Collectors.toList());
 
-    private final MongoClient client;
-    private final String database;
+    private final MongoDatabase database;
 
     @Inject
-    public MongoStorage(@NotNull final MongoClient client, @NotNull final Config config) {
-        this.client = client;
-        this.database = config.getDatabase().getDatabase();
+    public MongoStorage(@NotNull final MongoDatabase database) {
+        this.database = database;
     }
 
     @Override
     public void save(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
         final String name = DataUtils.getName(javadoc);
-        final MongoDatabase database = client.getDatabase(this.database);
 
         LOGGER.info("Attempting to save " + name + " to MongoDB.");
 
@@ -69,8 +64,7 @@ public final class MongoStorage implements IndexStorage {
 
     @NotNull
     public Optional<DocumentedObject> get(@NotNull final Javadoc javadoc, @NotNull final String name) {
-        final MongoCollection<MongoDocumentedObject> collection = client.getDatabase(database)
-                .getCollection(DataUtils.getName(javadoc), MongoDocumentedObject.class);
+        final MongoCollection<MongoDocumentedObject> collection = database.getCollection(DataUtils.getName(javadoc), MongoDocumentedObject.class);
 
         return Optional.ofNullable(collection.find(Filters.eq("name", name)).first())
                 .map(MongoDocumentedObject::getObject);

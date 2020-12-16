@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,6 +40,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
     @NotNull
     @Override
     public Map<String, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
+        final long millis = System.currentTimeMillis();
         final String javadocName = DataUtils.getName(javadoc);
         final Document mainDocument = connect(javadoc.getLink());
 
@@ -67,22 +69,26 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
         LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
 
-        int i = 0;
-        int previousPercentage = 0;
-        for (final Element element : types) {
-            final int percentage = (int) ((100D / types.size()) * i++);
+        final AtomicInteger i = new AtomicInteger();
+        final AtomicInteger previousPercentage = new AtomicInteger();
+        types.parallelStream().forEach(element -> {
+            synchronized (i) {
+                final int percentage = (int) ((100D / types.size()) * i.getAndIncrement());
 
-            if (percentage % 10 == 0 && percentage != previousPercentage) {
-                LOGGER.info(percentage + "% done on type indexing for " + javadocName);
-                previousPercentage = percentage;
+                if (percentage % 10 == 0 && percentage != previousPercentage.get()) {
+                    LOGGER.info(percentage + "% done on type indexing for " + javadocName);
+                    previousPercentage.set(percentage);
+                }
             }
 
             final Document page = connect(element.absUrl("href"));
 
-            if (page == null) continue;
+            if (page == null) {
+                return;
+            }
 
             objects.addAll(JavadocPageDeserializer.deserialize(page));
-        }
+        });
 
         final Map<String, DocumentedObject> map = new HashMap<>();
 
@@ -93,14 +99,14 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
         LOGGER.info("Indexing type children with parent methods for " + javadocName);
 
-        i = 0;
-        previousPercentage = 0;
+        i.set(0);
+        previousPercentage.set(0);
         for (final DocumentedObject type : objects) {
-            final int percentage = (int) ((100D / objects.size()) * i++);
+            final int percentage = (int) ((100D / objects.size()) * i.getAndIncrement());
 
-            if (percentage % 10 == 0 && percentage != previousPercentage) {
+            if (percentage % 10 == 0 && percentage != previousPercentage.get()) {
                 LOGGER.info(percentage + "% done on child method indexing for " + javadocName);
-                previousPercentage = percentage;
+                previousPercentage.set(percentage);
             }
 
             if (!DataUtils.isType(type)) {
@@ -120,7 +126,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
             });
         }
 
-        LOGGER.info("Finished indexing " + javadocName);
+        LOGGER.info("Finished indexing " + javadocName + " in " + (System.currentTimeMillis() - millis) / 1000 + " second(s).");
         return map;
     }
 

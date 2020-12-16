@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
+import me.piggypiglet.docdex.bootstrap.implementations.StartMessageRegisterable;
 import me.piggypiglet.docdex.commands.registerables.CommandsRegisterable;
 import me.piggypiglet.docdex.commands.registerables.ConsoleCommandsRegisterable;
 import me.piggypiglet.docdex.db.registerables.MongoRegisterable;
@@ -43,7 +44,9 @@ public final class DocDexBootstrap {
             RoutesRegisterable.class,
             ServerRegisterable.class,
 
-            ShutdownHookRegisterable.class
+            ShutdownHookRegisterable.class,
+
+            StartMessageRegisterable.class
     );
 
     private final AtomicReference<Injector> injector = new AtomicReference<>();

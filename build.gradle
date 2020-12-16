@@ -24,3 +24,8 @@ dependencies {
 
     compileOnly "org.jetbrains:annotations:20.1.0"
 }
+
+shadowJar {
+    archiveClassifier.set("")
+    archiveVersion.set("")
+}

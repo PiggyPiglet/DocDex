@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.documentation.index.data.population.registerables;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.config.Config;
@@ -13,15 +14,19 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
+@Singleton
 public final class IndexPopulationRegisterable extends Registerable {
     private static final double BYTE_PER_MB = 1_000_000;
     private static final double MB_PER_DOC = 100;
@@ -34,6 +39,7 @@ public final class IndexPopulationRegisterable extends Registerable {
     private final Set<IndexStorage> storageMechanisms;
 
     private final ExecutorService executor;
+    private final AtomicReference<CompletableFuture<Void>> completed = new AtomicReference<>();
 
     @Inject
     public IndexPopulationRegisterable(@NotNull final Config config, @NotNull @Named("populators") final Set<IndexPopulator> populators,
@@ -53,16 +59,23 @@ public final class IndexPopulationRegisterable extends Registerable {
     protected void execute() {
         LOGGER.info("Attempting to index " + javadocs.size() + " javadoc(s).");
 
+        final Set<CompletableFuture<Void>> futures = new HashSet<>();
         javadocs.forEach(javadoc ->
-                executor.execute(() ->
+                futures.add(CompletableFuture.runAsync(() ->
                         populators.stream().filter(populator -> populator.shouldPopulate(javadoc)).findAny().ifPresent(populator -> {
                             final Map<String, DocumentedObject> objects = populator.provideObjects(javadoc);
                             storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);
-                        })
-                )
+                        }), executor
+                ))
         );
+        completed.set(CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[]{})));
 
         executor.shutdown();
+    }
+
+    @NotNull
+    public CompletableFuture<Void> getCompleted() {
+        return completed.get();
     }
 }
