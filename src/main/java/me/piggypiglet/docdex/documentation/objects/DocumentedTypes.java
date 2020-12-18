@@ -9,6 +9,7 @@ public enum DocumentedTypes {
     ENUM("Enum"),
 
     METHOD("Method"),
+    CONSTRUCTOR("Constructor"),
 
     FIELD("Field"),
 

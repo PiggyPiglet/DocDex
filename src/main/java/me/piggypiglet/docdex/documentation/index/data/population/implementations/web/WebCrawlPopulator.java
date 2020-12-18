@@ -63,15 +63,16 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         final Set<DocumentedObject> objects = new HashSet<>();
-        final Set<Element> types = document.select("dl > dt > a").stream()
+        final Set<String> types = document.select("dl > dt > a").stream()
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
+                .map(element -> element.absUrl("href"))
                 .collect(Collectors.toSet());
 
         LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
 
         final AtomicInteger i = new AtomicInteger();
         final AtomicInteger previousPercentage = new AtomicInteger();
-        types.parallelStream().forEach(element -> {
+        types.parallelStream().forEach(url -> {
             synchronized (i) {
                 final int percentage = (int) ((100D / types.size()) * i.getAndIncrement());
 
@@ -81,7 +82,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 }
             }
 
-            final Document page = connect(element.absUrl("href"));
+            final Document page = connect(url);
 
             if (page == null) {
                 return;

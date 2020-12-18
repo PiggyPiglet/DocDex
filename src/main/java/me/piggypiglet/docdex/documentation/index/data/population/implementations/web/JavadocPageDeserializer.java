@@ -23,12 +23,14 @@ import java.util.function.Function;
 // ------------------------------
 public final class JavadocPageDeserializer {
     private static final Map<String, String> NEW_DETAIL_CLASSES = Map.of(
+            ".constructorDetails", "methods",
             ".methodDetails", "methods",
             ".constantDetails", "fields",
             ".fieldDetails", "fields"
     );
 
     private static final Map<String, String> OLD_DETAIL_HEADERS = Map.of(
+            "constructor detail", "methods",
             "method detail", "methods",
             "enum constant detail", "fields",
             "field detail", "fields"

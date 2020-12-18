@@ -23,9 +23,9 @@ public final class ShutdownHook extends Thread {
     @Override
     public void run() {
         server.stop();
-        LoggerFactory.getLogger("HTTP").info("Shutting down HTTP server.");
+        LoggerFactory.getLogger("HTTP").info("Shut down HTTP server.");
 
         client.close();
-        LoggerFactory.getLogger("Mongo").info("Shutting down MongoDB connection.");
+        LoggerFactory.getLogger("Mongo").info("Shut down MongoDB connection.");
     }
 }
