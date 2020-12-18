@@ -5,18 +5,15 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.bootstrap.implementations.StartMessageRegisterable;
+import me.piggypiglet.docdex.bot.commands.registerables.JDACommandListenerRegisterable;
+import me.piggypiglet.docdex.bot.commands.registerables.JDACommandsRegisterable;
+import me.piggypiglet.docdex.bot.registerables.JDARegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
-import me.piggypiglet.docdex.db.registerables.MongoRegisterable;
-import me.piggypiglet.docdex.documentation.index.data.population.registerables.IndexPopulationRegisterable;
-import me.piggypiglet.docdex.documentation.index.data.population.registerables.IndexPopulatorRegisterable;
-import me.piggypiglet.docdex.documentation.index.data.storage.registerables.IndexStorageRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
 import me.piggypiglet.docdex.guice.ExceptionalInjector;
 import me.piggypiglet.docdex.guice.modules.InitialModule;
-import me.piggypiglet.docdex.http.registerables.RoutesRegisterable;
-import me.piggypiglet.docdex.http.registerables.ServerRegisterable;
 import me.piggypiglet.docdex.shutdown.registerables.ShutdownHookRegisterable;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,17 +29,12 @@ public final class DocDexBootstrap {
             FileObjectsRegisterable.class,
             FilesRegisterable.class,
 
+            JDARegisterable.class,
+
             ConsoleCommandsRegisterable.class,
             ConsoleCommandListenerRegisterable.class,
-
-            MongoRegisterable.class,
-
-            IndexStorageRegisterable.class,
-            IndexPopulatorRegisterable.class,
-            IndexPopulationRegisterable.class,
-
-            RoutesRegisterable.class,
-            ServerRegisterable.class,
+            JDACommandsRegisterable.class,
+            JDACommandListenerRegisterable.class,
 
             ShutdownHookRegisterable.class,
 

@@ -2,7 +2,7 @@ package me.piggypiglet.docdex.documentation.index.data.population.implementation
 
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.population.IndexPopulator;
-import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
+import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;

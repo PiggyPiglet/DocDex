@@ -3,7 +3,7 @@ package me.piggypiglet.docdex.documentation.index.data.storage.implementations;
 import com.google.gson.Gson;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.storage.IndexStorage;
-import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
+import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.file.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;

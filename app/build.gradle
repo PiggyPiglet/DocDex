@@ -5,8 +5,8 @@ plugins {
 mainClassName = "me.piggypiglet.docdex.bootstrap.DocDexBootstrap"
 
 dependencies {
+    implementation project(":api")
     implementation "com.google.inject:guice:4.2.3"
-    implementation "com.google.code.gson:gson:2.8.6"
     implementation "org.nanohttpd:nanohttpd:2.3.1"
     implementation "org.jsoup:jsoup:1.13.1"
     implementation "ch.qos.logback:logback-classic:1.2.3"

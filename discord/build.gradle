@@ -1,0 +1,18 @@
+plugins {
+    id 'application'
+}
+
+mainClassName = 'me.piggypiglet.docdex.bootstrap.DocDexBootstrap'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation project(":api")
+    implementation "com.google.inject:guice:4.2.3"
+    implementation "ch.qos.logback:logback-classic:1.2.3"
+    implementation("net.dv8tion:JDA:4.2.0_222") {
+        exclude module: 'opus-java'
+    }
+}
