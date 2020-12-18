@@ -31,4 +31,16 @@ public final class DocumentedFieldBuilder extends DocumentedObject.Builder<Docum
     public DocumentedObject build() {
         return build(new FieldMetadata(owner, returns));
     }
+
+    @NotNull
+    @Override
+    public String getOwner() {
+        return owner;
+    }
+
+    @NotNull
+    @Override
+    public String getReturns() {
+        return returns;
+    }
 }

@@ -31,8 +31,9 @@ public final class MethodDeserializer {
         final DocumentedMethodBuilder builder = new DocumentedMethodBuilder();
         final Element details = old ? method : method.selectFirst(".detail");
         DetailDeserializer.deserialize(details, packaj, owner, builder, old);
+        final boolean constructor = builder.getName().equalsIgnoreCase(owner);
 
-        builder.type(DocumentedTypes.METHOD);
+        builder.type(constructor ? DocumentedTypes.CONSTRUCTOR : DocumentedTypes.METHOD);
 
         if (old) {
             OldParameterDeserializer.deserialize(details, builder);

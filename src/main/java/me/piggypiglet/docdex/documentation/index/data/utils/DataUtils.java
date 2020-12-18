@@ -28,6 +28,7 @@ public final class DataUtils {
         String prefix = object.getMetadata() instanceof DetailMetadata ? ((DetailMetadata) object.getMetadata()).getOwner() : "";
 
         switch (object.getType()) {
+            case CONSTRUCTOR:
             case METHOD:
                 prefix += '#';
                 break;

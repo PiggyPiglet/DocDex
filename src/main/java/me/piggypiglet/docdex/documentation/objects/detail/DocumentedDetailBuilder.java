@@ -13,4 +13,10 @@ public interface DocumentedDetailBuilder<R extends DocumentedObject.Builder<R> &
 
     @NotNull
     R returns(@NotNull final String value);
+
+    @NotNull
+    String getOwner();
+
+    @NotNull
+    String getReturns();
 }

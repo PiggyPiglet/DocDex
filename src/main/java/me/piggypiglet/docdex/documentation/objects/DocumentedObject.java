@@ -198,5 +198,45 @@ public final class DocumentedObject {
             return new DocumentedObject(type, packaj, name, description, annotations, deprecated,
                     deprecationMessage, modifiers, metadata);
         }
+
+        @NotNull
+        public DocumentedTypes getType() {
+            return type;
+        }
+
+        @NotNull
+        public String getPackaj() {
+            return packaj;
+        }
+
+        @NotNull
+        public String getName() {
+            return name;
+        }
+
+        @NotNull
+        public String getDescription() {
+            return description;
+        }
+
+        @NotNull
+        public Set<String> getAnnotations() {
+            return annotations;
+        }
+
+        @NotNull
+        public boolean isDeprecated() {
+            return deprecated;
+        }
+
+        @NotNull
+        public String getDeprecationMessage() {
+            return deprecationMessage;
+        }
+
+        @NotNull
+        public Set<String> getModifiers() {
+            return modifiers;
+        }
     }
 }

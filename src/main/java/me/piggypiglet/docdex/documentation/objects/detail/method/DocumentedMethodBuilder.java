@@ -81,4 +81,36 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
                 owner, parameters, parameterDescriptions, returns, returnsDescription, throwing
         ));
     }
+
+    @NotNull
+    @Override
+    public String getOwner() {
+        return owner;
+    }
+
+    @NotNull
+    @Override
+    public String getReturns() {
+        return returns;
+    }
+
+    @NotNull
+    public Set<String> getParameters() {
+        return parameters;
+    }
+
+    @NotNull
+    public Map<String, String> getParameterDescriptions() {
+        return parameterDescriptions;
+    }
+
+    @NotNull
+    public String getReturnsDescription() {
+        return returnsDescription;
+    }
+
+    @NotNull
+    public Set<Map.Entry<String, String>> getThrowing() {
+        return throwing;
+    }
 }

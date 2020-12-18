@@ -50,6 +50,7 @@ public final class DocumentationIndex {
                     fqns = fqnTypes;
                     break;
 
+                case CONSTRUCTOR:
                 case METHOD:
                     names = methods;
                     fqns = fqnMethods;

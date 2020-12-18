@@ -79,6 +79,7 @@ public final class JavadocPageDeserializer {
 
         TYPE_MEMBER_FUNCTIONS.forEach((key, functions) -> {
             final Set<String> typeMembers = functions.getMemberGetter().apply(metadata);
+
             detailElements.get(key).stream()
                     .map(element -> functions.getDeserializer().deserialize(element, packaj, owner, old))
                     .peek(objects::add)
