@@ -24,6 +24,8 @@ public final class DocumentationIndex {
     private final Multimap<Javadoc, String> fqnTypes = HashMultimap.create();
     private final Multimap<Javadoc, String> methods = HashMultimap.create();
     private final Multimap<Javadoc, String> fqnMethods = HashMultimap.create();
+    private final Multimap<Javadoc, String> fields = HashMultimap.create();
+    private final Multimap<Javadoc, String> fqnFields = HashMultimap.create();
 
     private final MongoStorage storage;
 
@@ -53,6 +55,11 @@ public final class DocumentationIndex {
                     fqns = fqnMethods;
                     break;
 
+                case FIELD:
+                    names = fields;
+                    fqns = fqnFields;
+                    break;
+
                 default:
                     continue;
             }
@@ -72,11 +79,15 @@ public final class DocumentationIndex {
         if (query.contains(".")) {
             if (query.contains("#")) {
                 map = fqnMethods;
+            } else if (query.contains("%")) {
+                map = fqnFields;
             } else {
                 map = fqnTypes;
             }
         } else if (query.contains("#")) {
             map = methods;
+        } else if (query.contains("%")) {
+            map = fields;
         } else {
             map = types;
         }

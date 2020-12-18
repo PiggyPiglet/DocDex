@@ -1,7 +1,10 @@
 package me.piggypiglet.docdex.documentation.index.data.population.implementations.web;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.TypeDeserializer;
-import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method.MethodDeserializer;
+import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.details.field.FieldDeserializer;
+import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.details.method.MethodDeserializer;
 import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
@@ -10,16 +13,32 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class JavadocPageDeserializer {
+    private static final Map<String, String> NEW_DETAIL_CLASSES = Map.of(
+            ".methodDetails", "methods",
+            ".constantDetails", "fields",
+            ".fieldDetails", "fields"
+    );
+
+    private static final Map<String, String> OLD_DETAIL_HEADERS = Map.of(
+            "method detail", "methods",
+            "enum constant detail", "fields",
+            "field detail", "fields"
+    );
+
+    private static final Map<String, TypeMemberFunctions> TYPE_MEMBER_FUNCTIONS = Map.of(
+            "methods", new TypeMemberFunctions(MethodDeserializer::deserialize, TypeMetadata::getMethods),
+            "fields", new TypeMemberFunctions(FieldDeserializer::deserialize, TypeMetadata::getFields)
+    );
+
     private JavadocPageDeserializer() {
         throw new AssertionError("This class cannot be instantiated.");
     }
@@ -38,31 +57,59 @@ public final class JavadocPageDeserializer {
         final Element possibleElements = document.selectFirst(".methodDetails ul.blockList > li.blockList");
         final boolean old = possibleElements == null;
 
-        final Stream<Element> elements;
+        final Multimap<String, Element> detailElements = HashMultimap.create();
 
         if (old) {
-            final Optional<Element> methods = document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
-                    .filter(element -> element.text().equalsIgnoreCase("method detail"))
-                    .findAny();
-
-            if (methods.isEmpty()) {
-                elements = Stream.empty();
-            } else {
-                elements = methods.get().parent().select("ul > li.blockList").stream();
-            }
+            document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
+                    .filter(element -> OLD_DETAIL_HEADERS.containsKey(element.text().toLowerCase()))
+                    .forEach(element -> detailElements.putAll(
+                            OLD_DETAIL_HEADERS.get(element.text().toLowerCase()),
+                            element.parent().select("ul > li.blockList")
+                    ));
         } else {
-            elements = document.select(".methodDetails ul.blockList > li.blockList").stream();
+            NEW_DETAIL_CLASSES.forEach((clazz, key) ->
+                    detailElements.putAll(key, document.select(clazz + " ul.blockList > li.blockList")));
         }
 
-        final Set<DocumentedObject> methods = elements
-                .map(element -> MethodDeserializer.deserialize(element, type.getPackage(), type.getName(), old))
-                .collect(Collectors.toSet());
-        objects.addAll(methods);
+        final String packaj = type.getPackage();
+        final String owner = type.getName();
+        final TypeMetadata metadata = (TypeMetadata) type.getMetadata();
 
-        ((TypeMetadata) type.getMetadata()).getMethods().addAll(methods.stream()
-                .map(DataUtils::getFqn)
-                .collect(Collectors.toSet()));
+        TYPE_MEMBER_FUNCTIONS.forEach((key, functions) -> {
+            final Set<String> typeMembers = functions.getMemberGetter().apply(metadata);
+            detailElements.get(key).stream()
+                    .map(element -> functions.getDeserializer().deserialize(element, packaj, owner, old))
+                    .peek(objects::add)
+                    .map(DataUtils::getFqn)
+                    .forEach(typeMembers::add);
+        });
 
         return objects;
+    }
+
+    private static final class TypeMemberFunctions {
+        private final TypeMemberDeserializer deserializer;
+        private final Function<TypeMetadata, Set<String>> memberGetter;
+
+        private TypeMemberFunctions(@NotNull final TypeMemberDeserializer deserializer,
+                                    @NotNull final Function<TypeMetadata, Set<String>> memberGetter) {
+            this.deserializer = deserializer;
+            this.memberGetter = memberGetter;
+        }
+
+        @NotNull
+        public TypeMemberDeserializer getDeserializer() {
+            return deserializer;
+        }
+
+        @NotNull
+        public Function<TypeMetadata, Set<String>> getMemberGetter() {
+            return memberGetter;
+        }
+    }
+
+    private interface TypeMemberDeserializer {
+        DocumentedObject deserialize(@NotNull final Element element, @NotNull final String packaj,
+                                     @NotNull final String owner, final boolean old);
     }
 }

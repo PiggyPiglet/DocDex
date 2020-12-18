@@ -1,6 +1,7 @@
-package me.piggypiglet.docdex.documentation.objects.method;
+package me.piggypiglet.docdex.documentation.objects.detail.method;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.detail.DocumentedDetailBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -9,17 +10,26 @@ import java.util.*;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class DocumentedMethodBuilder extends DocumentedObject.Builder<DocumentedMethodBuilder> {
-    private final String owner;
-
+public final class DocumentedMethodBuilder extends DocumentedObject.Builder<DocumentedMethodBuilder> implements DocumentedDetailBuilder<DocumentedMethodBuilder> {
+    private String owner;
+    private String returns = "";
     private final Set<String> parameters = new HashSet<>();
     private final Map<String, String> parameterDescriptions = new HashMap<>();
-    private String returns = "";
     private String returnsDescription = "";
     private final Set<Map.Entry<String, String>> throwing = new HashSet<>();
 
-    public DocumentedMethodBuilder(@NotNull final String owner) {
-        this.owner = owner;
+    @NotNull
+    @Override
+    public DocumentedMethodBuilder owner(@NotNull final String value) {
+        owner = value;
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public DocumentedMethodBuilder returns(@NotNull final String value) {
+        returns = value;
+        return this;
     }
 
     @NotNull
@@ -47,12 +57,6 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
     }
 
     @NotNull
-    public DocumentedMethodBuilder returns(@NotNull final String value) {
-        returns = value;
-        return this;
-    }
-
-    @NotNull
     public DocumentedMethodBuilder returnsDescription(@NotNull final String value) {
         returnsDescription = value;
         return this;
@@ -70,6 +74,7 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
         return this;
     }
 
+    @NotNull
     @Override
     public DocumentedObject build() {
         return build(new MethodMetadata(

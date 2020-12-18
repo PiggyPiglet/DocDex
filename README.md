@@ -12,7 +12,7 @@ Requirements:
 - Java 11
 - MongoDB
 ```bash
-java -jar DocDex-1.0.0-all.jar
+java -Xmx2G -jar DocDex.jar
 ```
 Make sure to populate the config.json with your javadocs. On first start, it'll crawl the sites (which can take a while), and then save the indexes to file & database. As mentioned earlier, you should only run this on local sites. Doing otherwise will result in extremely long crawl times, or your ip being banned from said site. Multiple javadoc sites are loaded concurrently to help with speed.
 
@@ -27,8 +27,10 @@ Both methods (methods, constructors) and types (classes, interfaces, enums, anno
 When requesting from the index with a query, it'll first attempt to find a perfect match for the query (two possible matches, name or fqn). If it can't find one, it'll use a ratio of the levenshtein distance of the algorithm, and either the name or fqn (determined by whether the query contains periods) of every object in that javadoc. e.g.
 ```
 /index?javadoc=1.16.4&query=commandexecutor
+/index?javadoc=1.16.4&query=commandexecutor~oncommand
 ```
-> Queries are case insensitive.
+> Queries are case insensitive.<br/>
+> Use ~ instead of # for methods
 
 ### Contact
 Join either [HelpChat](https://helpch.at/discord), or my personal [discord](https://piggypiglet.me/discord).

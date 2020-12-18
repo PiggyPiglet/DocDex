@@ -1,7 +1,7 @@
 package me.piggypiglet.docdex.documentation.objects.adaptation;
 
 import com.google.gson.*;
-import me.piggypiglet.docdex.documentation.objects.method.MethodMetadata;
+import me.piggypiglet.docdex.documentation.objects.detail.method.MethodMetadata;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import org.jetbrains.annotations.NotNull;
 

@@ -3,7 +3,7 @@ package me.piggypiglet.docdex.documentation.index.data.utils;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
-import me.piggypiglet.docdex.documentation.objects.method.MethodMetadata;
+import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -25,12 +25,15 @@ public final class DataUtils {
 
     @NotNull
     public static String getName(@NotNull final DocumentedObject object) {
-        final String prefix;
+        String prefix = object.getMetadata() instanceof DetailMetadata ? ((DetailMetadata) object.getMetadata()).getOwner() : "";
 
-        if (object.getType() == DocumentedTypes.METHOD) {
-            prefix = ((MethodMetadata) object.getMetadata()).getOwner() + '#';
-        } else {
-            prefix = "";
+        switch (object.getType()) {
+            case METHOD:
+                prefix += '#';
+                break;
+            case FIELD:
+                prefix += '%';
+                break;
         }
 
         return prefix + object.getName();

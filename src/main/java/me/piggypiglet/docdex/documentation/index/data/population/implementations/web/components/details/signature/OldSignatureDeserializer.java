@@ -1,18 +1,18 @@
-package me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method;
+package me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.details.signature;
 
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.utils.DeserializationUtils;
-import me.piggypiglet.docdex.documentation.objects.method.DocumentedMethodBuilder;
+import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.detail.DocumentedDetailBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.method.MethodDeserializer.LIST_DELIMITER;
+import static me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.details.signature.SignatureConstants.SPACE_DELIMITER;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -20,14 +20,13 @@ import static me.piggypiglet.docdex.documentation.index.data.population.implemen
 // ------------------------------
 public final class OldSignatureDeserializer {
     private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@.+?(?=[ \\n])");
-    private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
 
     private OldSignatureDeserializer() {
         throw new AssertionError("This class cannot be instantiated.");
     }
 
-    static void deserialize(@NotNull final Element details, @NotNull final DocumentedMethodBuilder builder,
-                            @NotNull final String name) {
+    public static <R extends DocumentedObject.Builder<R> & DocumentedDetailBuilder<R>> void deserialize(@NotNull final Element details, @NotNull final R builder,
+                                                                                                        @NotNull final String name) {
         final Element pre = details.selectFirst("pre");
         final Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(pre.text());
 
@@ -47,22 +46,19 @@ public final class OldSignatureDeserializer {
 
         final String preText = preTextReference.get().trim();
         final String[] preSplit = SPACE_DELIMITER.split(preText);
+        final String lowerName = name.toLowerCase();
 
         int lastModifierIndex = 0;
         for (int i = 0; i < preSplit.length; ++i) {
-            if (preSplit[i].toLowerCase().startsWith(name)) {
+            if (preSplit[i].toLowerCase().startsWith(lowerName)) {
                 builder.returns(preSplit[i - 1]);
                 lastModifierIndex = i - 2;
                 break;
             }
         }
 
-        for (int i = 0; i < lastModifierIndex; ++i) {
+        for (int i = 0; i <= lastModifierIndex; ++i) {
             builder.modifiers(preSplit[i]);
         }
-
-        Arrays.stream(LIST_DELIMITER.split(preText.substring(preText.indexOf('(') + 1, preText.indexOf(')')).replace("\n", " ")))
-                .map(String::trim)
-                .forEach(builder::parameters);
     }
 }

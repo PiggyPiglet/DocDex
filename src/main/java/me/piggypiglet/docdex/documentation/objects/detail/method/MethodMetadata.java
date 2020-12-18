@@ -1,10 +1,10 @@
-package me.piggypiglet.docdex.documentation.objects.method;
+package me.piggypiglet.docdex.documentation.objects.detail.method;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.objects.adaptation.EntrySetAdapter;
+import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -14,7 +14,7 @@ import java.util.Set;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class MethodMetadata {
+public final class MethodMetadata implements DetailMetadata {
     private final String owner;
     private final Set<String> parameters;
     private final Map<String, String> parameterDescriptions;
@@ -23,8 +23,8 @@ public final class MethodMetadata {
     @SerializedName("throws") @JsonAdapter(EntrySetAdapter.class) private final Set<Map.Entry<String, String>> throwing;
 
     MethodMetadata(@NotNull final String owner, @NotNull final Set<String> parameters,
-                   @NotNull final Map<String, String> parameterDescriptions, @Nullable final String returns,
-                   @Nullable final String returnsDescription, @NotNull final Set<Map.Entry<String, String>> throwing) {
+                   @NotNull final Map<String, String> parameterDescriptions, @NotNull final String returns,
+                   @NotNull final String returnsDescription, @NotNull final Set<Map.Entry<String, String>> throwing) {
         this.owner = owner;
         this.parameters = parameters;
         this.parameterDescriptions = parameterDescriptions;
@@ -39,6 +39,11 @@ public final class MethodMetadata {
     }
 
     @NotNull
+    public String getReturns() {
+        return returns;
+    }
+
+    @NotNull
     public Set<String> getParameters() {
         return parameters;
     }
@@ -48,12 +53,7 @@ public final class MethodMetadata {
         return parameterDescriptions;
     }
 
-    @Nullable
-    public String getReturns() {
-        return returns;
-    }
-
-    @Nullable
+    @NotNull
     public String getReturnsDescription() {
         return returnsDescription;
     }
@@ -61,18 +61,6 @@ public final class MethodMetadata {
     @NotNull
     public Set<Map.Entry<String, String>> getThrows() {
         return throwing;
-    }
-
-    @Override
-    public String toString() {
-        return "MethodMetadata{" +
-                "owner='" + owner + '\'' +
-                ", parameters=" + parameters +
-                ", parameterDescriptions=" + parameterDescriptions +
-                ", returns='" + returns + '\'' +
-                ", returnsDescription='" + returnsDescription + '\'' +
-                ", throws=" + throwing +
-                '}';
     }
 
     @Override
@@ -86,5 +74,17 @@ public final class MethodMetadata {
     @Override
     public int hashCode() {
         return Objects.hash(owner, parameters, parameterDescriptions, returns, returnsDescription, throwing);
+    }
+
+    @Override
+    public String toString() {
+        return "MethodMetadata{" +
+                "owner='" + owner + '\'' +
+                ", parameters=" + parameters +
+                ", parameterDescriptions=" + parameterDescriptions +
+                ", returns='" + returns + '\'' +
+                ", returnsDescription='" + returnsDescription + '\'' +
+                ", throwing=" + throwing +
+                '}';
     }
 }

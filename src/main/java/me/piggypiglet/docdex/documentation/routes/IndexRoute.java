@@ -37,6 +37,7 @@ public final class IndexRoute extends JsonRoute {
         final String javadocName = params.get("javadoc").stream().findAny().orElse(null);
         final String query = params.get("query").stream().findAny()
                 .map(str -> str.replace("~", "#"))
+                .map(str -> str.replace("-", "%"))
                 .orElse(null);
 
         if (javadocName == null || query == null) {

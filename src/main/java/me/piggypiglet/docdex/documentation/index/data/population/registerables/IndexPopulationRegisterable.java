@@ -64,6 +64,7 @@ public final class IndexPopulationRegisterable extends Registerable {
                 futures.add(CompletableFuture.runAsync(() ->
                         populators.stream().filter(populator -> populator.shouldPopulate(javadoc)).findAny().ifPresent(populator -> {
                             final Map<String, DocumentedObject> objects = populator.provideObjects(javadoc);
+
                             storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);
                         }), executor

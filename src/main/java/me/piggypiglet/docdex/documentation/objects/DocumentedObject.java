@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.index.data.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.adaptation.MetadataAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -25,9 +24,9 @@ public final class DocumentedObject {
     @JsonAdapter(MetadataAdapter.class) private final Object metadata;
 
     private DocumentedObject(@NotNull final DocumentedTypes type, @NotNull final String packaj,
-                             @NotNull final String name, @Nullable final String description,
+                             @NotNull final String name, @NotNull final String description,
                              @NotNull final Set<String> annotations, final boolean deprecated,
-                             @Nullable final String deprecationMessage, @NotNull final Set<String> modifiers,
+                             @NotNull final String deprecationMessage, @NotNull final Set<String> modifiers,
                              @NotNull final Object metadata) {
         this.type = type;
         this.packaj = packaj;
@@ -55,7 +54,7 @@ public final class DocumentedObject {
         return name;
     }
 
-    @Nullable
+    @NotNull
     public String getDescription() {
         return description;
     }
@@ -69,7 +68,7 @@ public final class DocumentedObject {
         return deprecated;
     }
 
-    @Nullable
+    @NotNull
     public String getDeprecationMessage() {
         return deprecationMessage;
     }
@@ -191,6 +190,7 @@ public final class DocumentedObject {
             return instance;
         }
 
+        @NotNull
         public abstract DocumentedObject build();
 
         @NotNull

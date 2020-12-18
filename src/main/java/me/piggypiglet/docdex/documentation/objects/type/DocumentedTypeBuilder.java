@@ -105,7 +105,8 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
         addAll(implementingClasses, values);
         return this;
     }
-    
+
+    @NotNull
     @Override
     public DocumentedObject build() {
         return build(new TypeMetadata(extensions, implementations, allImplementations, superInterfaces,
