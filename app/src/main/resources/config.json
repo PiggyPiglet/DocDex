@@ -14,7 +14,7 @@
     {
       "names": ["1.16.4"],
       "link": "http://localhost/docs/1.16.4"
-    }/*,
+    },
     {
       "names":["1.16.3"],
       "link":"http://localhost/docs/1.16.3"
@@ -146,6 +146,6 @@
     {
       "names": ["1.7.10"],
       "link": "http://localhost/docs/1.7.10/overview-summary.html"
-    }*/
+    }
   ]
 }

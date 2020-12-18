@@ -114,7 +114,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 continue;
             }
 
-            getChildren(map, type).forEach(heir -> {
+            getChildren(map, type).forEach(heir ->
                 ((TypeMetadata) type.getMetadata()).getMethods().stream()
                         .map(String::toLowerCase)
                         .map(map::get)
@@ -123,8 +123,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
                             map.put(DataUtils.getFqn(heir).toLowerCase() + addendum, method);
                             map.put(DataUtils.getName(heir).toLowerCase() + addendum, method);
-                        });
-            });
+                        })
+            );
         }
 
         LOGGER.info("Finished indexing " + javadocName + " in " + (System.currentTimeMillis() - millis) / 1000 + " second(s).");

@@ -1,31 +1,21 @@
 plugins {
     id "java"
-    id "application"
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-group "me.piggypiglet"
-version "1.0.0"
-mainClassName = "me.piggypiglet.docdex.bootstrap.DocDexBootstrap"
-sourceCompatibility = JavaVersion.VERSION_11
+subprojects {
+    apply plugin: "java"
+    apply plugin: "com.github.johnrengelman.shadow"
 
-repositories {
-    mavenCentral()
-}
+    group "me.piggypiglet"
+    version "1.0.0"
+    sourceCompatibility = JavaVersion.VERSION_11
 
-dependencies {
-    implementation "com.google.inject:guice:4.2.3"
-    implementation "com.google.code.gson:gson:2.8.6"
-    implementation "org.nanohttpd:nanohttpd:2.3.1"
-    implementation "org.jsoup:jsoup:1.13.1"
-    implementation "ch.qos.logback:logback-classic:1.2.3"
-    implementation "me.xdrop:fuzzywuzzy:1.3.1"
-    implementation "org.mongodb:mongo-java-driver:3.12.7"
+    repositories {
+        mavenCentral()
+    }
 
-    compileOnly "org.jetbrains:annotations:20.1.0"
-}
-
-shadowJar {
-    archiveClassifier.set("")
-    archiveVersion.set("")
+    dependencies {
+        compileOnly "org.jetbrains:annotations:20.1.0"
+    }
 }

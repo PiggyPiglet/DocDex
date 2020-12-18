@@ -224,7 +224,6 @@ public final class DocumentedObject {
             return annotations;
         }
 
-        @NotNull
         public boolean isDeprecated() {
             return deprecated;
         }
