@@ -39,6 +39,7 @@ public final class IndexRoute extends JsonRoute {
                 .map(str -> str.replace("~", "#"))
                 .map(str -> str.replace("-", "%"))
                 .orElse(null);
+        final int limit = params.get("limit").stream().findAny().map(Integer::parseInt).orElse(5);
 
         if (javadocName == null || query == null) {
             return null;
@@ -50,6 +51,6 @@ public final class IndexRoute extends JsonRoute {
             return null;
         }
 
-        return index.get(javadoc, query);
+        return index.get(javadoc, query, limit);
     }
 }

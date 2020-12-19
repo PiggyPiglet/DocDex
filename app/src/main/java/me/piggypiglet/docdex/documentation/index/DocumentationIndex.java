@@ -9,10 +9,9 @@ import me.piggypiglet.docdex.documentation.index.data.storage.implementations.Mo
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -73,8 +72,9 @@ public final class DocumentationIndex {
         }
     }
 
-    @Nullable
-    public DocumentedObject get(@NotNull final Javadoc javadoc, @NotNull final String query) {
+    @NotNull
+    public List<DocumentedObject> get(@NotNull final Javadoc javadoc, @NotNull final String query,
+                                      final int limit) {
         final Multimap<Javadoc, String> map;
 
         if (query.contains(".")) {
@@ -94,19 +94,22 @@ public final class DocumentationIndex {
         }
 
         if (map.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
         final String lowerQuery = query.toLowerCase();
         final DocumentedObject object = map.get(javadoc).contains(lowerQuery) ? storage.get(javadoc, lowerQuery).orElse(null) : null;
 
         if (object != null) {
-            return object;
+            return List.of(object);
         }
 
         return map.get(javadoc).stream()
-                .max(Comparator.comparingInt(name -> FuzzySearch.ratio(name, lowerQuery)))
-                .flatMap(name -> storage.get(javadoc, name))
-                .orElse(null);
+                .sorted(Collections.reverseOrder(Comparator.comparingInt(name -> FuzzySearch.ratio(name, lowerQuery))))
+                .limit(limit)
+                .map(name -> storage.get(javadoc, name))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 }

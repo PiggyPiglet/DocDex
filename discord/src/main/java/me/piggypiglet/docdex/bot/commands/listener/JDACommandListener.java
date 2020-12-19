@@ -21,7 +21,11 @@ public final class JDACommandListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull final MessageReceivedEvent event) {
         if (!event.getAuthor().isBot()) {
-            commandHandler.process(event.getAuthor(), event.getMessage());
+            try {
+                commandHandler.process(event.getAuthor(), event.getMessage());
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
     }
 }
