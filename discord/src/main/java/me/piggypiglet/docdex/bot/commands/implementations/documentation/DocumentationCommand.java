@@ -23,6 +23,7 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -75,17 +76,32 @@ public abstract class DocumentationCommand extends JDACommand {
             return;
         }
 
-        if (args.length == 0) {
+        if (args.length == 0 || args[0].isBlank()) {
             channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit]").queue();
             return;
         }
+
+        final AtomicInteger limit = new AtomicInteger(-1);
+
+        try {
+            if (args.length > 2) {
+                limit.set(Integer.parseInt(args[2]));
+            } else if (args.length == 2) {
+                limit.set(Integer.parseInt(args[1]));
+            }
+        } catch (Exception e) {}
 
         final String javadoc;
         final String query;
 
         if (args.length >= 2) {
-            javadoc = args[0];
-            query = args[1];
+            if (limit.get() != -1) {
+                javadoc = defaultJavadoc;
+                query = args[0];
+            } else {
+                javadoc = args[0];
+                query = args[1];
+            }
         } else {
             javadoc = defaultJavadoc;
             query = args[0];
@@ -95,9 +111,9 @@ public abstract class DocumentationCommand extends JDACommand {
                 .javadoc(javadoc)
                 .query(query);
 
-        try {
-            urlBuilder.limit(Integer.parseInt(args.length > 2 ? args[2] : args[1]));
-        } catch (Exception e) {}
+        if (limit.get() != -1) {
+            urlBuilder.limit(limit.get());
+        }
 
         final HttpRequest request = HttpRequest.newBuilder(URI.create(url + urlBuilder.build()))
                 .build();
@@ -111,7 +127,7 @@ public abstract class DocumentationCommand extends JDACommand {
 
                     final List<DocumentedObject> objects = GSON.fromJson(json, OBJECT_LIST);
 
-                    if (objects.size() == 1) {
+                    if (objects.size() == 1 && limit.get() != 1) {
                         final DocumentedObject object = objects.get(0);
                         execute(message, SimpleObjectSerializer.toEmbed(javadoc, object), object);
                         return;

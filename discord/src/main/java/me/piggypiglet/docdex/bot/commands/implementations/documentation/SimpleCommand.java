@@ -24,7 +24,6 @@ public final class SimpleCommand extends DocumentationCommand {
     @Override
     protected void execute(final @NotNull Message message, @NotNull final EmbedBuilder defaultEmbed,
                            final @NotNull DocumentedObject object) {
-        LOGGER.info("test");
         message.getChannel().sendMessage(defaultEmbed.build()).queue();
     }
 }
