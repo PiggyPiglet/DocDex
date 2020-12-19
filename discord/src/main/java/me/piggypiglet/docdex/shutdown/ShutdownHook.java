@@ -22,7 +22,7 @@ public final class ShutdownHook extends Thread {
 
     @Override
     public void run() {
-        jda.shutdown();
+        jda.shutdownNow();
         LOGGER.info("Shut down JDA.");
     }
 }

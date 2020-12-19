@@ -3,14 +3,13 @@ package me.piggypiglet.docdex.bot.commands;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import me.piggypiglet.docdex.bot.commands.implementations.DocumentationCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
 import me.piggypiglet.docdex.config.Config;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
 import java.util.Set;
 
 // ------------------------------
@@ -25,11 +24,12 @@ public final class JDACommandHandler {
 
     @Inject
     public JDACommandHandler(@NotNull final Config config, @NotNull @Named("jda commands") final Set<JDACommand> commands,
-                             @NotNull final HelpCommand helpCommand) {
+                             @NotNull final DocumentationCommand defaultCommand, @NotNull final HelpCommand helpCommand) {
         this.prefix = config.getPrefix().toLowerCase();
         this.commands = commands;
-        this.unknownCommand = helpCommand;
+        this.unknownCommand = defaultCommand;
 
+        commands.add(defaultCommand);
         commands.add(helpCommand);
     }
 
@@ -44,7 +44,13 @@ public final class JDACommandHandler {
                 .filter(possibleCommand -> rawMessage.startsWith(prefix + possibleCommand.getMatch()))
                 .findAny().orElse(unknownCommand);
 
-        command.execute(user, message, prefix + command.getMatch());
+        String start = prefix;
+
+        if (rawMessage.startsWith(prefix + command.getMatch())) {
+            start += command.getMatch();
+        }
+
+        command.execute(user, message, start);
     }
 
     @NotNull

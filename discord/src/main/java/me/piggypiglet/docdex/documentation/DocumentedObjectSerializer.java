@@ -3,7 +3,6 @@ package me.piggypiglet.docdex.documentation;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
 import me.piggypiglet.docdex.documentation.objects.detail.method.MethodMetadata;
-import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -36,7 +35,7 @@ public final class DocumentedObjectSerializer {
         GETTERS.forEach((key, getter) -> {
             final String value = String.valueOf(getter.apply(object));
 
-            if (!value.isBlank() || !value.equalsIgnoreCase("null")) {
+            if (!value.isBlank() && !value.equalsIgnoreCase("null")) {
                 builder.addField(key, value, false);
             }
         });

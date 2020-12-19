@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.bootstrap.implementations.StartMessageRegisterable;
 import me.piggypiglet.docdex.bot.commands.registerables.JDACommandListenerRegisterable;
 import me.piggypiglet.docdex.bot.commands.registerables.JDACommandsRegisterable;
+import me.piggypiglet.docdex.bot.registerables.JDAPresenceRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDARegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
@@ -29,10 +30,12 @@ public final class DocDexBootstrap {
             FileObjectsRegisterable.class,
             FilesRegisterable.class,
 
-            JDARegisterable.class,
-
             ConsoleCommandsRegisterable.class,
             ConsoleCommandListenerRegisterable.class,
+
+            JDARegisterable.class,
+            JDAPresenceRegisterable.class,
+
             JDACommandsRegisterable.class,
             JDACommandListenerRegisterable.class,
 

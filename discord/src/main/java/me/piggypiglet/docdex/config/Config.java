@@ -19,6 +19,8 @@ public final class Config {
     private String token;
     private String prefix;
     @JsonAdapter(UrlDeserializer.class) private String url;
+    private String defaultJavadoc;
+    private Presence presence;
 
     @NotNull
     public String getToken() {
@@ -33,5 +35,15 @@ public final class Config {
     @NotNull
     public String getUrl() {
         return url;
+    }
+
+    @NotNull
+    public String getDefaultJavadoc() {
+        return defaultJavadoc;
+    }
+
+    @NotNull
+    public Presence getPresence() {
+        return presence;
     }
 }
