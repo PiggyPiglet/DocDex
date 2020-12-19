@@ -1,11 +1,10 @@
-package me.piggypiglet.docdex.documentation;
+package me.piggypiglet.docdex.bot.embed.documentation;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
 import me.piggypiglet.docdex.documentation.objects.detail.method.MethodMetadata;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -15,18 +14,18 @@ import java.util.function.Function;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class DocumentedObjectSerializer {
+public final class SimpleObjectSerializer {
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
             "Description:", DocumentedObject::getDescription,
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 
-    private DocumentedObjectSerializer() {
+    private SimpleObjectSerializer() {
         throw new AssertionError("This class cannot be instantiated.");
     }
 
     @NotNull
-    public static MessageEmbed toEmbed(@NotNull final String javadoc, @NotNull final DocumentedObject object) {
+    public static EmbedBuilder toEmbed(@NotNull final String javadoc, @NotNull final DocumentedObject object) {
         final EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(DataUtils.getFqn(object));
         builder.setAuthor(javadoc);
@@ -40,7 +39,7 @@ public final class DocumentedObjectSerializer {
             }
         });
 
-        return builder.build();
+        return builder;
     }
 
     @NotNull

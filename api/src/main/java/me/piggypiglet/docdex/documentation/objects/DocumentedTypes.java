@@ -2,11 +2,14 @@ package me.piggypiglet.docdex.documentation.objects;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public enum DocumentedTypes {
-    CLASS("Class"),
-    INTERFACE("Interface"),
+    CLASS("Class", "class"),
+    INTERFACE("Interface", "interface"),
     ANNOTATION("Annotation", "@interface"),
-    ENUM("Enum"),
+    ENUM("Enum", "enum"),
 
     METHOD("Method"),
     CONSTRUCTOR("Constructor"),
@@ -14,6 +17,9 @@ public enum DocumentedTypes {
     FIELD("Field"),
 
     UNKNOWN("Unknown");
+
+    private static final Set<DocumentedTypes> TYPES = EnumSet.of(CLASS, INTERFACE, ANNOTATION, ENUM);
+    private static final Set<DocumentedTypes> METHODS = EnumSet.of(METHOD, CONSTRUCTOR);
 
     private final String name;
     private final String code;
@@ -46,5 +52,17 @@ public enum DocumentedTypes {
         }
 
         return UNKNOWN;
+    }
+
+    public static boolean isType(@NotNull final DocumentedTypes type) {
+        return TYPES.contains(type);
+    }
+
+    public static boolean isMethod(@NotNull final DocumentedTypes type) {
+        return METHODS.contains(type);
+    }
+
+    public static boolean isField(@NotNull final DocumentedTypes type) {
+        return type == FIELD;
     }
 }

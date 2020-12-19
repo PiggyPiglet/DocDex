@@ -2,23 +2,14 @@ package me.piggypiglet.docdex.documentation.utils;
 
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DataUtils {
-    private static final Set<DocumentedTypes> TYPE_TYPES = EnumSet.of(
-            DocumentedTypes.CLASS, DocumentedTypes.INTERFACE,
-            DocumentedTypes.ANNOTATION, DocumentedTypes.ENUM
-    );
-
     private DataUtils() {
         throw new AssertionError("This class cannot be instantiated.");
     }
@@ -43,10 +34,6 @@ public final class DataUtils {
     @NotNull
     public static String getFqn(@NotNull final DocumentedObject object) {
         return object.getPackage() + '.' + getName(object);
-    }
-
-    public static boolean isType(@NotNull final DocumentedObject object) {
-        return TYPE_TYPES.contains(object.getType());
     }
 
     @NotNull

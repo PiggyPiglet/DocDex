@@ -1,17 +1,14 @@
-package me.piggypiglet.docdex.bot.commands.implementations;
+package me.piggypiglet.docdex.bot.commands.implementations.documentation;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
 import me.piggypiglet.docdex.bot.commands.JDACommand;
-import me.piggypiglet.docdex.config.Config;
-import me.piggypiglet.docdex.documentation.DocumentedObjectSerializer;
+import me.piggypiglet.docdex.bot.embed.documentation.SimpleObjectSerializer;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.scanning.annotations.Hidden;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,14 +16,16 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-@Hidden
-public final class DocumentationCommand extends JDACommand {
+public abstract class DocumentationCommand extends JDACommand {
     private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_# ]");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
@@ -36,16 +35,32 @@ public final class DocumentationCommand extends JDACommand {
     private final String url;
     private final String defaultJavadoc;
 
-    @Inject
-    public DocumentationCommand(@NotNull final Config config) {
-        super("doc", "search a javadoc");
-        this.url = config.getUrl();
-        this.defaultJavadoc = config.getDefaultJavadoc();
+    protected DocumentationCommand(@NotNull final String @NotNull [] matches, @NotNull final String url,
+                                   @NotNull final String defaultJavadoc) {
+        this(matches, "", url, defaultJavadoc);
+    }
+
+    protected DocumentationCommand(@NotNull final String @NotNull [] matches, @NotNull final String description,
+                                   @NotNull final String url, @NotNull final String defaultJavadoc) {
+        this(Arrays.stream(matches).collect(Collectors.toSet()), description, url, defaultJavadoc);
+    }
+
+    protected DocumentationCommand(@NotNull final Set<String> matches, @NotNull final String url,
+                                   @NotNull final String defaultJavadoc) {
+        this(matches, "", url, defaultJavadoc);
+    }
+
+    protected DocumentationCommand(@NotNull final Set<String> matches, @NotNull final String description,
+                                   @NotNull final String url, @NotNull final String defaultJavadoc) {
+        super(matches, description);
+        this.url = url;
+        this.defaultJavadoc = defaultJavadoc;
     }
 
     @Override
-    protected void execute(final @NotNull User user, final @NotNull Message message,
-                           final @NotNull String @NotNull [] args) {
+    public void run(final @NotNull User user, final @NotNull Message message,
+                    final @NotNull String start) {
+        final String[] args = args(message, start);
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
@@ -55,7 +70,7 @@ public final class DocumentationCommand extends JDACommand {
         }
 
         if (args.length == 0) {
-            channel.sendMessage("Incorrect usage. Correct usage is: doc [javadoc] <query>").queue();
+            channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query>").queue();
             return;
         }
 
@@ -81,10 +96,12 @@ public final class DocumentationCommand extends JDACommand {
                     }
 
                     final DocumentedObject object = GSON.fromJson(json, DocumentedObject.class);
-                    final MessageEmbed embed = DocumentedObjectSerializer.toEmbed(javadoc, object);
-                    channel.sendMessage(embed).queue();
+                    execute(message, SimpleObjectSerializer.toEmbed(javadoc, object), object);
                 });
     }
+
+    protected abstract void execute(final @NotNull Message message, @NotNull final EmbedBuilder defaultEmbed,
+                                    final @NotNull DocumentedObject object);
 
     @NotNull
     private static String formatQuery(@NotNull final String query) {

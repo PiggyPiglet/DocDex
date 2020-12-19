@@ -3,25 +3,41 @@ package me.piggypiglet.docdex.bot.commands;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public abstract class JDACommand {
+    protected static final Logger LOGGER = LoggerFactory.getLogger("Commands");
+    protected static final Consumer<Throwable> ERROR_LOG = throwable -> LOGGER.error("", throwable);
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
 
-    private final String match;
+    private final Set<String> matches;
     private final String description;
 
-    protected JDACommand(@NotNull final String match) {
-        this(match, "");
+    protected JDACommand(@NotNull final String @NotNull [] matches) {
+        this(matches, "");
     }
 
-    protected JDACommand(@NotNull final String match, @NotNull final String description) {
-        this.match = match;
+    protected JDACommand(@NotNull final String @NotNull [] matches, @NotNull final String description) {
+        this(Arrays.stream(matches).collect(Collectors.toSet()), description);
+    }
+
+    protected JDACommand(@NotNull final Set<String> matches) {
+        this(matches, "");
+    }
+
+    protected JDACommand(@NotNull final Set<String> matches, @NotNull final String description) {
+        this.matches = matches;
         this.description = description;
     }
 
@@ -30,15 +46,15 @@ public abstract class JDACommand {
     protected void execute(@NotNull final User user, @NotNull final Message message,
                            @NotNull final String @NotNull [] args) {}
 
-    public void execute(@NotNull final User user, @NotNull final Message message,
-                        @NotNull final String start) {
+    public void run(@NotNull final User user, @NotNull final Message message,
+                    @NotNull final String start) {
         execute(user, message);
         execute(user, message, args(message, start));
     }
 
     @NotNull
-    public String getMatch() {
-        return match;
+    public Set<String> getMatches() {
+        return matches;
     }
 
     @NotNull
@@ -47,7 +63,7 @@ public abstract class JDACommand {
     }
 
     @NotNull
-    private static String @NotNull [] args(@NotNull final Message message, @NotNull final String start) {
+    protected static String @NotNull [] args(@NotNull final Message message, @NotNull final String start) {
         return SPACE_DELIMITER.split(message.getContentRaw().replace(start, "").trim());
     }
 }

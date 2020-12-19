@@ -2,10 +2,10 @@ package me.piggypiglet.docdex.documentation.index.data.population.implementation
 
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.population.IndexPopulator;
-import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
+import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
@@ -110,7 +110,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 previousPercentage.set(percentage);
             }
 
-            if (!DataUtils.isType(type)) {
+            if (!DocumentedTypes.isType(type.getType())) {
                 continue;
             }
 

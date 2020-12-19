@@ -3,8 +3,8 @@ package me.piggypiglet.docdex.bot.commands;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import me.piggypiglet.docdex.bot.commands.implementations.DocumentationCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
+import me.piggypiglet.docdex.bot.commands.implementations.documentation.SimpleCommand;
 import me.piggypiglet.docdex.config.Config;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -24,7 +24,7 @@ public final class JDACommandHandler {
 
     @Inject
     public JDACommandHandler(@NotNull final Config config, @NotNull @Named("jda commands") final Set<JDACommand> commands,
-                             @NotNull final DocumentationCommand defaultCommand, @NotNull final HelpCommand helpCommand) {
+                             @NotNull final SimpleCommand defaultCommand, @NotNull final HelpCommand helpCommand) {
         this.prefix = config.getPrefix().toLowerCase();
         this.commands = commands;
         this.unknownCommand = defaultCommand;
@@ -41,16 +41,13 @@ public final class JDACommandHandler {
         }
 
         final JDACommand command = commands.stream()
-                .filter(possibleCommand -> rawMessage.startsWith(prefix + possibleCommand.getMatch()))
+                .filter(possibleCommand -> possibleCommand.getMatches().stream().anyMatch(match -> rawMessage.startsWith(prefix + match)))
                 .findAny().orElse(unknownCommand);
+        final String start = prefix + command.getMatches().stream()
+                .filter(match -> rawMessage.startsWith(prefix + match))
+                .findAny().orElse("");
 
-        String start = prefix;
-
-        if (rawMessage.startsWith(prefix + command.getMatch())) {
-            start += command.getMatch();
-        }
-
-        command.execute(user, message, start);
+        command.run(user, message, start);
     }
 
     @NotNull

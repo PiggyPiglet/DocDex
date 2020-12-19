@@ -5,8 +5,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.bootstrap.implementations.StartMessageRegisterable;
-import me.piggypiglet.docdex.bot.commands.registerables.JDACommandListenerRegisterable;
 import me.piggypiglet.docdex.bot.commands.registerables.JDACommandsRegisterable;
+import me.piggypiglet.docdex.bot.registerables.JDAListenerRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDAPresenceRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDARegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
@@ -35,9 +35,8 @@ public final class DocDexBootstrap {
 
             JDARegisterable.class,
             JDAPresenceRegisterable.class,
-
             JDACommandsRegisterable.class,
-            JDACommandListenerRegisterable.class,
+            JDAListenerRegisterable.class,
 
             ShutdownHookRegisterable.class,
 
