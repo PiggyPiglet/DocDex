@@ -2,8 +2,8 @@ package me.piggypiglet.docdex.documentation.objects;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.adaptation.MetadataAdapter;
+import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -13,6 +13,7 @@ import java.util.*;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DocumentedObject {
+    private final String link;
     private final DocumentedTypes type;
     @SerializedName("package") private final String packaj;
     private final String name;
@@ -23,11 +24,12 @@ public final class DocumentedObject {
     private final Set<String> modifiers;
     @JsonAdapter(MetadataAdapter.class) private final Object metadata;
 
-    private DocumentedObject(@NotNull final DocumentedTypes type, @NotNull final String packaj,
-                             @NotNull final String name, @NotNull final String description,
-                             @NotNull final Set<String> annotations, final boolean deprecated,
-                             @NotNull final String deprecationMessage, @NotNull final Set<String> modifiers,
-                             @NotNull final Object metadata) {
+    private DocumentedObject(@NotNull final String link, @NotNull final DocumentedTypes type,
+                             @NotNull final String packaj, @NotNull final String name,
+                             @NotNull final String description, @NotNull final Set<String> annotations,
+                             final boolean deprecated, @NotNull final String deprecationMessage,
+                             @NotNull final Set<String> modifiers, @NotNull final Object metadata) {
+        this.link = link;
         this.type = type;
         this.packaj = packaj;
         this.name = name;
@@ -37,6 +39,11 @@ public final class DocumentedObject {
         this.deprecationMessage = deprecationMessage;
         this.modifiers = modifiers;
         this.metadata = metadata;
+    }
+
+    @NotNull
+    public String getLink() {
+        return link;
     }
 
     @NotNull
@@ -88,22 +95,24 @@ public final class DocumentedObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DocumentedObject object = (DocumentedObject) o;
-        return deprecated == object.deprecated && type == object.type &&
-                packaj.equals(object.packaj) && name.equals(object.name) &&
-                description.equals(object.description) && annotations.equals(object.annotations) &&
-                deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) &&
-                metadata.equals(object.metadata);
+        return deprecated == object.deprecated && link.equals(object.link) &&
+                type == object.type && packaj.equals(object.packaj) &&
+                name.equals(object.name) && description.equals(object.description) &&
+                annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) &&
+                modifiers.equals(object.modifiers) && metadata.equals(object.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, packaj, name, description, annotations, deprecated, deprecationMessage, modifiers, metadata);
+        return Objects.hash(link, type, packaj, name, description, annotations, deprecated, deprecationMessage, modifiers, metadata);
     }
 
     @Override
     public String toString() {
         return "DocumentedObject{" +
-                "type=" + type +
+                "link='" + link + '\'' +
+                ", type=" + type +
+                ", packaj='" + packaj + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", annotations=" + annotations +
@@ -119,6 +128,7 @@ public final class DocumentedObject {
         @SuppressWarnings("unchecked")
         private final T instance = (T) this;
 
+        private String link = "";
         private DocumentedTypes type;
         private String packaj;
         private String name;
@@ -129,6 +139,12 @@ public final class DocumentedObject {
         private final Set<String> modifiers = new HashSet<>();
 
         protected Builder() {}
+
+        @NotNull
+        public T link(@NotNull final String value) {
+            link = value;
+            return instance;
+        }
 
         @NotNull
         public T type(@NotNull final DocumentedTypes value) {
@@ -195,8 +211,13 @@ public final class DocumentedObject {
 
         @NotNull
         protected final DocumentedObject build(@NotNull final Object metadata) {
-            return new DocumentedObject(type, packaj, name, description, annotations, deprecated,
+            return new DocumentedObject(link, type, packaj, name, description, annotations, deprecated,
                     deprecationMessage, modifiers, metadata);
+        }
+
+        @NotNull
+        public String getLink() {
+            return link;
         }
 
         @NotNull

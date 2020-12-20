@@ -26,11 +26,12 @@ public final class MethodDeserializer {
     }
 
     @NotNull
-    public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String packaj,
-                                               @NotNull final String owner, final boolean old) {
+    public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String link,
+                                               @NotNull final String packaj, @NotNull final String owner,
+                                               final boolean old) {
         final DocumentedMethodBuilder builder = new DocumentedMethodBuilder();
         final Element details = old ? method : method.selectFirst(".detail");
-        DetailDeserializer.deserialize(details, packaj, owner, builder, old);
+        DetailDeserializer.deserialize(details, link, packaj, owner, builder, old);
         final boolean constructor = builder.getName().equalsIgnoreCase(owner);
 
         builder.type(constructor ? DocumentedTypes.CONSTRUCTOR : DocumentedTypes.METHOD);

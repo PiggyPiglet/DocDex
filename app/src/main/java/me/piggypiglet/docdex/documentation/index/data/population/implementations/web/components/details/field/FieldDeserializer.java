@@ -17,12 +17,13 @@ public final class FieldDeserializer {
     }
 
     @NotNull
-    public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String packaj,
-                                               @NotNull final String owner, final boolean old) {
+    public static DocumentedObject deserialize(@NotNull final Element method, @NotNull final String link,
+                                               @NotNull final String packaj, @NotNull final String owner,
+                                               final boolean old) {
         final DocumentedFieldBuilder builder = new DocumentedFieldBuilder()
                 .type(DocumentedTypes.FIELD);
 
-        DetailDeserializer.deserialize(method, packaj, owner, builder, old);
+        DetailDeserializer.deserialize(method, link, packaj, owner, builder, old);
 
         return builder.build();
     }

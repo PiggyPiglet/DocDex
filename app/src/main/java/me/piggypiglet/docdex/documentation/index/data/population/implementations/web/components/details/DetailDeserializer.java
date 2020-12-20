@@ -18,10 +18,11 @@ public final class DetailDeserializer {
         throw new AssertionError("This class cannot be instantiated.");
     }
 
-    public static <R extends DocumentedObject.Builder<R> & DocumentedDetailBuilder<R>> void deserialize(@NotNull final Element details, @NotNull final String packaj,
-                                                                                                        @NotNull final String owner, @NotNull final R builder,
-                                                                                                        final boolean old) {
+    public static <R extends DocumentedObject.Builder<R> & DocumentedDetailBuilder<R>> void deserialize(@NotNull final Element details, @NotNull final String link,
+                                                                                                        @NotNull final String packaj, @NotNull final String owner,
+                                                                                                        @NotNull final R builder, final boolean old) {
         builder
+                .link(link)
                 .owner(owner)
                 .packaj(packaj);
 

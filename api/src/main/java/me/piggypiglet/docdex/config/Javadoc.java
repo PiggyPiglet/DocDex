@@ -11,6 +11,7 @@ import java.util.Set;
 public final class Javadoc {
     private Set<String> names;
     private String link;
+    private String actualLink;
 
     @NotNull
     public Set<String> getNames() {
@@ -20,5 +21,10 @@ public final class Javadoc {
     @NotNull
     public String getLink() {
         return link;
+    }
+
+    @NotNull
+    public String getActualLink() {
+        return actualLink;
     }
 }

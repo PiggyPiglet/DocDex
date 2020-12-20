@@ -33,9 +33,11 @@ public final class TypeDeserializer {
 
     @SuppressWarnings("DuplicatedCode")
     @NotNull
-    public static DocumentedObject deserialize(@NotNull final Element description, @Nullable final Element packaj) {
+    public static DocumentedObject deserialize(@NotNull final Element description, @NotNull final String link,
+                                               @Nullable final Element packaj) {
         final DocumentedTypeBuilder builder = new DocumentedTypeBuilder();
 
+        builder.link(link);
         Optional.ofNullable(packaj).ifPresent(packageElement ->
                 builder.packaj(packageElement.text().replace("Package ", "")));
 

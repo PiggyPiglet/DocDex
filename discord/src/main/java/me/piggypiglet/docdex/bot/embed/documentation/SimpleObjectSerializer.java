@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -15,6 +16,8 @@ import java.util.function.Function;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class SimpleObjectSerializer {
+    private static final String ICON = "https://helpch.at/bots/Darry.png";
+
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
             "Description:", DocumentedObject::getDescription,
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
@@ -27,9 +30,10 @@ public final class SimpleObjectSerializer {
     @NotNull
     public static EmbedBuilder toEmbed(@NotNull final String javadoc, @NotNull final DocumentedObject object) {
         final EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(DataUtils.getFqn(object));
-        builder.setAuthor(javadoc);
+        builder.setAuthor(DataUtils.getFqn(object), object.getLink(), ICON);
         builder.setDescription(generateSignature(object));
+        builder.setTimestamp(LocalDateTime.now());
+        builder.setFooter(javadoc);
 
         GETTERS.forEach((key, getter) -> {
             final String value = String.valueOf(getter.apply(object));

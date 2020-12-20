@@ -5,9 +5,9 @@ import com.google.common.collect.Multimap;
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.TypeDeserializer;
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.details.field.FieldDeserializer;
 import me.piggypiglet.docdex.documentation.index.data.population.implementations.web.components.details.method.MethodDeserializer;
-import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
+import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,11 +46,14 @@ public final class JavadocPageDeserializer {
     }
 
     @NotNull
-    public static Set<DocumentedObject> deserialize(@NotNull final Document document) {
+    public static Set<DocumentedObject> deserialize(@NotNull final Document document, @NotNull final String link) {
+        // todo: this doesn't work
+        final String uri = link + '/' + document.baseUri().replace(".html", "");
         final Set<DocumentedObject> objects = new HashSet<>();
 
         final DocumentedObject type = TypeDeserializer.deserialize(
                 document.selectFirst(".contentContainer > .description"),
+                uri,
                 document.selectFirst(".header > .subTitle")
         );
         objects.add(type);
@@ -59,18 +62,24 @@ public final class JavadocPageDeserializer {
         final Element possibleElements = document.selectFirst(".methodDetails ul.blockList > li.blockList");
         final boolean old = possibleElements == null;
 
-        final Multimap<String, Element> detailElements = HashMultimap.create();
+        final Multimap<String, Map.Entry<String, Element>> detailElements = HashMultimap.create();
 
         if (old) {
             document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
                     .filter(element -> OLD_DETAIL_HEADERS.containsKey(element.text().toLowerCase()))
-                    .forEach(element -> detailElements.putAll(
-                            OLD_DETAIL_HEADERS.get(element.text().toLowerCase()),
-                            element.parent().select("ul > li.blockList")
-                    ));
+                    .forEach(element -> {
+                        final String key = OLD_DETAIL_HEADERS.get(element.text().toLowerCase());
+
+                        element.parent().select("ul").forEach(ul ->
+                                detailElements.put(key, Map.entry(ul.previousElementSibling().attr("name"), ul.selectFirst("li.blockList")))
+                        );
+                    });
         } else {
             NEW_DETAIL_CLASSES.forEach((clazz, key) ->
-                    detailElements.putAll(key, document.select(clazz + " ul.blockList > li.blockList")));
+                    document.select(clazz + " ul.blockList > li.blockList").forEach(block ->
+                            detailElements.put(key, Map.entry(uri + '#' + block.selectFirst(".detail > h3 > a").id(), block))
+                    )
+            );
         }
 
         final String packaj = type.getPackage();
@@ -81,7 +90,7 @@ public final class JavadocPageDeserializer {
             final Set<String> typeMembers = functions.getMemberGetter().apply(metadata);
 
             detailElements.get(key).stream()
-                    .map(element -> functions.getDeserializer().deserialize(element, packaj, owner, old))
+                    .map(entry -> functions.getDeserializer().deserialize(entry.getValue(), entry.getKey(), packaj, owner, old))
                     .peek(objects::add)
                     .map(DataUtils::getFqn)
                     .forEach(typeMembers::add);
@@ -112,7 +121,8 @@ public final class JavadocPageDeserializer {
     }
 
     private interface TypeMemberDeserializer {
-        DocumentedObject deserialize(@NotNull final Element element, @NotNull final String packaj,
-                                     @NotNull final String owner, final boolean old);
+        DocumentedObject deserialize(@NotNull final Element element, @NotNull final String link,
+                                     @NotNull final String packaj, @NotNull final String owner,
+                                     final boolean old);
     }
 }
