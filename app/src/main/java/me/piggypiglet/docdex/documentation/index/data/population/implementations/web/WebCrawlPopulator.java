@@ -63,15 +63,16 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         final Set<DocumentedObject> objects = new HashSet<>();
-        final Set<Element> types = document.select("dl > dt > a").stream()
+        final Set<Map.Entry<String, String>> types = document.select("dl > dt > a").stream()
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
+                .map(element -> Map.entry(element.absUrl("href"), element.attr("href")))
                 .collect(Collectors.toSet());
 
         LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
 
         final AtomicInteger i = new AtomicInteger();
         final AtomicInteger previousPercentage = new AtomicInteger();
-        types.parallelStream().forEach(url -> {
+        types.parallelStream().forEach(entry -> {
             synchronized (i) {
                 final int percentage = (int) ((100D / types.size()) * i.getAndIncrement());
 
@@ -81,13 +82,13 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 }
             }
 
-            final Document page = connect(url.absUrl("href"));
+            final Document page = connect(entry.getKey());
 
             if (page == null) {
                 return;
             }
 
-            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + url.attr("href")));
+            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue()));
         });
 
         final Map<String, DocumentedObject> map = new HashMap<>();
