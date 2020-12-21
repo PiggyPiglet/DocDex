@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,7 +73,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
         final AtomicInteger i = new AtomicInteger();
         final AtomicInteger previousPercentage = new AtomicInteger();
-        types.parallelStream().forEach(entry -> {
+        types.parallelStream().forEach(completesExceptionally(entry -> {
             synchronized (i) {
                 final int percentage = (int) ((100D / types.size()) * i.getAndIncrement());
 
@@ -89,7 +90,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
             }
 
             objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue()));
-        });
+        }));
 
         final Map<String, DocumentedObject> map = new HashMap<>();
 
@@ -115,15 +116,15 @@ public final class WebCrawlPopulator implements IndexPopulator {
             }
 
             getChildren(map, type).forEach(heir ->
-                ((TypeMetadata) type.getMetadata()).getMethods().stream()
-                        .map(String::toLowerCase)
-                        .map(map::get)
-                        .forEach(method -> {
-                            final String addendum = '#' + method.getName().toLowerCase();
+                    ((TypeMetadata) type.getMetadata()).getMethods().stream()
+                            .map(String::toLowerCase)
+                            .map(map::get)
+                            .forEach(method -> {
+                                final String addendum = '#' + method.getName().toLowerCase();
 
-                            map.put(DataUtils.getFqn(heir).toLowerCase() + addendum, method);
-                            map.put(DataUtils.getName(heir).toLowerCase() + addendum, method);
-                        })
+                                map.put(DataUtils.getFqn(heir).toLowerCase() + addendum, method);
+                                map.put(DataUtils.getName(heir).toLowerCase() + addendum, method);
+                            })
             );
         }
 
@@ -172,5 +173,16 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 .map(map::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
+    }
+
+    @NotNull
+    private static <T> Consumer<T> completesExceptionally(@NotNull final Consumer<T> function) {
+        return (t) -> {
+            try {
+                function.accept(t);
+            } catch (Exception e) {
+                LOGGER.error("", e);
+            }
+        };
     }
 }

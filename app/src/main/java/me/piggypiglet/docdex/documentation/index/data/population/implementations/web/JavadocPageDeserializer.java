@@ -68,8 +68,8 @@ public final class JavadocPageDeserializer {
                     .forEach(element -> {
                         final String key = OLD_DETAIL_HEADERS.get(element.text().toLowerCase());
 
-                        element.parent().select("ul").forEach(ul ->
-                                detailElements.put(key, Map.entry(link + '#' + ul.previousElementSibling().attr("name"), ul.selectFirst("li.blockList")))
+                        element.parent().select("ul.blockList,ul.blockListLast").forEach(ul ->
+                            detailElements.put(key, Map.entry(link + '#' + ul.previousElementSibling().attr("name"), ul.selectFirst("li.blockList")))
                         );
                     });
         } else {
