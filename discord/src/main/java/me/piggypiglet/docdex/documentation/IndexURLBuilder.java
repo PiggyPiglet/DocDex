@@ -6,24 +6,25 @@ import org.jetbrains.annotations.NotNull;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class URLBuilder {
+public final class IndexURLBuilder {
     boolean start = true;
-    private final StringBuilder builder = new StringBuilder();
+    private final StringBuilder builder = new StringBuilder()
+            .append("/index");
 
     @NotNull
-    public URLBuilder javadoc(@NotNull final String value) {
+    public IndexURLBuilder javadoc(@NotNull final String value) {
         builder.append(delimiter()).append("javadoc=").append(value);
         return this;
     }
 
     @NotNull
-    public URLBuilder query(@NotNull final String value) {
+    public IndexURLBuilder query(@NotNull final String value) {
         builder.append(delimiter()).append("query=").append(formatQuery(value));
         return this;
     }
 
     @NotNull
-    public URLBuilder limit(final int value) {
+    public IndexURLBuilder limit(final int value) {
         builder.append(delimiter()).append("limit=").append(value);
         return this;
     }

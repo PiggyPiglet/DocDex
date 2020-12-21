@@ -18,6 +18,11 @@ public final class DeserializationUtils {
 
     @NotNull
     public static String generateFqn(@NotNull final Element element) {
-        return ANCHOR_TITLE_PACKAGE_DELIMITER.split(element.attr("title"))[1] + '.' + element.text();
+        try {
+            return ANCHOR_TITLE_PACKAGE_DELIMITER.split(element.attr("title"))[1] + '.' + element.text();
+        } catch (Exception e) {
+            System.out.println(element);
+            throw new RuntimeException(e);
+        }
     }
 }

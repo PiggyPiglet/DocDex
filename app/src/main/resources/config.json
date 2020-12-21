@@ -12,6 +12,11 @@
 
   "javadocs": [
     {
+      "names": ["jda"],
+      "link": "http://localhost/docs/jda",
+      "actual_link": "https://ci.dv8tion.net/job/JDA/javadoc"
+    },
+    {
       "names": ["1.16.4"],
       "link": "http://localhost/docs/1.16.4",
       "actual_link": "https://hub.spigotmc.org/javadocs/spigot"

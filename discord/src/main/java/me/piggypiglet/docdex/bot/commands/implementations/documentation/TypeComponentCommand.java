@@ -52,6 +52,11 @@ public final class TypeComponentCommand extends DocumentationCommand {
                 .collect(Collectors.toList());
         final MessageChannel channel = message.getChannel();
 
+        if (pages.size() > 9) {
+            channel.sendMessage("There are too many " + component.getFormattedName().toLowerCase().replace(":", "") + " to display in a paginated message. Please refer to the web page: <" + object.getLink() + '>').queue();
+            return;
+        }
+
         if (pages.size() == 1) {
             channel.sendMessage(pages.get(0)).queue();
             return;

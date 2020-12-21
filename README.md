@@ -52,5 +52,6 @@ java -Xmx1G -jar bot.jar
 ```
 On first run, a config will generate, and the application will probably spew a few errors. Populate the config with your token, along with your docdex link, and if you wish to limit certain commands to particular channels, you can do so via the config. The default prefix is `d;`, and you should familiarise yourself with the commands which are accessible via `d;help`.
 
+Quick Note: Paginations will cease to function after 15 minutes with no activity. i.e. if someone hasn't reacted to a pagination for 15 minutes, the pagination will no longer work.
 ## Contact
 Join either [HelpChat](https://helpch.at/discord), or my personal [discord](https://piggypiglet.me/discord).

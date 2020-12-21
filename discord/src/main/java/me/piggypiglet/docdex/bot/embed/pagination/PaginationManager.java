@@ -6,10 +6,12 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -17,7 +19,10 @@ import java.util.Map;
 // ------------------------------
 @Singleton
 public final class PaginationManager {
-    private final Map<String, Map<EmoteWrapper, MessageEmbed>> paginatedMessages = new HashMap<>();
+    private final Map<String, Map<EmoteWrapper, MessageEmbed>> paginatedMessages = ExpiringMap.builder()
+            .expiration(15, TimeUnit.MINUTES)
+            .expirationPolicy(ExpirationPolicy.ACCESSED)
+            .build();
 
     @NotNull
     public Map<String, Map<EmoteWrapper, MessageEmbed>> getPaginatedMessages() {

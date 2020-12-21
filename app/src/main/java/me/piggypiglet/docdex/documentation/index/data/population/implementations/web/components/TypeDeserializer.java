@@ -58,6 +58,7 @@ public final class TypeDeserializer {
                 .map(elements -> elements.select("a"))
                 .stream()
                 .flatMap(Collection::stream)
+                .filter(element -> element.text().startsWith("@"))
                 .map(element -> element.text(element.text().substring(1)))
                 .map(element -> '@' + DeserializationUtils.generateFqn(element))
                 .forEach(builder::annotations);

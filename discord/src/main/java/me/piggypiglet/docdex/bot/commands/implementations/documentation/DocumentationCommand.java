@@ -7,7 +7,7 @@ import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bot.commands.JDACommand;
 import me.piggypiglet.docdex.bot.embed.documentation.SimpleObjectSerializer;
 import me.piggypiglet.docdex.config.Config;
-import me.piggypiglet.docdex.documentation.URLBuilder;
+import me.piggypiglet.docdex.documentation.IndexURLBuilder;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -63,12 +63,12 @@ public abstract class DocumentationCommand extends JDACommand {
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
-            queueAndDelete(channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_# `"));
+            channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_# `").queue();
             return;
         }
 
         if (args.length == 0 || args[0].isBlank()) {
-            queueAndDelete(channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit]"));
+            channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit/$(first result)]").queue();
             return;
         }
 
@@ -109,7 +109,7 @@ public abstract class DocumentationCommand extends JDACommand {
             query = args[0];
         }
 
-        final URLBuilder urlBuilder = new URLBuilder()
+        final IndexURLBuilder urlBuilder = new IndexURLBuilder()
                 .javadoc(javadoc)
                 .query(query);
 
