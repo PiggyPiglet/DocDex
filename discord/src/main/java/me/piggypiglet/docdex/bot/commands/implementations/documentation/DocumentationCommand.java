@@ -87,9 +87,9 @@ public abstract class DocumentationCommand extends JDACommand {
             if (limitArg != null) {
                 if (limitArg.equals("$")) {
                     returnClosest.set(true);
+                } else {
+                    limit.set(Integer.parseInt(limitArg));
                 }
-
-                limit.set(Integer.parseInt(limitArg));
             }
         } catch (Exception e) {}
 
@@ -97,7 +97,7 @@ public abstract class DocumentationCommand extends JDACommand {
         final String query;
 
         if (args.length >= 2) {
-            if (limit.get() != -1) {
+            if (limit.get() != -1 || returnClosest.get()) {
                 javadoc = config.getDefaultJavadoc();
                 query = args[0];
             } else {
