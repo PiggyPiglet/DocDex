@@ -86,9 +86,11 @@ public final class JavadocsCommand extends JDACommand {
 
     @NotNull
     private static String format(@NotNull final List<String> strings) {
-        if (strings.size() == 10) {
+        if (strings.size() <= 10) {
             return String.join("\n", strings);
         }
+
+        System.out.println(strings.size());
 
         final int length = strings.stream()
                 .map(String::length)
