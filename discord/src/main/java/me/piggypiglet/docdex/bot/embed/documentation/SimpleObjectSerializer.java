@@ -127,7 +127,7 @@ public final class SimpleObjectSerializer {
 
     @NotNull
     private static String annotationsAndModifiers(@NotNull final DocumentedObject object) {
-        return (object.getAnnotations().isEmpty() ? "" : String.join(" ", object.getAnnotations()) + '\n') +
+        return (object.getAnnotations().isEmpty() ? "" : object.getAnnotations().stream().map(SimpleObjectSerializer::getName).collect(Collectors.joining(", ")) + '\n') +
                 (object.getModifiers().isEmpty() ? "" : String.join(" ", object.getModifiers()) + ' ');
     }
 
