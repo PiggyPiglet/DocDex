@@ -17,3 +17,7 @@ dependencies {
         exclude module: 'opus-java'
     }
 }
+
+shadowJar {
+    archiveFileName.set("bot.jar");
+}

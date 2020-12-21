@@ -16,5 +16,5 @@ dependencies {
 }
 
 shadowJar {
-    archiveFileName.set("DocDex.jar")
+    archiveFileName.set("docdex.jar")
 }

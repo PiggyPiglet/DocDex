@@ -44,7 +44,6 @@ public final class JDACommandHandler {
             return;
         }
 
-        message.delete().queue();
         final AtomicReference<String> match = new AtomicReference<>("");
 
         final JDACommand command = commands.stream()
@@ -66,6 +65,7 @@ public final class JDACommandHandler {
             final String id = message.getChannel().getId();
 
             if (!(allowed.isEmpty() || allowed.contains(id)) || (!disallowed.isEmpty() && disallowed.contains(id))) {
+                message.delete().queue();
                 message.getChannel().sendMessage(rule.getRecommendation()).queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
             }
