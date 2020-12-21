@@ -6,6 +6,8 @@ import me.piggypiglet.docdex.config.deserialization.UrlDeserializer;
 import me.piggypiglet.docdex.file.annotations.File;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
@@ -21,6 +23,7 @@ public final class Config {
     @JsonAdapter(UrlDeserializer.class) private String url;
     private String defaultJavadoc;
     private Presence presence;
+    private Map<String, CommandRule> commands;
 
     @NotNull
     public String getToken() {
@@ -45,5 +48,10 @@ public final class Config {
     @NotNull
     public Presence getPresence() {
         return presence;
+    }
+
+    @NotNull
+    public Map<String, CommandRule> getCommands() {
+        return commands;
     }
 }

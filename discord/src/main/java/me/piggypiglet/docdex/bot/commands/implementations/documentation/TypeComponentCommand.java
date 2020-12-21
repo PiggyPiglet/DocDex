@@ -34,8 +34,8 @@ public final class TypeComponentCommand extends DocumentationCommand {
                         .map(TypeComponents::toString)
                         .map(String::toLowerCase)
                         .collect(Collectors.toSet()),
-                "get information on a specific component of a type.",
-                config.getUrl(), config.getDefaultJavadoc()
+                "Get information on a specific component of a type.",
+                config
         );
         this.upperPrefix = config.getPrefix().toUpperCase();
         this.paginationManager = paginationManager;

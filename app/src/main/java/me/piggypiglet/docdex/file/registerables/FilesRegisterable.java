@@ -24,7 +24,7 @@ public final class FilesRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         for (final Class<?> clazz : fileClasses) {
             final File data = clazz.getAnnotation(File.class);
             fileManager.loadFile(clazz, data.internalPath(), data.externalPath());

@@ -12,7 +12,7 @@ public final class StartMessageRegisterable extends Registerable {
     private static final Logger LOGGER = LoggerFactory.getLogger("DocDex");
 
     @Override
-    protected void execute() {
+    public void execute() {
         LOGGER.info("DocDex Bot initialization process complete.");
     }
 }

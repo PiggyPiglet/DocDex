@@ -7,7 +7,6 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.bot.commands.JDACommand;
-import me.piggypiglet.docdex.bot.commands.JDACommandHandler;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +30,7 @@ public final class JDACommandsRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute(final @NotNull Injector injector) {
+    public void execute(@NotNull final Injector injector) {
         addBinding(new TypeLiteral<Set<JDACommand>>() {}, COMMANDS,
                 new HashSet<>(scanner.getClasses(Rules.builder().typeExtends(JDACommand.class).disallowMutableClasses().build())
                         .map(injector::getInstance)

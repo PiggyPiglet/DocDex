@@ -25,7 +25,7 @@ public final class ServerRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         addBinding(NanoHTTPD.class, server);
 
         try {

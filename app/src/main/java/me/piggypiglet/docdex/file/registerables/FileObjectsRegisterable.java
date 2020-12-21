@@ -31,7 +31,7 @@ public final class FileObjectsRegisterable extends Registerable {
 
     @SuppressWarnings("Convert2Diamond")
     @Override
-    protected void execute(@NotNull final Injector injector) {
+    public void execute(@NotNull final Injector injector) {
         final Map<Class<?>, Object> fileObjects = scanner.getClasses(Rules.builder()
                 .hasAnnotation(File.class)
                 .build()).collect(Collectors.toMap(clazz -> clazz, injector::getInstance));

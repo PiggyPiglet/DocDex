@@ -35,7 +35,7 @@ public final class MongoRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute(@NotNull final Injector injector) {
+    public void execute(@NotNull final Injector injector) {
         final Set<Codec<?>> codecs = scanner.getClasses(Rules.builder().typeExtends(Codec.class).disallowMutableClasses().build())
                 .map(injector::getInstance)
                 .map(codec -> (Codec<?>) codec)

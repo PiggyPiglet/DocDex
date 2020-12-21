@@ -30,7 +30,7 @@ public final class IndexPopulatorRegisterable extends Registerable {
 
     @SuppressWarnings({"Convert2Diamond"})
     @Override
-    protected void execute(final @NotNull Injector injector) {
+    public void execute(@NotNull final Injector injector) {
         addBinding(new TypeLiteral<Set<IndexPopulator>>() {}, POPULATORS,
                 scanner.getClasses(Rules.builder().typeExtends(IndexPopulator.class).disallowMutableClasses().build())
                         .map(injector::getInstance)

@@ -22,22 +22,18 @@ public abstract class JDACommand {
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
 
     private final Set<String> matches;
+    private final String usage;
     private final String description;
 
-    protected JDACommand(@NotNull final String @NotNull [] matches) {
-        this(matches, "");
+    protected JDACommand(@NotNull final String @NotNull [] matches, @NotNull final String usage,
+                         @NotNull final String description) {
+        this(Arrays.stream(matches).collect(Collectors.toSet()), usage, description);
     }
 
-    protected JDACommand(@NotNull final String @NotNull [] matches, @NotNull final String description) {
-        this(Arrays.stream(matches).collect(Collectors.toSet()), description);
-    }
-
-    protected JDACommand(@NotNull final Set<String> matches) {
-        this(matches, "");
-    }
-
-    protected JDACommand(@NotNull final Set<String> matches, @NotNull final String description) {
+    protected JDACommand(@NotNull final Set<String> matches, @NotNull final String usage,
+                         @NotNull final String description) {
         this.matches = matches;
+        this.usage = usage;
         this.description = description;
     }
 
@@ -55,6 +51,11 @@ public abstract class JDACommand {
     @NotNull
     public Set<String> getMatches() {
         return matches;
+    }
+
+    @NotNull
+    public String getUsage() {
+        return usage;
     }
 
     @NotNull

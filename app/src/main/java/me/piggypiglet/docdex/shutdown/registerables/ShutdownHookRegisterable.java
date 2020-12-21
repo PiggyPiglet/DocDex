@@ -18,7 +18,7 @@ public final class ShutdownHookRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 }

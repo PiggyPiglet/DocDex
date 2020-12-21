@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bot.commands.JDACommand;
 import me.piggypiglet.docdex.bot.embed.documentation.SimpleObjectSerializer;
+import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.documentation.URLBuilder;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -23,6 +25,8 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,29 +43,17 @@ public abstract class DocumentationCommand extends JDACommand {
             .create();
     private static final Type OBJECT_LIST = Types.listOf(DocumentedObject.class);
 
-    private final String url;
-    private final String defaultJavadoc;
-
-    protected DocumentationCommand(@NotNull final String @NotNull [] matches, @NotNull final String url,
-                                   @NotNull final String defaultJavadoc) {
-        this(matches, "", url, defaultJavadoc);
-    }
+    private final Config config;
 
     protected DocumentationCommand(@NotNull final String @NotNull [] matches, @NotNull final String description,
-                                   @NotNull final String url, @NotNull final String defaultJavadoc) {
-        this(Arrays.stream(matches).collect(Collectors.toSet()), description, url, defaultJavadoc);
-    }
-
-    protected DocumentationCommand(@NotNull final Set<String> matches, @NotNull final String url,
-                                   @NotNull final String defaultJavadoc) {
-        this(matches, "", url, defaultJavadoc);
+                                   @NotNull final Config config) {
+        this(Arrays.stream(matches).collect(Collectors.toSet()), description, config);
     }
 
     protected DocumentationCommand(@NotNull final Set<String> matches, @NotNull final String description,
-                                   @NotNull final String url, @NotNull final String defaultJavadoc) {
-        super(matches, description);
-        this.url = url;
-        this.defaultJavadoc = defaultJavadoc;
+                                   @NotNull final Config config) {
+        super(matches, "[javadoc] <query> [limit/$(first result)]", description);
+        this.config = config;
     }
 
     @Override
@@ -71,23 +63,33 @@ public abstract class DocumentationCommand extends JDACommand {
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
-            channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_# `")
-                    .queue();
+            queueAndDelete(channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_# `"));
             return;
         }
 
         if (args.length == 0 || args[0].isBlank()) {
-            channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit]").queue();
+            queueAndDelete(channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit]"));
             return;
         }
 
         final AtomicInteger limit = new AtomicInteger(-1);
+        final AtomicBoolean returnClosest = new AtomicBoolean();
 
         try {
+            String limitArg = null;
+
             if (args.length > 2) {
-                limit.set(Integer.parseInt(args[2]));
+                limitArg = args[2];
             } else if (args.length == 2) {
-                limit.set(Integer.parseInt(args[1]));
+                limitArg = args[1];
+            }
+
+            if (limitArg != null) {
+                if (limitArg.equals("$")) {
+                    returnClosest.set(true);
+                }
+
+                limit.set(Integer.parseInt(limitArg));
             }
         } catch (Exception e) {}
 
@@ -96,14 +98,14 @@ public abstract class DocumentationCommand extends JDACommand {
 
         if (args.length >= 2) {
             if (limit.get() != -1) {
-                javadoc = defaultJavadoc;
+                javadoc = config.getDefaultJavadoc();
                 query = args[0];
             } else {
                 javadoc = args[0];
                 query = args[1];
             }
         } else {
-            javadoc = defaultJavadoc;
+            javadoc = config.getDefaultJavadoc();
             query = args[0];
         }
 
@@ -115,7 +117,7 @@ public abstract class DocumentationCommand extends JDACommand {
             urlBuilder.limit(limit.get());
         }
 
-        final HttpRequest request = HttpRequest.newBuilder(URI.create(url + urlBuilder.build()))
+        final HttpRequest request = HttpRequest.newBuilder(URI.create(config.getUrl() + urlBuilder.build()))
                 .build();
         CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
@@ -127,9 +129,9 @@ public abstract class DocumentationCommand extends JDACommand {
 
                     final List<DocumentedObject> objects = GSON.fromJson(json, OBJECT_LIST);
 
-                    if (objects.size() == 1 && limit.get() != 1) {
+                    if ((objects.size() == 1 && limit.get() != 1) || returnClosest.get()) {
                         final DocumentedObject object = objects.get(0);
-                        execute(message, SimpleObjectSerializer.toEmbed(javadoc, object), object);
+                        execute(message, SimpleObjectSerializer.toEmbed(user, javadoc, object), object);
                         return;
                     }
 
@@ -147,4 +149,8 @@ public abstract class DocumentationCommand extends JDACommand {
 
     protected abstract void execute(final @NotNull Message message, @NotNull final EmbedBuilder defaultEmbed,
                                     final @NotNull DocumentedObject object);
+
+    private static void queueAndDelete(@NotNull final MessageAction message) {
+        message.queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+    }
 }

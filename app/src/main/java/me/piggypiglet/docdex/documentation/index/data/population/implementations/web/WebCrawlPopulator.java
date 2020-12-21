@@ -63,9 +63,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         final Set<DocumentedObject> objects = new HashSet<>();
-        final Set<String> types = document.select("dl > dt > a").stream()
+        final Set<Element> types = document.select("dl > dt > a").stream()
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
-                .map(element -> element.absUrl("href"))
                 .collect(Collectors.toSet());
 
         LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
@@ -82,13 +81,13 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 }
             }
 
-            final Document page = connect(url);
+            final Document page = connect(url.absUrl("href"));
 
             if (page == null) {
                 return;
             }
 
-            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink()));
+            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + url.attr("href")));
         });
 
         final Map<String, DocumentedObject> map = new HashMap<>();

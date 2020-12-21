@@ -30,7 +30,7 @@ public final class RoutesRegisterable extends Registerable {
 
     @SuppressWarnings({"Convert2Diamond"})
     @Override
-    protected void execute(@NotNull final Injector injector) {
+    public void execute(@NotNull final Injector injector) {
         addBinding(new TypeLiteral<Set<Route>>() {}, ROUTES,
                 scanner.getClasses(Rules.builder().typeExtends(Route.class).disallowMutableClasses().build())
                         .map(injector::getInstance)

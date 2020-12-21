@@ -23,7 +23,7 @@ public final class ConsoleCommandListenerRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         EXECUTOR.execute(listener);
     }
 }

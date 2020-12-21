@@ -56,7 +56,7 @@ public final class IndexPopulationRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         LOGGER.info("Attempting to index " + javadocs.size() + " javadoc(s).");
 
         final Set<CompletableFuture<Void>> futures = new HashSet<>();

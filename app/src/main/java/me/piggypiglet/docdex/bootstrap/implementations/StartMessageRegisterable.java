@@ -22,7 +22,7 @@ public final class StartMessageRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         indexPopulationRegisterable.getCompleted().whenComplete((v, t) -> LOGGER.info("DocDex initialization process complete."));
     }
 }

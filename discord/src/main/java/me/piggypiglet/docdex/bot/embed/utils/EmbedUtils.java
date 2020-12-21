@@ -13,6 +13,9 @@ import java.util.function.Function;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class EmbedUtils {
+    public static final int COLOUR = 199061147;
+    public static final String ICON = "https://cdn.piggypiglet.me/docdex/avatar.png";
+
     private static final Set<EmbedFunction<?>> EMBED_FUNCTIONS = Set.of(
             function(MessageEmbed::getAuthor, (builder, author) -> builder.setAuthor(author.getName(), author.getUrl(), author.getIconUrl())),
             function(MessageEmbed::getColor, EmbedBuilder::setColor),

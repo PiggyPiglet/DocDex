@@ -30,4 +30,13 @@ public final class Presence {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "Presence{" +
+                "status=" + status +
+                ", activity=" + activity +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

@@ -18,7 +18,7 @@ import java.util.Set;
 public final class SimpleCommand extends DocumentationCommand {
     @Inject
     public SimpleCommand(@NotNull final Config config) {
-        super(Set.of("doc"), "search a javadoc", config.getUrl(), config.getDefaultJavadoc());
+        super(Set.of("doc"), "Search a javadoc.", config);
     }
 
     @Override

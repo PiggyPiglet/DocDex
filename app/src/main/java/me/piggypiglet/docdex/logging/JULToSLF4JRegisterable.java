@@ -9,7 +9,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 // ------------------------------
 public final class JULToSLF4JRegisterable extends Registerable {
     @Override
-    protected void execute() {
+    public void execute() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
     }

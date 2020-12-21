@@ -14,7 +14,7 @@
     {
       "names": ["1.16.4"],
       "link": "http://localhost/docs/1.16.4",
-      "actual_link": "https://helpch.at/docs/1.16.4"
+      "actual_link": "https://hub.spigotmc.org/javadocs/spigot"
     },
     {
       "names": ["1.16.3"],
@@ -30,7 +30,7 @@
       "names": ["1.16.1"],
       "link": "http://localhost/docs/1.16.1",
       "actual_link":  "https://helpch.at/docs/1.16.1"
-    }/*,
+    },
     {
       "names": ["1.15.2"],
       "link": "http://localhost/docs/1.15.2/overview-summary.html",
@@ -180,6 +180,6 @@
       "names": ["1.7.10"],
       "link": "http://localhost/docs/1.7.10/overview-summary.html",
       "actual_link": "https://helpch.at/docs/1.7.10"
-    }*/
+    }
   ]
 }

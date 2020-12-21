@@ -14,16 +14,17 @@ import org.jetbrains.annotations.NotNull;
 // ------------------------------
 public final class JDAPresenceRegisterable extends Registerable {
     private final JDA jda;
-    private final Presence presence;
+    private final Config config;
 
     @Inject
     public JDAPresenceRegisterable(@NotNull final JDA jda, @NotNull final Config config) {
         this.jda = jda;
-        this.presence = config.getPresence();
+        this.config = config;
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
+        final Presence presence = config.getPresence();
         jda.getPresence().setPresence(presence.getStatus(), Activity.of(presence.getActivity(), presence.getMessage()));
     }
 }

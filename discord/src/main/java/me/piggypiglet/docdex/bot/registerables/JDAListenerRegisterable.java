@@ -24,7 +24,7 @@ public final class JDAListenerRegisterable extends Registerable {
     }
 
     @Override
-    protected void execute(final @NotNull Injector injector) {
+    public void execute(@NotNull final Injector injector) {
         scanner.getClasses(Rules.builder().typeExtends(ListenerAdapter.class).disallowMutableClasses().build())
                 .map(injector::getInstance)
                 .forEach(jda::addEventListener);

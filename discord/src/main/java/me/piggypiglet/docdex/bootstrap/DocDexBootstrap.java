@@ -30,10 +30,11 @@ public final class DocDexBootstrap {
             FileObjectsRegisterable.class,
             FilesRegisterable.class,
 
+            JDARegisterable.class,
+
             ConsoleCommandsRegisterable.class,
             ConsoleCommandListenerRegisterable.class,
 
-            JDARegisterable.class,
             JDAPresenceRegisterable.class,
             JDACommandsRegisterable.class,
             JDAListenerRegisterable.class,

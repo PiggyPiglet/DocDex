@@ -21,9 +21,14 @@ public abstract class Registerable {
     private final Set<Binding<?>> bindings = new HashSet<>();
     private final Set<Class<?>> staticInjections = new HashSet<>();
 
-    protected void execute() {}
+    public void execute() {}
 
-    protected void execute(@NotNull final Injector injector) {}
+    public void execute(@NotNull final Injector injector) {}
+
+    public final void run(@NotNull final Injector injector) {
+        execute();
+        execute(injector);
+    }
 
     protected <T> void addBinding(@NotNull final Class<? super T> type, @NotNull final T instance) {
         addBinding(Key.get(type), instance);
@@ -59,11 +64,6 @@ public abstract class Registerable {
 
     protected void requestStaticInjections(@NotNull final Class<?>@NotNull... classes) {
         staticInjections.addAll(Arrays.asList(classes));
-    }
-
-    public void run(@NotNull final Injector injector) {
-        execute();
-        execute(injector);
     }
 
     @NotNull

@@ -26,7 +26,7 @@ public final class JDARegisterable extends Registerable {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         final JDA jda;
 
         try {

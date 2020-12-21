@@ -47,13 +47,11 @@ public final class JavadocPageDeserializer {
 
     @NotNull
     public static Set<DocumentedObject> deserialize(@NotNull final Document document, @NotNull final String link) {
-        // todo: this doesn't work
-        final String uri = link + '/' + document.baseUri().replace(".html", "");
         final Set<DocumentedObject> objects = new HashSet<>();
 
         final DocumentedObject type = TypeDeserializer.deserialize(
                 document.selectFirst(".contentContainer > .description"),
-                uri,
+                link,
                 document.selectFirst(".header > .subTitle")
         );
         objects.add(type);
@@ -71,13 +69,13 @@ public final class JavadocPageDeserializer {
                         final String key = OLD_DETAIL_HEADERS.get(element.text().toLowerCase());
 
                         element.parent().select("ul").forEach(ul ->
-                                detailElements.put(key, Map.entry(ul.previousElementSibling().attr("name"), ul.selectFirst("li.blockList")))
+                                detailElements.put(key, Map.entry(link + '#' + ul.previousElementSibling().attr("name"), ul.selectFirst("li.blockList")))
                         );
                     });
         } else {
             NEW_DETAIL_CLASSES.forEach((clazz, key) ->
                     document.select(clazz + " ul.blockList > li.blockList").forEach(block ->
-                            detailElements.put(key, Map.entry(uri + '#' + block.selectFirst(".detail > h3 > a").id(), block))
+                            detailElements.put(key, Map.entry(link + '#' + block.selectFirst(".detail > h3 > a").id(), block))
                     )
             );
         }
