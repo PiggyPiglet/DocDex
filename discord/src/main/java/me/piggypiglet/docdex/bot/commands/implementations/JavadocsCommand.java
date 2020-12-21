@@ -90,8 +90,6 @@ public final class JavadocsCommand extends JDACommand {
             return String.join("\n", strings);
         }
 
-        System.out.println(strings.size());
-
         final int length = strings.stream()
                 .map(String::length)
                 .max(Comparator.comparingInt(i -> i))
