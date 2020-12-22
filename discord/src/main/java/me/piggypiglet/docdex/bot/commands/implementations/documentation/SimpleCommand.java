@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Set;
 
 // ------------------------------
@@ -28,7 +27,7 @@ public final class SimpleCommand extends DocumentationCommand {
                            final @NotNull DocumentedObject object) {
         final MessageEmbed embed = defaultEmbed.build();
 
-        if (Objects.requireNonNull(embed.getDescription()).length() > 900) {
+        if (object.getDescription().length() > 900) {
             message.getChannel().sendMessage("This object is too big to be viewed in discord, please refer to it's javadoc page: " + object.getLink()).queue();
             return;
         }
