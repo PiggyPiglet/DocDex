@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public abstract class DocumentationCommand extends JDACommand {
-    private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_# ]");
+    private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\- ]");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -63,7 +63,7 @@ public abstract class DocumentationCommand extends JDACommand {
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
-            channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_# `").queue();
+            channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_#\\- `").queue();
             return;
         }
 

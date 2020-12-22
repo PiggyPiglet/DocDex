@@ -135,6 +135,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                                 }
                             })*/
                             .map(map::get)
+                            //todo: something is null and I don't know what yet
                             .filter(Objects::nonNull)
                             .forEach(method -> {
                                 final String addendum = '#' + method.getName().toLowerCase();
