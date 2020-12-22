@@ -13,7 +13,7 @@
   "javadocs": [
     {
       "names": ["jdk"],
-      "link": "http://localhost/docs/jdk/api/overview-summary.html",
+      "link": "http://localhost/docs/jdk/overview-summary.html",
       "actual_link": "https://docs.oracle.com/javase/8/docs/api"
     },
     {
