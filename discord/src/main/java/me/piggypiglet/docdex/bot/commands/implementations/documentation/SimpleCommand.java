@@ -6,8 +6,10 @@ import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.scanning.annotations.Hidden;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 
 // ------------------------------
@@ -24,6 +26,13 @@ public final class SimpleCommand extends DocumentationCommand {
     @Override
     protected void execute(final @NotNull Message message, @NotNull final EmbedBuilder defaultEmbed,
                            final @NotNull DocumentedObject object) {
-        message.getChannel().sendMessage(defaultEmbed.build()).queue();
+        final MessageEmbed embed = defaultEmbed.build();
+
+        if (Objects.requireNonNull(embed.getDescription()).length() > 900) {
+            message.getChannel().sendMessage("This object is too big to be viewed in discord, please refer to it's javadoc page: " + object.getLink()).queue();
+            return;
+        }
+
+        message.getChannel().sendMessage(embed).queue();
     }
 }
