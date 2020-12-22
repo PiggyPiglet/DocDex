@@ -6,6 +6,9 @@ mainClassName = 'me.piggypiglet.docdex.bootstrap.DocDexBootstrap'
 
 repositories {
     jcenter()
+    maven {
+        url = 'https://repo.aikar.co/content/groups/aikar'
+    }
 }
 
 dependencies {
@@ -17,6 +20,9 @@ dependencies {
         exclude module: 'opus-java'
     }
     implementation "net.jodah:expiringmap:0.5.9"
+    implementation "com.zaxxer:HikariCP:3.4.5"
+    implementation "co.aikar:idb-core:1.0.0-SNAPSHOT"
+    implementation "mysql:mysql-connector-java:8.0.22"
 }
 
 shadowJar {

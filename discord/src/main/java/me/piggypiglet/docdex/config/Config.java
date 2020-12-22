@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.config;
 
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.deserialization.UrlDeserializer;
 import me.piggypiglet.docdex.file.annotations.File;
@@ -23,6 +24,8 @@ public final class Config {
     @JsonAdapter(UrlDeserializer.class) private String url;
     private String defaultJavadoc;
     private Presence presence;
+    @SerializedName("public") private boolean isPublic;
+    private MysqlConfig mysql;
     private Map<String, CommandRule> commands;
 
     @NotNull
@@ -48,6 +51,15 @@ public final class Config {
     @NotNull
     public Presence getPresence() {
         return presence;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    @NotNull
+    public MysqlConfig getMysql() {
+        return mysql;
     }
 
     @NotNull

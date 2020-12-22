@@ -11,6 +11,7 @@ import me.piggypiglet.docdex.bot.registerables.JDAPresenceRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDARegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
+import me.piggypiglet.docdex.db.registerables.MysqlRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
 import me.piggypiglet.docdex.guice.ExceptionalInjector;
@@ -31,6 +32,8 @@ public final class DocDexBootstrap {
             FilesRegisterable.class,
 
             JDARegisterable.class,
+
+            MysqlRegisterable.class,
 
             ConsoleCommandsRegisterable.class,
             ConsoleCommandListenerRegisterable.class,

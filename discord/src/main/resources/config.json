@@ -3,6 +3,18 @@
   "prefix": "d;",
   "url": "https://docdex.helpch.at",
   "default_javadoc": "jdk",
+  "public": false,
+
+  "mysql": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "username": "docdex",
+    "password": "1234",
+
+    "database": "docdex",
+    "table_prefix": "docdex_",
+    "pool_size": 10
+  },
 
   "presence": {
     "status": "online",

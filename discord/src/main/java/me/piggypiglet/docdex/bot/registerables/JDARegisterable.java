@@ -32,7 +32,7 @@ public final class JDARegisterable extends Registerable {
         try {
             jda = JDABuilder.createDefault(config.getToken()).build();
         } catch (LoginException e) {
-            LOGGER.error("Something went wrong when logging into JDA", e);
+            LOGGER.error("Something went wrong when logging into JDA, perhaps you haven't populated the config.", e);
             System.exit(0);
             return;
         }
