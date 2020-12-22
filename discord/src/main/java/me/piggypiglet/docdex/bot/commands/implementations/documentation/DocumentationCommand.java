@@ -110,7 +110,7 @@ public abstract class DocumentationCommand extends JDACommand {
         }
 
         final IndexURLBuilder urlBuilder = new IndexURLBuilder()
-                .javadoc(javadoc)
+                .javadoc(javadoc.toLowerCase())
                 .query(query);
 
         if (limit.get() != -1) {
