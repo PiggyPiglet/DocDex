@@ -1,7 +1,6 @@
 {
   "host": "0.0.0.0",
   "port": 8800,
-  "threads": 8,
 
   "database": {
     "host": "127.0.0.1",
@@ -12,6 +11,11 @@
   },
 
   "javadocs": [
+    {
+      "names": ["jdk"],
+      "link": "http://localhost/docs/jdk/api/overview-summary.html",
+      "actual_link": "https://docs.oracle.com/javase/8/docs/api"
+    },
     {
       "names": ["jda"],
       "link": "http://localhost/docs/jda",
@@ -186,6 +190,26 @@
       "names": ["1.7.10"],
       "link": "http://localhost/docs/1.7.10/overview-summary.html",
       "actual_link": "https://helpch.at/docs/1.7.10"
+    },
+    {
+      "names": ["1.7.9"],
+      "link": "http://localhost/docs/1.7.9/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/1.7.9"
+    },
+    {
+      "names": ["1.7.8"],
+      "link": "http://localhost/docs/1.7.8/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/1.7.8"
+    },
+    {
+      "names": ["1.7.5"],
+      "link": "http://localhost/docs/1.7.5/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/1.7.5"
+    },
+    {
+      "names": ["1.7.2"],
+      "link": "http://localhost/docs/1.7.2/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/1.7.2"
     }
   ]
 }

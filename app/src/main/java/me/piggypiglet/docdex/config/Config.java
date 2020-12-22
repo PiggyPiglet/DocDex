@@ -20,7 +20,6 @@ public final class Config {
     private int port;
     private MongoConfig database;
     private Set<Javadoc> javadocs;
-    private int threads;
 
     @NotNull
     public String getHost() {
@@ -39,9 +38,5 @@ public final class Config {
     @NotNull
     public Set<Javadoc> getJavadocs() {
         return javadocs;
-    }
-
-    public int getThreads() {
-        return threads;
     }
 }

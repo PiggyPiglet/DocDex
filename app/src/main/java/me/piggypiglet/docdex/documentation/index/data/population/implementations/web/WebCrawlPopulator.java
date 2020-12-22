@@ -129,6 +129,11 @@ public final class WebCrawlPopulator implements IndexPopulator {
             getChildren(map, type).forEach(heir ->
                     ((TypeMetadata) type.getMetadata()).getMethods().stream()
                             .map(String::toLowerCase)
+                            .peek(method -> {
+                                if (map.get(method) == null) {
+                                    System.out.println(type.getName() + " - " + heir + " - " + method);
+                                }
+                            })
                             .map(map::get)
                             .forEach(method -> {
                                 final String addendum = '#' + method.getName().toLowerCase();
