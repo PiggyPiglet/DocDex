@@ -52,7 +52,7 @@ public final class MethodDeserializer {
                 final String text = element.text();
 
                 if (tag.equalsIgnoreCase("dt")) {
-                    dd = new HashSet<>();
+                    dd = new LinkedHashSet<>();
                     meta.put(text, dd);
                 }
 
@@ -66,7 +66,8 @@ public final class MethodDeserializer {
                     case "parameters:":
                         builder.parameterDescriptions(content.stream()
                                 .map(CONTENT_DELIMITER::split)
-                                .collect(Collectors.toMap(array -> array[0], array -> array.length > 1 ? array[1] : "")));
+                                .collect(Collectors.toMap(array -> array[0], array -> array.length > 1 ? array[1] : "",
+                                        (o1, o2) -> o1, LinkedHashMap::new)));
                         break;
 
                     case "throws:":

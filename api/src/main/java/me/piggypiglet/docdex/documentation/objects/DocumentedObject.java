@@ -136,7 +136,7 @@ public final class DocumentedObject {
         private final Set<String> annotations = new HashSet<>();
         private boolean deprecated = false;
         private String deprecationMessage = "";
-        private final Set<String> modifiers = new HashSet<>();
+        private final Set<String> modifiers = new LinkedHashSet<>();
 
         protected Builder() {}
 

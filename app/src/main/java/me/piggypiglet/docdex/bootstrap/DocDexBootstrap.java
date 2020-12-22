@@ -5,6 +5,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.bootstrap.implementations.StartMessageRegisterable;
+import me.piggypiglet.docdex.bootstrap.implementations.StartupTimeRegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
 import me.piggypiglet.docdex.db.registerables.MongoRegisterable;
@@ -30,6 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
 // ------------------------------
 public final class DocDexBootstrap {
     private static final List<Class<? extends Registerable>> REGISTERABLES = Lists.newArrayList(
+            StartupTimeRegisterable.class,
+
             JULToSLF4JRegisterable.class,
 
             FileObjectsRegisterable.class,

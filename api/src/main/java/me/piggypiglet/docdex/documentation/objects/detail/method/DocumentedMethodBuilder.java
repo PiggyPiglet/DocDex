@@ -13,8 +13,8 @@ import java.util.*;
 public final class DocumentedMethodBuilder extends DocumentedObject.Builder<DocumentedMethodBuilder> implements DocumentedDetailBuilder<DocumentedMethodBuilder> {
     private String owner;
     private String returns = "";
-    private final Set<String> parameters = new HashSet<>();
-    private final Map<String, String> parameterDescriptions = new HashMap<>();
+    private final Set<String> parameters = new LinkedHashSet<>();
+    private final Map<String, String> parameterDescriptions = new LinkedHashMap<>();
     private String returnsDescription = "";
     private final Set<Map.Entry<String, String>> throwing = new HashSet<>();
 
@@ -34,6 +34,10 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
 
     @NotNull
     public DocumentedMethodBuilder parameters(@NotNull final String @NotNull ... values) {
+        if (owner.contains("UserManager") && getName().contains("modifyUser")) {
+            System.out.println(Arrays.toString(values));
+        }
+
         Collections.addAll(parameters, values);
         return this;
     }

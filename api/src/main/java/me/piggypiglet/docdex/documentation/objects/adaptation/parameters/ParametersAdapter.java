@@ -4,6 +4,7 @@ import com.google.gson.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,15 +19,16 @@ public final class ParametersAdapter implements JsonSerializer<Set<String>>, Jso
                                  @NotNull final JsonSerializationContext context) {
         return context.serialize(src.stream()
                 .map(string -> string.replace("$", "!"))
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
     @Override
     public Set<String> deserialize(@NotNull final JsonElement json, @NotNull final Type typeOfT,
                                    @NotNull final JsonDeserializationContext context) {
         return ((Set<String>) context.deserialize(json, typeOfT)).stream()
                 .map(string -> string.replace("!", "$"))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

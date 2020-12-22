@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -26,9 +27,10 @@ public final class SimpleObjectSerializer {
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 
-    private static final Map<String, Function<MethodMetadata, Set<Map.Entry<String, String>>>> METHOD_GETTERS = Map.of(
-            "Parameters:", metadata -> metadata.getParameterDescriptions().entrySet(),
-            "Throws:", MethodMetadata::getThrows
+    private static final Map<String, Function<MethodMetadata, String>> METHOD_GETTERS = Map.of(
+            "Returns:", MethodMetadata::getReturnsDescription,
+            "Parameters:", metadata -> formatEntrySet(metadata.getParameterDescriptions().entrySet()),
+            "Throws:", metadata -> formatEntrySet(metadata.getThrows())
     );
 
     private SimpleObjectSerializer() {
@@ -44,28 +46,29 @@ public final class SimpleObjectSerializer {
         builder.setDescription("```java\n" + generateSignature(object) + "```");
         builder.setFooter("Requested by: " + requester.getName() + " • " + javadoc);
 
-        GETTERS.forEach((key, getter) -> {
-            final String value = String.valueOf(getter.apply(object));
+        final Map<String, String> values = new LinkedHashMap<>();
 
-            if (!value.isBlank() && !value.equalsIgnoreCase("null")) {
+        GETTERS.forEach((key, getter) -> values.put(key, String.valueOf(getter.apply(object))));
+
+        if (object.getType() == DocumentedTypes.METHOD || object.getType() == DocumentedTypes.CONSTRUCTOR) {
+            METHOD_GETTERS.forEach((key, getter) -> values.put(key, getter.apply((MethodMetadata) object.getMetadata())));
+        }
+
+        values.forEach((key, value) -> {
+            if (!value.isBlank() && !value.equals("null")) {
                 builder.addField(key, value, false);
             }
         });
 
-        if (object.getType() == DocumentedTypes.METHOD || object.getType() == DocumentedTypes.CONSTRUCTOR) {
-            METHOD_GETTERS.forEach((key, getter) -> {
-                final String value = getter.apply((MethodMetadata) object.getMetadata()).stream()
-                        .filter(entry -> !entry.getValue().isBlank())
-                        .map(entry -> entry.getKey() + " - " + entry.getValue())
-                        .collect(Collectors.joining("\n"));
-
-                if (!value.isBlank()) {
-                    builder.addField(key, value, false);
-                }
-            });
-        }
-
         return builder;
+    }
+
+    @NotNull
+    private static String formatEntrySet(@NotNull final Set<Map.Entry<String, String>> set) {
+        return set.stream()
+                .filter(entry -> !entry.getValue().isBlank())
+                .map(entry -> entry.getKey() + " - " + entry.getValue())
+                .collect(Collectors.joining("\n"));
     }
 
     @NotNull
