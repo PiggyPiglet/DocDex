@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Singleton
 public final class IndexPopulationRegisterable extends Registerable {
     private static final double BYTE_PER_MB = 1_000_000;
-    private static final double MB_PER_DOC = 300;
+    private static final double MB_PER_DOC = 500;
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Indexer");
 
