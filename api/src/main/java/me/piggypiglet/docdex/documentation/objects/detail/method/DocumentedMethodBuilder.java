@@ -34,10 +34,6 @@ public final class DocumentedMethodBuilder extends DocumentedObject.Builder<Docu
 
     @NotNull
     public DocumentedMethodBuilder parameters(@NotNull final String @NotNull ... values) {
-        if (owner.contains("UserManager") && getName().contains("modifyUser")) {
-            System.out.println(Arrays.toString(values));
-        }
-
         Collections.addAll(parameters, values);
         return this;
     }

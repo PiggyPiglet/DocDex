@@ -23,12 +23,6 @@ public final class OldParameterDeserializer {
         Arrays.stream(LIST_DELIMITER.split(pre.substring(pre.indexOf('(') + 1, pre.indexOf(')')).replace("\n", "")))
                 .filter(param -> !param.isBlank())
                 .map(String::trim)
-                .peek(str -> {
-                    if (pre.contains("modifyUser") && pre.contains("CompletableFuture<Void>")) {
-                        System.out.println(str);
-                        System.out.println("big fat separator\n\n\n\n");
-                    }
-                })
                 .forEach(builder::parameters);
     }
 }
