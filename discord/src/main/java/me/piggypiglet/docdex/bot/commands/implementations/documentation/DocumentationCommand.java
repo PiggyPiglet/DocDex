@@ -131,6 +131,12 @@ public abstract class DocumentationCommand extends JDACommand {
 
                     if ((objects.size() == 1 && limit.get() != 1) || returnClosest.get()) {
                         final DocumentedObject object = objects.get(0);
+
+                        if (object.getDescription().length() > 900) {
+                            message.getChannel().sendMessage("This object is too big to be viewed in discord, please refer to it's javadoc page: " + object.getLink()).queue();
+                            return;
+                        }
+
                         execute(message, SimpleObjectSerializer.toEmbed(user, javadoc, object), object);
                         return;
                     }
