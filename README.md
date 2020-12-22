@@ -16,7 +16,7 @@ Requirements:
 
 ### API App
 ```bash
-java -Xms2G -Xmx2G -jar docdex.jar
+java -Xmx2G -jar docdex.jar
 ```
 Make sure to populate the config.json with your javadocs. On first start, it'll crawl the sites (which can take a while), and then save the indexes to file & database. As mentioned earlier, you should only run this on local sites. Doing otherwise will result in extremely long crawl times, or your ip being banned from said site. Multiple javadoc sites are loaded concurrently to help with speed.
 
