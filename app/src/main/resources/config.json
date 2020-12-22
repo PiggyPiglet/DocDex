@@ -3,7 +3,7 @@
   "port": 8800,
 
   "database": {
-    "host": "127.0.0.1",
+    "host": "localhost",
     "port": 27017,
     "database": "docdex",
     "username": "",
@@ -19,27 +19,27 @@
     {
       "names": ["jda"],
       "link": "http://localhost/docs/jda",
-      "actual_link": "https://ci.dv8tion.net/job/JDA/javadoc"
+      "actual_link": "https://helpch.at/docs/jda"
     },
     {
-      "names": ["1.16.4"],
+      "names": ["1.16.4", "latest", "spigot"],
       "link": "http://localhost/docs/1.16.4",
       "actual_link": "https://hub.spigotmc.org/javadocs/spigot"
     },
     {
-      "names": ["1.16.3"],
-      "link": "http://localhost/docs/1.16.3",
+      "names":["1.16.3"],
+      "link":"http://localhost/docs/1.16.3",
       "actual_link": "https://helpch.at/docs/1.16.3"
     },
     {
       "names": ["1.16.2"],
       "link": "http://localhost/docs/1.16.2",
-      "actual_link":  "https://helpch.at/docs/1.16.2"
+      "actual_link": "https://helpch.at/docs/1.16.2"
     },
     {
       "names": ["1.16.1"],
       "link": "http://localhost/docs/1.16.1",
-      "actual_link":  "https://helpch.at/docs/1.16.1"
+      "actual_link": "https://helpch.at/docs/1.16.1"
     },
     {
       "names": ["1.15.2"],
@@ -210,6 +210,96 @@
       "names": ["1.7.2"],
       "link": "http://localhost/docs/1.7.2/overview-summary.html",
       "actual_link": "https://helpch.at/docs/1.7.2"
+    },
+    {
+      "names": ["paper-1.16", "paper"],
+      "link": "http://localhost/docs/paper-1.16/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.16"
+    },
+    {
+      "names": ["paper-1.15"],
+      "link": "http://localhost/docs/paper-1.15/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.15"
+    },
+    {
+      "names": ["paper-1.14"],
+      "link": "http://localhost/docs/paper-1.14/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.14"
+    },
+    {
+      "names": ["paper-1.13"],
+      "link": "http://localhost/docs/paper-1.13/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.13"
+    },
+    {
+      "names": ["paper-1.12"],
+      "link": "http://localhost/docs/paper-1.12/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.12"
+    },
+    {
+      "names": ["paper-1.11"],
+      "link": "http://localhost/docs/paper-1.11/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.11"
+    },
+    {
+      "names": ["paper-1.10"],
+      "link": "http://localhost/docs/paper-1.10/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.10"
+    },
+    {
+      "names": ["paper-1.9"],
+      "link": "http://localhost/docs/paper-1.9/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/paper-1.9"
+    },
+    {
+      "names": ["adventure"],
+      "link": "http://localhost/docs/adventure",
+      "actual_link": "https://helpch.at/docs/adventure"
+    },
+    {
+      "names": ["chat"],
+      "link": "http://localhost/docs/chat/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/chat"
+    },
+    {
+      "names": ["gson"],
+      "link": "http://localhost/docs/gson/com.google.gson/module-summary.html",
+      "actual_link": "https://helpch.at/docs/gson"
+    },
+    {
+      "names": ["guice"],
+      "link": "http://localhost/docs/guice/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/guice"
+    },
+    {
+      "names": ["luckperms"],
+      "link": "http://localhost/docs/luckperms/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/luckperms"
+    },
+    {
+      "names": ["snakeyaml"],
+      "link": "http://localhost/docs/snakeyaml/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/snakeyaml"
+    },
+    {
+      "names": ["sponge"],
+      "link": "http://localhost/docs/sponge/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/sponge"
+    },
+    {
+      "names": ["velocity"],
+      "link": "http://localhost/docs/velocity",
+      "actual_link": "https://helpch.at/docs/velocity"
+    },
+    {
+      "names": ["worldedit"],
+      "link": "http://localhost/docs/worldedit/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/worldedit"
+    },
+    {
+      "names": ["worldguard"],
+      "link": "http://localhost/docs/worldguard/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/worldguard"
     }
   ]
 }
