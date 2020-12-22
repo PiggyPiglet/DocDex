@@ -50,7 +50,7 @@ public final class IndexPopulationRegisterable extends Registerable {
         this.storageMechanisms = storageMechanisms;
 
         final double memory = (Runtime.getRuntime().totalMemory() / BYTE_PER_MB);
-        final int threads = Math.min(javadocs.size(), (int) Math.ceil(memory / MB_PER_DOC));
+        final int threads = Math.min(15, Math.min(javadocs.size(), (int) Math.ceil(memory / MB_PER_DOC)));
         this.executor = Executors.newFixedThreadPool(threads);
         LOGGER.info("Spinning up thread pool with " + threads + " thread(s) for population.");
     }
