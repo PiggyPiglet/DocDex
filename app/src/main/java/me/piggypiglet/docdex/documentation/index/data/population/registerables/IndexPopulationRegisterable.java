@@ -63,7 +63,7 @@ public final class IndexPopulationRegisterable extends Registerable {
 
                             storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);
-                            objects.clear();
+                            System.gc();
                         }), executor
                 ).exceptionally(throwable -> {
                     LOGGER.error("", throwable);
