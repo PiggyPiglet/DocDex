@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.documentation.index.data.population.implementations.web;
 
+import com.google.common.collect.Lists;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.data.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
@@ -57,14 +58,24 @@ public final class WebCrawlPopulator implements IndexPopulator {
             return Collections.emptyMap();
         }
 
-        final Document document = connect(indexAnchor.get().absUrl("href"));
+        final List<Document> documents = Lists.newArrayList(connect(indexAnchor.get().absUrl("href")));
+        final Document firstDocument = documents.get(0);
 
-        if (document == null) {
+        if (firstDocument == null) {
             return Collections.emptyMap();
         }
 
+        if (firstDocument.location().endsWith("index-1.html")) {
+            firstDocument.selectFirst(".contentContainer > h2.title").previousElementSiblings().select("a").stream()
+                    .filter(a -> a.hasAttr("href"))
+                    .map(a -> a.absUrl("href"))
+                    .filter(url -> !url.endsWith("index-1.html"))
+                    .map(WebCrawlPopulator::connect)
+                    .forEach(documents::add);
+        }
+
         final Set<DocumentedObject> objects = new HashSet<>();
-        final Set<Map.Entry<String, String>> types = document.select("dl > dt > a").stream()
+        final Set<Map.Entry<String, String>> types = documents.stream().flatMap(document -> document.select("dl > dt > a").stream())
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
                 .map(element -> Map.entry(element.absUrl("href"), element.attr("href")))
                 .collect(Collectors.toSet());
@@ -89,7 +100,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 return;
             }
 
-            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue()));
+            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue().replace("..", "")));
         }));
 
         final Map<String, DocumentedObject> map = new HashMap<>();

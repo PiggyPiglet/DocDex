@@ -3,6 +3,8 @@ package me.piggypiglet.docdex.documentation.objects.detail.method;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import me.piggypiglet.docdex.documentation.objects.adaptation.EntrySetAdapter;
+import me.piggypiglet.docdex.documentation.objects.adaptation.parameters.ParameterDescriptionsAdapter;
+import me.piggypiglet.docdex.documentation.objects.adaptation.parameters.ParametersAdapter;
 import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +18,8 @@ import java.util.Set;
 // ------------------------------
 public final class MethodMetadata implements DetailMetadata {
     private final String owner;
-    private final Set<String> parameters;
-    private final Map<String, String> parameterDescriptions;
+    @JsonAdapter(ParametersAdapter.class) private final Set<String> parameters;
+    @JsonAdapter(ParameterDescriptionsAdapter.class) private final Map<String, String> parameterDescriptions;
     private final String returns;
     private final String returnsDescription;
     @SerializedName("throws") @JsonAdapter(EntrySetAdapter.class) private final Set<Map.Entry<String, String>> throwing;

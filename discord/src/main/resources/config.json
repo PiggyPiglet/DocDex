@@ -2,7 +2,7 @@
   "token": "",
   "prefix": "d;",
   "url": "https://docdex.helpch.at",
-  "default_javadoc": "1.16.4",
+  "default_javadoc": "jdk",
 
   "presence": {
     "status": "online",

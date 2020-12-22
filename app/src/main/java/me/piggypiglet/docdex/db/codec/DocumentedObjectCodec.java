@@ -48,8 +48,13 @@ public final class DocumentedObjectCodec implements CollectibleCodec<MongoDocume
 
     @Override
     public void encode(final BsonWriter writer, final MongoDocumentedObject value, final EncoderContext encoderContext) {
-        DOCUMENT_CODEC.encode(writer, new Document(GSON.fromJson(GSON.toJsonTree(value), Types.mapOf(String.class, Object.class))),
-                encoderContext);
+        try {
+            DOCUMENT_CODEC.encode(writer, new Document(GSON.fromJson(GSON.toJsonTree(value), Types.mapOf(String.class, Object.class))),
+                    encoderContext);
+        } catch (Exception e) {
+            System.out.println(value);
+            System.exit(-1);
+        }
     }
 
     @Override

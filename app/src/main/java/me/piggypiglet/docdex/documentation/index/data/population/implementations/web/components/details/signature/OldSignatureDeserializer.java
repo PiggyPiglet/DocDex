@@ -50,7 +50,7 @@ public final class OldSignatureDeserializer {
 
         int lastModifierIndex = 0;
         for (int i = 0; i < preSplit.length; ++i) {
-            if (preSplit[i].toLowerCase().startsWith(lowerName)) {
+            if (preSplit[i].toLowerCase().startsWith(lowerName + '(')) {
                 builder.returns(preSplit[i - 1]);
                 lastModifierIndex = i - 2;
                 break;

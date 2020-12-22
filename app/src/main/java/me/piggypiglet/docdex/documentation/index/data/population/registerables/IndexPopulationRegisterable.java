@@ -68,7 +68,10 @@ public final class IndexPopulationRegisterable extends Registerable {
                             storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);
                         }), executor
-                ))
+                ).exceptionally(throwable -> {
+                    LOGGER.error("", throwable);
+                    return null;
+                }))
         );
         completed.set(CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[]{})));
 

@@ -25,4 +25,12 @@ public final class MongoDocumentedObject {
     public DocumentedObject getObject() {
         return object;
     }
+
+    @Override
+    public String toString() {
+        return "MongoDocumentedObject{" +
+                "name='" + name + '\'' +
+                ", object=" + object +
+                '}';
+    }
 }
