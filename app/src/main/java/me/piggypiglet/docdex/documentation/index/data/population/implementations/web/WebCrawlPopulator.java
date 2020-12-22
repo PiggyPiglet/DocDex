@@ -100,7 +100,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 return;
             }
 
-            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue().replace("..", "")));
+            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue().replace("../", "")));
         }));
 
         final Map<String, DocumentedObject> map = new HashMap<>();
