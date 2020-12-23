@@ -1,13 +1,14 @@
 package me.piggypiglet.docdex.db.orm.structure.adaptation;
 
-import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
-import me.piggypiglet.docdex.db.orm.structure.TableStructure;
-import me.piggypiglet.docdex.db.orm.structure.factory.TableStructures;
+import me.piggypiglet.docdex.db.orm.structure.factory.TableStructureBuilder;
+import me.piggypiglet.docdex.db.orm.structure.factory.TableStructureFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Map;
 
 // ------------------------------
@@ -15,24 +16,35 @@ import java.util.Map;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class MapAdapter implements StructureAdapter {
-    private final TableStructures tableStructures;
-
-    @Inject
-    public MapAdapter(@NotNull final TableStructures tableStructures) {
-        this.tableStructures = tableStructures;
+    @Override
+    public boolean shouldAdapt(final @NotNull Field field) {
+        return field.getType().isAssignableFrom(Map.class) &&
+                StructureAdapter.checkGenericType(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]);
     }
 
     @Override
-    public boolean shouldAdapt(final @NotNull Class<?> type) {
-        return type.isAssignableFrom(Map.class);
-    }
+    public @NotNull TableStructureBuilder generate(final @NotNull Field field, final @NotNull String name,
+                                                   @NotNull final TableStructureFactory structureFactory) {
+        final Type[] params = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+        final Class<?> value = TypeLiteral.get(params[1]).getRawType();
+        final String identifier;
+        final boolean intermediate;
 
-    @Override
-    public @NotNull TableStructure serialize(final @NotNull Field field, final @NotNull String name,
-                                             final @NotNull String identifier) {
-        return tableStructures.from(
-                TypeLiteral.get(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[1]).getRawType(),
-                name + '_' + field.getName().toLowerCase(), "", true
-        );
+        if (Arrays.stream(value.getDeclaredFields()).map(Field::getGenericType).anyMatch(type -> !StructureAdapter.checkGenericType(type))) {
+            identifier = "key";
+            intermediate = false;
+        } else {
+            identifier = "";
+            intermediate = true;
+        }
+
+        final TableStructureBuilder builder =
+                structureFactory.builder(value, name + '_' + field.getName().toLowerCase(), identifier, intermediate);
+
+        if (!identifier.isBlank()) {
+            builder.columns(identifier);
+        }
+
+        return builder;
     }
 }

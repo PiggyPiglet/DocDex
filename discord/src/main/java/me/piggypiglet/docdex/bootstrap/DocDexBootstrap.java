@@ -11,11 +11,16 @@ import me.piggypiglet.docdex.bot.registerables.JDAPresenceRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDARegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
+import me.piggypiglet.docdex.db.orm.registerables.TableObjectsRegisterable;
+import me.piggypiglet.docdex.db.orm.registerables.TablesRegisterable;
+import me.piggypiglet.docdex.db.orm.structure.registerables.StructureAdaptersRegisterable;
+import me.piggypiglet.docdex.db.orm.structure.registerables.StructuresRegisterable;
 import me.piggypiglet.docdex.db.registerables.MysqlRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
 import me.piggypiglet.docdex.guice.ExceptionalInjector;
 import me.piggypiglet.docdex.guice.modules.InitialModule;
+import me.piggypiglet.docdex.logging.JULToSLF4JRegisterable;
 import me.piggypiglet.docdex.shutdown.registerables.ShutdownHookRegisterable;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,12 +33,18 @@ import java.util.concurrent.atomic.AtomicReference;
 // ------------------------------
 public final class DocDexBootstrap {
     private static final List<Class<? extends Registerable>> REGISTERABLES = Lists.newArrayList(
+            JULToSLF4JRegisterable.class,
+
             FileObjectsRegisterable.class,
             FilesRegisterable.class,
 
             JDARegisterable.class,
 
             MysqlRegisterable.class,
+            TableObjectsRegisterable.class,
+            StructureAdaptersRegisterable.class,
+            StructuresRegisterable.class,
+            TablesRegisterable.class,
 
             ConsoleCommandsRegisterable.class,
             ConsoleCommandListenerRegisterable.class,

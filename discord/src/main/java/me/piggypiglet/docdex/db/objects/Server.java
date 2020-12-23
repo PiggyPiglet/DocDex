@@ -13,8 +13,7 @@ import java.util.Map;
 // ------------------------------
 @Table(name = "servers")
 public final class Server {
-    @Identifier
-    private String id;
+    @Identifier private String id;
     private String prefix;
     private Map<String, CommandRule> rules;
 

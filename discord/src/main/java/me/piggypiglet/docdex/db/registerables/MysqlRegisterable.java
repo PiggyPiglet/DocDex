@@ -24,7 +24,8 @@ public final class MysqlRegisterable extends Registerable {
     @Override
     public void execute() {
         final DatabaseOptions options = DatabaseOptions.builder()
-                .mysql(config.getUsername(), config.getPassword(), config.getDatabase(), config.getPassword() + ':' + config.getPort())
+                .mysql(config.getUsername(), config.getPassword(), config.getDatabase(), config.getHost() + ':' + config.getPort())
+                .dataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource")
                 .build();
         final Database database = PooledDatabaseOptions.builder()
                 .options(options)

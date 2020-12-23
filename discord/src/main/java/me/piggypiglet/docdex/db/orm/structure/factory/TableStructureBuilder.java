@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -17,7 +18,7 @@ public final class TableStructureBuilder {
     private String name;
     private String identifier;
     private Set<String> columns = new HashSet<>();
-    private Set<TableStructure> subStructures = new HashSet<>();
+    private Set<TableStructureBuilder> subStructures = new HashSet<>();
 
     private TableStructureBuilder(final boolean intermediate) {
         this.intermediate = intermediate;
@@ -59,19 +60,48 @@ public final class TableStructureBuilder {
     }
 
     @NotNull
-    public TableStructureBuilder subStructures(@NotNull final TableStructure @NotNull ... values) {
+    public TableStructureBuilder subStructures(@NotNull final TableStructureBuilder @NotNull ... values) {
         Collections.addAll(subStructures, values);
         return this;
     }
 
     @NotNull
-    public TableStructureBuilder subStructures(@NotNull final Set<TableStructure> values) {
+    public TableStructureBuilder subStructures(@NotNull final Set<TableStructureBuilder> values) {
         subStructures.addAll(values);
         return this;
     }
 
     @NotNull
     public TableStructure build() {
-        return new TableStructure(intermediate, name, identifier, Collections.unmodifiableSet(columns), Collections.unmodifiableSet(subStructures));
+        return new TableStructure(
+                name, identifier, Collections.unmodifiableSet(columns),
+                subStructures.stream()
+                        .map(TableStructureBuilder::build)
+                        .collect(Collectors.toUnmodifiableSet())
+        );
+    }
+
+    boolean isIntermediate() {
+        return intermediate;
+    }
+
+    @NotNull
+    String getName() {
+        return name;
+    }
+
+    @NotNull
+    String getIdentifier() {
+        return identifier;
+    }
+
+    @NotNull
+    Set<String> getColumns() {
+        return columns;
+    }
+
+    @NotNull
+    Set<TableStructureBuilder> getSubStructures() {
+        return subStructures;
     }
 }

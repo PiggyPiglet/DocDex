@@ -24,6 +24,6 @@ public final class TablesRegisterable extends Registerable {
 
     @Override
     public void execute() {
-        super.execute();
+        tables.forEach(tableManager::loadTable);
     }
 }

@@ -38,7 +38,7 @@ public final class TableObjectsRegisterable extends Registerable {
     public void execute(final @NotNull Injector injector) {
         final Map<Class<?>, Object> tables = scanner.getClasses(Rules.builder().hasAnnotation(Table.class).disallowMutableClasses().build())
                 .filter(table -> {
-                    if (Arrays.stream(table.getFields()).noneMatch(field -> field.isAnnotationPresent(Identifier.class))) {
+                    if (Arrays.stream(table.getDeclaredFields()).noneMatch(field -> field.isAnnotationPresent(Identifier.class))) {
                         LOGGER.warn(table.getName() + " is marked as a table but does not have an identification field.");
                         return false;
                     }
