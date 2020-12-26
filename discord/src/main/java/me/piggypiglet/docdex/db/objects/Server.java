@@ -13,11 +13,11 @@ import java.util.Map;
 // ------------------------------
 @Table(name = "servers")
 public final class Server {
-    @Identifier private long id;
+    @Identifier private String id;
     private String prefix;
     private Map<String, CommandRule> rules;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 

@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.db.orm.query.types;
 
+import me.piggypiglet.docdex.db.orm.query.Query;
 import me.piggypiglet.docdex.db.orm.query.SqlDataTypes;
 import me.piggypiglet.docdex.db.orm.structure.TableField;
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
@@ -13,10 +14,11 @@ import java.util.stream.Stream;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class SchemaQuery {
+public final class SchemaQuery implements Query {
+    @Override
     @NotNull
     public Set<String> generate(@NotNull final TableStructure structure) {
-        return Stream.concat(Stream.of(structure), getAll(structure))
+        return Stream.concat(Stream.of(structure), Query.getAll(structure))
                 .map(struct -> {
                     final StringBuilder builder = new StringBuilder();
 
@@ -54,13 +56,5 @@ public final class SchemaQuery {
 
                     return builder.toString();
                 }).collect(Collectors.toSet());
-    }
-
-    @NotNull
-    private static Stream<TableStructure> getAll(@NotNull final TableStructure structure) {
-        final Set<TableStructure> subs = structure.getSubStructures();
-
-        return Stream.concat(subs.stream(), subs.stream()
-                .flatMap(SchemaQuery::getAll));
     }
 }

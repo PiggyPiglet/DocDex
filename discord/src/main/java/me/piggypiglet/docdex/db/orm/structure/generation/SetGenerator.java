@@ -29,7 +29,7 @@ public final class SetGenerator implements StructureGenerator {
 
         if (StructureGenerator.checkGenericType(type)) {
             return TableStructureBuilder.builder(false)
-                    .clazz(Set.class)
+                    .clazz(type)
                     .name(tableName)
                     .identifier(identifier)
                     .columns(identifier);
