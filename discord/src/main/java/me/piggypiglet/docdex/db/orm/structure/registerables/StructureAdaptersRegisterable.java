@@ -6,7 +6,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
-import me.piggypiglet.docdex.db.orm.structure.adaptation.StructureAdapter;
+import me.piggypiglet.docdex.db.orm.structure.generation.StructureGenerator;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +31,10 @@ public final class StructureAdaptersRegisterable extends Registerable {
     @SuppressWarnings("Convert2Diamond")
     @Override
     public void execute(final @NotNull Injector injector) {
-        addBinding(new TypeLiteral<Set<StructureAdapter>>() {}, STRUCTURE_ADAPTERS,
-                scanner.getClasses(Rules.builder().typeExtends(StructureAdapter.class).disallowMutableClasses().build())
+        addBinding(new TypeLiteral<Set<StructureGenerator>>() {}, STRUCTURE_ADAPTERS,
+                scanner.getClasses(Rules.builder().typeExtends(StructureGenerator.class).disallowMutableClasses().build())
                         .map(injector::getInstance)
-                        .map(StructureAdapter.class::cast)
+                        .map(StructureGenerator.class::cast)
                         .collect(Collectors.toSet()));
     }
 }

@@ -1,6 +1,7 @@
-package me.piggypiglet.docdex.db.orm.structure.adaptation;
+package me.piggypiglet.docdex.db.orm.structure.generation;
 
 import com.google.inject.TypeLiteral;
+import me.piggypiglet.docdex.db.orm.structure.TableField;
 import me.piggypiglet.docdex.db.orm.structure.factory.TableStructureBuilder;
 import me.piggypiglet.docdex.db.orm.structure.factory.TableStructureFactory;
 import org.jetbrains.annotations.NotNull;
@@ -15,11 +16,11 @@ import java.util.Map;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class MapAdapter implements StructureAdapter {
+public final class MapGenerator implements StructureGenerator {
     @Override
     public boolean shouldAdapt(final @NotNull Field field) {
         return field.getType().isAssignableFrom(Map.class) &&
-                StructureAdapter.checkGenericType(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]);
+                StructureGenerator.checkGenericType(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]);
     }
 
     @Override
@@ -30,7 +31,7 @@ public final class MapAdapter implements StructureAdapter {
         final String identifier;
         final boolean intermediate;
 
-        if (Arrays.stream(value.getDeclaredFields()).map(Field::getGenericType).anyMatch(type -> !StructureAdapter.checkGenericType(type))) {
+        if (Arrays.stream(value.getDeclaredFields()).map(Field::getGenericType).anyMatch(type -> !StructureGenerator.checkGenericType(type))) {
             identifier = "key";
             intermediate = false;
         } else {
@@ -39,10 +40,10 @@ public final class MapAdapter implements StructureAdapter {
         }
 
         final TableStructureBuilder builder =
-                structureFactory.builder(value, name + '_' + field.getName().toLowerCase(), identifier, intermediate);
+                structureFactory.builder(value, name + '_' + field.getName().toLowerCase(), TableField.of(identifier), intermediate);
 
         if (!identifier.isBlank()) {
-            builder.columns(identifier);
+            builder.columns(TableField.of(identifier));
         }
 
         return builder;

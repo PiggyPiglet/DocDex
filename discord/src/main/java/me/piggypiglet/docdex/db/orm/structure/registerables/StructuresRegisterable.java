@@ -6,6 +6,7 @@ import com.google.inject.name.Named;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
+import me.piggypiglet.docdex.db.orm.structure.TableField;
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
 import me.piggypiglet.docdex.db.orm.structure.factory.TableStructureFactory;
 import org.jetbrains.annotations.NotNull;
@@ -35,11 +36,11 @@ public final class StructuresRegisterable extends Registerable {
         addBinding(new TypeLiteral<Map<Class<?>, TableStructure>>() {}, tables.stream()
                 .collect(Collectors.toMap(table -> table, table -> {
                     final String name = table.getAnnotation(Table.class).name();
-                    final String identifier = Arrays.stream(table.getDeclaredFields())
+                    final TableField identifier = Arrays.stream(table.getDeclaredFields())
                             .filter(field -> field.isAnnotationPresent(Identifier.class))
                             .findAny()
-                            .get()
-                            .getName();
+                            .map(TableField::of)
+                            .get();
 
                     return structureFactory.from(table, name, identifier);
                 })));

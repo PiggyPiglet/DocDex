@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.db.orm.structure.factory;
 
+import me.piggypiglet.docdex.db.orm.structure.TableField;
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +17,8 @@ public final class TableStructureBuilder {
     private final boolean intermediate;
     private Class<?> clazz;
     private String name;
-    private String identifier;
-    private Set<String> columns = new HashSet<>();
+    private TableField identifier;
+    private Set<TableField> columns = new HashSet<>();
     private Set<TableStructureBuilder> subStructures = new HashSet<>();
 
     private TableStructureBuilder(final boolean intermediate) {
@@ -42,19 +43,19 @@ public final class TableStructureBuilder {
     }
 
     @NotNull
-    public TableStructureBuilder identifier(@NotNull final String value) {
+    public TableStructureBuilder identifier(@NotNull final TableField value) {
         identifier = value;
         return this;
     }
 
     @NotNull
-    public TableStructureBuilder columns(@NotNull final String @NotNull ... values) {
+    public TableStructureBuilder columns(@NotNull final TableField @NotNull ... values) {
         Collections.addAll(columns, values);
         return this;
     }
 
     @NotNull
-    public TableStructureBuilder columns(@NotNull final Set<String> values) {
+    public TableStructureBuilder columns(@NotNull final Set<TableField> values) {
         columns.addAll(values);
         return this;
     }
@@ -74,7 +75,7 @@ public final class TableStructureBuilder {
     @NotNull
     public TableStructure build() {
         return new TableStructure(
-                name, identifier, Collections.unmodifiableSet(columns),
+                clazz, name, identifier, Collections.unmodifiableSet(columns),
                 subStructures.stream()
                         .map(TableStructureBuilder::build)
                         .collect(Collectors.toUnmodifiableSet())
@@ -91,12 +92,12 @@ public final class TableStructureBuilder {
     }
 
     @NotNull
-    String getIdentifier() {
+    TableField getIdentifier() {
         return identifier;
     }
 
     @NotNull
-    Set<String> getColumns() {
+    Set<TableField> getColumns() {
         return columns;
     }
 

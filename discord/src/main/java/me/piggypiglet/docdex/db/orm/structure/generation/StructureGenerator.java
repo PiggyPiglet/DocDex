@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.db.orm.structure.adaptation;
+package me.piggypiglet.docdex.db.orm.structure.generation;
 
 import com.google.inject.TypeLiteral;
 import me.piggypiglet.docdex.db.orm.structure.factory.TableStructureBuilder;
@@ -13,7 +13,7 @@ import java.util.Set;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public interface StructureAdapter {
+public interface StructureGenerator {
     Set<Class<?>> ADAPTABLE_TYPES = Set.of(
             String.class,
             Character.class, char.class,
@@ -35,7 +35,7 @@ public interface StructureAdapter {
     static boolean checkGenericType(@NotNull final Type type) {
         final Class<?> clazz = TypeLiteral.get(type).getRawType();
 
-        return StructureAdapter.ADAPTABLE_TYPES.stream()
+        return StructureGenerator.ADAPTABLE_TYPES.stream()
                 .anyMatch(clazz::equals);
     }
 }
