@@ -22,6 +22,7 @@ public final class TableManager {
     }
 
     public void loadTable(@NotNull final Class<?> table) {
-        queryRunner.applySchema(structures.get(table));
+        queryRunner.insert(structures.get(table));
+//        queryRunner.applySchema(structures.get(table));
     }
 }

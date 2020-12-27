@@ -28,6 +28,8 @@ public final class SchemaQuery implements Query {
 
                     for (final TableField column : struct.getColumns()) {
                         builder.append("`")
+                                .append(column.getLevel())
+                                .append(":")
                                 .append(column.getName())
                                 .append("` ")
                                 .append(column.getType())
@@ -44,7 +46,7 @@ public final class SchemaQuery implements Query {
 
                     builder.append("PRIMARY KEY (`")
                             .append(identifier.getName())
-                            .append('`');
+                            .append("`");
 
                     if (identifier.getType() == SqlDataTypes.TEXT) {
                         builder.append("(")

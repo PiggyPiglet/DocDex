@@ -25,7 +25,7 @@ public final class TableField {
         this.field = field;
         this.level = level;
 
-        this.name = level + ":" + (isField() ? Objects.requireNonNull(field).getName().toLowerCase() : string);
+        this.name = isField() ? Objects.requireNonNull(field).getName().toLowerCase() : string;
         this.type = isField() ? SqlDataTypes.from(Objects.requireNonNull(field).getType()).orElse(SqlDataTypes.TEXT) : SqlDataTypes.TEXT;
     }
 
