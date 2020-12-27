@@ -2,19 +2,20 @@ package me.piggypiglet.docdex.db.orm.registerables;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +25,6 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class TableObjectsRegisterable extends Registerable {
-    private static final Logger LOGGER = LoggerFactory.getLogger("MySQL");
     private static final Named TABLES = Names.named("tables");
 
     private final Scanner scanner;
@@ -34,19 +34,19 @@ public final class TableObjectsRegisterable extends Registerable {
         this.scanner = scanner;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(final @NotNull Injector injector) {
-        final Map<Class<?>, Object> tables = scanner.getClasses(Rules.builder().hasAnnotation(Table.class).disallowMutableClasses().build())
-                .filter(table -> {
-                    if (Arrays.stream(table.getDeclaredFields()).noneMatch(field -> field.isAnnotationPresent(Identifier.class))) {
-                        LOGGER.warn(table.getName() + " is marked as a table but does not have an identification field.");
-                        return false;
-                    }
+        final Set<Class<?>> tableClasses = scanner.getClasses(Rules.builder().hasAnnotation(Table.class).disallowMutableClasses().build())
+                .filter(clazz -> Arrays.stream(clazz.getDeclaredFields()).anyMatch(field -> field.isAnnotationPresent(Identifier.class)))
+                .collect(Collectors.toUnmodifiableSet());
 
-                    return true;
-                }).collect(Collectors.toMap(table -> table, injector::getInstance));
+        addBinding(new TypeLiteral<Set<Class<?>>>() {}, TABLES, tableClasses);
 
-        addBinding(new TypeLiteral<Set<Class<?>>>() {}, TABLES, tables.keySet());
-        addBinding(new TypeLiteral<Map<Class<?>, Object>>() {}, TABLES, tables);
+        final Map<Class<?>, Set<Object>> tables = tableClasses.stream()
+                .collect(Collectors.toMap(table -> table, table -> new HashSet<>()));
+
+        addBinding(new TypeLiteral<Map<Class<?>, Set<Object>>>() {}, TABLES, tables);
+        tables.forEach((clazz, set) -> addBinding((Key<Set<?>>) Key.get(Types.setOf(clazz)), set));
     }
 }

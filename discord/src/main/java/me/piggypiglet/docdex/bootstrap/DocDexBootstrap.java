@@ -13,8 +13,7 @@ import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegiste
 import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
 import me.piggypiglet.docdex.db.orm.registerables.TableObjectsRegisterable;
 import me.piggypiglet.docdex.db.orm.registerables.TablesRegisterable;
-import me.piggypiglet.docdex.db.orm.structure.registerables.StructureAdaptersRegisterable;
-import me.piggypiglet.docdex.db.orm.structure.registerables.StructuresRegisterable;
+import me.piggypiglet.docdex.db.orm.structure.registerables.TableStructuresRegisterable;
 import me.piggypiglet.docdex.db.registerables.MysqlRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
@@ -42,8 +41,7 @@ public final class DocDexBootstrap {
 
             MysqlRegisterable.class,
             TableObjectsRegisterable.class,
-            StructureAdaptersRegisterable.class,
-            StructuresRegisterable.class,
+            TableStructuresRegisterable.class,
             TablesRegisterable.class,
 
             ConsoleCommandsRegisterable.class,

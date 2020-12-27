@@ -1,8 +1,6 @@
 package me.piggypiglet.docdex.db.objects;
 
 import me.piggypiglet.docdex.config.CommandRule;
-import me.piggypiglet.docdex.db.orm.annotations.Identifier;
-import me.piggypiglet.docdex.db.orm.annotations.Table;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -11,12 +9,19 @@ import java.util.Map;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-@Table(name = "servers")
 public final class Server {
-    @Identifier private String id;
+    private final String id;
     private String prefix;
-    private Map<String, CommandRule> rules;
+    private final Map<String, CommandRule> rules;
 
+    public Server(@NotNull final String id, @NotNull final String prefix,
+                  @NotNull final Map<String, CommandRule> rules) {
+        this.id = id;
+        this.prefix = prefix;
+        this.rules = rules;
+    }
+
+    @NotNull
     public String getId() {
         return id;
     }

@@ -1,7 +1,6 @@
 package me.piggypiglet.docdex.db.orm.structure;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
@@ -12,17 +11,15 @@ import java.util.Set;
 public final class TableStructure {
     private final Class<?> clazz;
     private final String name;
-    private final TableField identifier;
-    private final Set<TableField> columns;
-    private final Set<TableStructure> subStructures;
+    private final TableColumn identifier;
+    private final Set<TableColumn> columns;
 
-    public TableStructure(@NotNull final Class<?> clazz, @NotNull final String name, @NotNull final TableField identifier,
-                          @NotNull @Unmodifiable final Set<TableField> columns, @NotNull @Unmodifiable final Set<TableStructure> subStructures) {
+    public TableStructure(@NotNull final Class<?> clazz, @NotNull final String name,
+                          @NotNull final TableColumn identifier, @NotNull final Set<TableColumn> columns) {
         this.clazz = clazz;
         this.name = name;
         this.identifier = identifier;
         this.columns = columns;
-        this.subStructures = subStructures;
     }
 
     @NotNull
@@ -36,27 +33,12 @@ public final class TableStructure {
     }
 
     @NotNull
-    public TableField getIdentifier() {
+    public TableColumn getIdentifier() {
         return identifier;
     }
 
-    @NotNull @Unmodifiable
-    public Set<TableField> getColumns() {
+    @NotNull
+    public Set<TableColumn> getColumns() {
         return columns;
-    }
-
-    @NotNull @Unmodifiable
-    public Set<TableStructure> getSubStructures() {
-        return subStructures;
-    }
-
-    @Override
-    public String toString() {
-        return "TableStructure{" +
-                "name='" + name + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", columns=" + columns +
-                ", subStructures=" + subStructures +
-                '}';
     }
 }
