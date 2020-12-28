@@ -39,4 +39,13 @@ public final class Server {
     public Map<String, CommandRule> getRules() {
         return rules;
     }
+
+    @Override
+    public String toString() {
+        return "Server{" +
+                "id='" + id + '\'' +
+                ", prefix='" + prefix + '\'' +
+                ", rules=" + rules +
+                '}';
+    }
 }

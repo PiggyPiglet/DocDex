@@ -1,25 +1,30 @@
 package me.piggypiglet.docdex.console.implementations;
 
 import com.google.inject.Inject;
-import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.console.ConsoleCommand;
+import me.piggypiglet.docdex.db.objects.Server;
+import me.piggypiglet.docdex.db.orm.TableManager;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class TestCommand extends ConsoleCommand {
-    private final Config config;
+    private final Set<Server> servers;
+    private final TableManager tableManager;
 
     @Inject
-    public TestCommand(@NotNull final Config config) {
+    public TestCommand(@NotNull final Set<Server> servers, @NotNull final TableManager tableManager) {
         super("test", "");
-        this.config = config;
+        this.servers = servers;
+        this.tableManager = tableManager;
     }
 
     @Override
     public void execute() {
-        msg(config.getPresence());
+        msg(servers);
     }
 }

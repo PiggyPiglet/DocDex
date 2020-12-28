@@ -2,7 +2,6 @@ package me.piggypiglet.docdex.config;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Set;
 
 // ------------------------------
@@ -10,22 +9,38 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class CommandRule {
-    private Set<String> allowed;
-    private Set<String> disallowed;
-    private String recommendation;
+    private final Set<String> allowed;
+    private final Set<String> disallowed;
+    private final String recommendation;
+
+    public CommandRule(@NotNull final Set<String> allowed, @NotNull final Set<String> disallowed,
+                       @NotNull final String recommendation) {
+        this.allowed = allowed;
+        this.disallowed = disallowed;
+        this.recommendation = recommendation;
+    }
 
     @NotNull
     public Set<String> getAllowed() {
-        return allowed == null ? Collections.emptySet() : allowed;
+        return allowed;
     }
 
     @NotNull
     public Set<String> getDisallowed() {
-        return disallowed == null ? Collections.emptySet() : disallowed;
+        return disallowed;
     }
 
     @NotNull
     public String getRecommendation() {
         return recommendation;
+    }
+
+    @Override
+    public String toString() {
+        return "CommandRule{" +
+                "allowed=" + allowed +
+                ", disallowed=" + disallowed +
+                ", recommendation='" + recommendation + '\'' +
+                '}';
     }
 }

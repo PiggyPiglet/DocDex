@@ -20,13 +20,12 @@ public final class SchemaQuery implements StructureQuery {
                 .append(structure.getName())
                 .append("` (");
 
-        structure.getColumns().forEach(column -> {
-            builder.append("`")
-                    .append(column.getName())
-                    .append("` ")
-                    .append(column.getDataStructure())
-                    .append(" NOT NULL, ");
-        });
+        structure.getColumns().forEach(column ->
+                builder.append("`")
+                        .append(column.getName())
+                        .append("` ")
+                        .append(column.getDataStructure())
+                        .append(" NOT NULL, "));
 
         final TableColumn identifier = structure.getIdentifier();
 
