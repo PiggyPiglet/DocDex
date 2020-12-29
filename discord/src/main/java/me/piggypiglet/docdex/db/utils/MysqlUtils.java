@@ -60,7 +60,7 @@ public final class MysqlUtils {
                     break;
 
                 case '\'':
-                    builder.append('\'');
+                    builder.append('\\');
                     builder.append('\'');
                     break;
 

@@ -31,10 +31,10 @@ public final class ConsoleCommandHandler {
 
     public void process(@NotNull final String text) {
         final ConsoleCommand command = commands.stream()
-                .filter(cmd -> cmd.getMatch().equalsIgnoreCase(text))
+                .filter(cmd -> text.startsWith(cmd.getMatch()))
                 .findAny().orElse(unknownCommand);
 
-        EXECUTOR.submit(command::execute);
+        EXECUTOR.submit(() -> command.run(text.replaceFirst(command.getMatch(), "")));
     }
 
     @NotNull

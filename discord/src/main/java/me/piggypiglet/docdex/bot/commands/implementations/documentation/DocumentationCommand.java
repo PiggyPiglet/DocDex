@@ -4,7 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.util.Types;
-import me.piggypiglet.docdex.bot.commands.JDACommand;
+import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.documentation.SimpleObjectSerializer;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.documentation.IndexURLBuilder;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public abstract class DocumentationCommand extends JDACommand {
+public abstract class DocumentationCommand extends BotCommand {
     private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\- ]");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
@@ -59,7 +59,7 @@ public abstract class DocumentationCommand extends JDACommand {
     @Override
     public void run(final @NotNull User user, final @NotNull Message message,
                     final @NotNull String start) {
-        final String[] args = args(message, start);
+        final List<String> args = args(message, start);
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
@@ -67,7 +67,7 @@ public abstract class DocumentationCommand extends JDACommand {
             return;
         }
 
-        if (args.length == 0 || args[0].isBlank()) {
+        if (args.size() == 0 || args.get(0).isBlank()) {
             channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit/$(first result)]").queue();
             return;
         }
@@ -78,10 +78,10 @@ public abstract class DocumentationCommand extends JDACommand {
         try {
             String limitArg = null;
 
-            if (args.length > 2) {
-                limitArg = args[2];
-            } else if (args.length == 2) {
-                limitArg = args[1];
+            if (args.size() > 2) {
+                limitArg = args.get(2);
+            } else if (args.size() == 2) {
+                limitArg = args.get(1);
             }
 
             if (limitArg != null) {
@@ -96,17 +96,17 @@ public abstract class DocumentationCommand extends JDACommand {
         final String javadoc;
         final String query;
 
-        if (args.length >= 2) {
+        if (args.size() >= 2) {
             if (limit.get() != -1 || returnClosest.get()) {
                 javadoc = config.getDefaultJavadoc();
-                query = args[0];
+                query = args.get(0);
             } else {
-                javadoc = args[0];
-                query = args[1];
+                javadoc = args.get(0);
+                query = args.get(1);
             }
         } else {
             javadoc = config.getDefaultJavadoc();
-            query = args[0];
+            query = args.get(0);
         }
 
         final IndexURLBuilder urlBuilder = new IndexURLBuilder()

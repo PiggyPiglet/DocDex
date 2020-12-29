@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.bot.commands;
+package me.piggypiglet.docdex.bot.commands.framework;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public abstract class JDACommand {
+public abstract class BotCommand {
     protected static final Logger LOGGER = LoggerFactory.getLogger("Commands");
     protected static final Consumer<Throwable> ERROR_LOG = throwable -> LOGGER.error("", throwable);
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
@@ -25,12 +26,12 @@ public abstract class JDACommand {
     private final String usage;
     private final String description;
 
-    protected JDACommand(@NotNull final String @NotNull [] matches, @NotNull final String usage,
+    protected BotCommand(@NotNull final String @NotNull [] matches, @NotNull final String usage,
                          @NotNull final String description) {
         this(Arrays.stream(matches).collect(Collectors.toSet()), usage, description);
     }
 
-    protected JDACommand(@NotNull final Set<String> matches, @NotNull final String usage,
+    protected BotCommand(@NotNull final Set<String> matches, @NotNull final String usage,
                          @NotNull final String description) {
         this.matches = matches;
         this.usage = usage;
@@ -40,7 +41,7 @@ public abstract class JDACommand {
     protected void execute(@NotNull final User user, @NotNull final Message message) {}
 
     protected void execute(@NotNull final User user, @NotNull final Message message,
-                           @NotNull final String @NotNull [] args) {}
+                           @NotNull final List<String> args) {}
 
     public void run(@NotNull final User user, @NotNull final Message message,
                     @NotNull final String start) {
@@ -64,7 +65,7 @@ public abstract class JDACommand {
     }
 
     @NotNull
-    protected static String @NotNull [] args(@NotNull final Message message, @NotNull final String start) {
-        return SPACE_DELIMITER.split(message.getContentRaw().replace(start, "").trim());
+    protected static List<String> args(@NotNull final Message message, @NotNull final String start) {
+        return Arrays.asList(SPACE_DELIMITER.split(message.getContentRaw().replace(start, "").trim()));
     }
 }

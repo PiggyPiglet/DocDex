@@ -7,8 +7,6 @@ import me.piggypiglet.docdex.config.deserialization.UrlDeserializer;
 import me.piggypiglet.docdex.file.annotations.File;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
@@ -26,7 +24,6 @@ public final class Config {
     private Presence presence;
     @SerializedName("public") private boolean isPublic;
     private MysqlConfig mysql;
-    private Map<String, CommandRule> commands;
 
     @NotNull
     public String getToken() {
@@ -60,10 +57,5 @@ public final class Config {
     @NotNull
     public MysqlConfig getMysql() {
         return mysql;
-    }
-
-    @NotNull
-    public Map<String, CommandRule> getCommands() {
-        return commands;
     }
 }

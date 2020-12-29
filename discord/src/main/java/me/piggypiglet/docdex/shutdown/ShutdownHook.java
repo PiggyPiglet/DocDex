@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.shutdown;
 
+import co.aikar.idb.Database;
 import com.google.inject.Inject;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
@@ -11,18 +12,24 @@ import org.slf4j.LoggerFactory;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class ShutdownHook extends Thread {
-    private static final Logger LOGGER = LoggerFactory.getLogger("JDA");
+    private static final Logger JDA = LoggerFactory.getLogger("JDA");
+    private static final Logger MYSQL = LoggerFactory.getLogger("MySQL");
 
     private final JDA jda;
+    private final Database database;
 
     @Inject
-    public ShutdownHook(@NotNull final JDA jda) {
+    public ShutdownHook(@NotNull final JDA jda, @NotNull final Database database) {
         this.jda = jda;
+        this.database = database;
     }
 
     @Override
     public void run() {
         jda.shutdownNow();
-        LOGGER.info("Shut down JDA.");
+        JDA.info("Shut down JDA.");
+
+        database.close();
+        MYSQL.info("Shut down MySQL.");
     }
 }

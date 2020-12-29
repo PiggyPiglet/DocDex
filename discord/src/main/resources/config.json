@@ -3,7 +3,6 @@
   "prefix": "d;",
   "url": "https://docdex.helpch.at",
   "default_javadoc": "jdk",
-  "public": false,
 
   "mysql": {
     "host": "127.0.0.1",
@@ -20,13 +19,5 @@
     "status": "online",
     "activity": "watching",
     "message": "the docs (d;help)"
-  },
-
-  "commands": {
-    "help": {
-      "allowed": ["339674158596358145", "411094432402636802"],
-      "disallowed": [],
-      "recommendation": "You can't use this command here, go to <#339674158596358145>."
-    }
   }
 }

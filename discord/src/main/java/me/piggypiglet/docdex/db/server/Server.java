@@ -1,6 +1,7 @@
-package me.piggypiglet.docdex.db.objects;
+package me.piggypiglet.docdex.db.server;
 
-import me.piggypiglet.docdex.config.CommandRule;
+import com.google.gson.annotations.JsonAdapter;
+import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Set;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
+@JsonAdapter(ServerCreator.class)
 public final class Server {
     private final String id;
     private String prefix;

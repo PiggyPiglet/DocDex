@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.util.Types;
-import me.piggypiglet.docdex.bot.commands.JDACommand;
+import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.pagination.PaginationManager;
 import me.piggypiglet.docdex.bot.embed.pagination.objects.Pagination;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
@@ -34,7 +34,7 @@ import java.util.stream.IntStream;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class JavadocsCommand extends JDACommand {
+public final class JavadocsCommand extends BotCommand {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)

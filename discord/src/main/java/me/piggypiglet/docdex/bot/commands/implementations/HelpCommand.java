@@ -2,9 +2,10 @@ package me.piggypiglet.docdex.bot.commands.implementations;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import me.piggypiglet.docdex.bot.commands.JDACommand;
+import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
-import me.piggypiglet.docdex.config.Config;
+import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import me.piggypiglet.docdex.scanning.annotations.Hidden;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,19 +21,33 @@ import java.util.TreeSet;
 // https://www.piggypiglet.me
 // ------------------------------
 @Hidden
-public final class HelpCommand extends JDACommand {
-    private final Set<JDACommand> commands;
-    private final String prefix;
+public final class HelpCommand extends BotCommand {
+    private static final String DEFAULT_PREFIX = ServerCreator.createInstance().getPrefix();
+
+    private final Set<BotCommand> commands;
+    private final Set<Server> servers;
 
     @Inject
-    public HelpCommand(@NotNull @Named("jda commands") final Set<JDACommand> commands, @NotNull final Config config) {
+    public HelpCommand(@NotNull @Named("jda commands") final Set<BotCommand> commands, @NotNull final Set<Server> servers) {
         super(Set.of("help"), "", "This page.");
         this.commands = commands;
-        this.prefix = config.getPrefix();
+        this.servers = servers;
     }
 
     @Override
     public void execute(final @NotNull User user, final @NotNull Message message) {
+        final String prefix;
+
+        if (message.isFromGuild()) {
+            prefix = servers.stream()
+                    .filter(server -> server.getId().equals(message.getGuild().getId()))
+                    .findAny()
+                    .map(Server::getPrefix)
+                    .orElse(DEFAULT_PREFIX);
+        } else {
+            prefix = DEFAULT_PREFIX;
+        }
+
         final EmbedBuilder embed = new EmbedBuilder();
         final Set<String> helpMessages = new TreeSet<>(Comparator.comparingInt(String::length));
 

@@ -1,10 +1,10 @@
 package me.piggypiglet.docdex.db.adapters.implementations;
 
 import com.google.inject.Inject;
-import me.piggypiglet.docdex.config.CommandRule;
 import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
 import me.piggypiglet.docdex.db.adapters.framework.ModificationRequest;
-import me.piggypiglet.docdex.db.objects.Server;
+import me.piggypiglet.docdex.db.server.CommandRule;
+import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.tables.*;
 import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRule;
@@ -68,10 +68,12 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     @Override
     public ModificationRequest applyToRaw(final @NotNull Server server) {
         final String id = server.getId();
-
         final RawServer rawServer = new RawServer(id, server.getPrefix());
 
         final Set<Map.Entry<String, CommandRule>> rules = server.getRules().entrySet();
+        final Set<RawServerRoles> rawServerRoles = server.getRoles().stream()
+                .map(role -> new RawServerRoles(server.getId(), role))
+                .collect(Collectors.toSet());
         final Set<RawServerRules> rawServerRules = rules.stream()
                 .map(entry -> new RawServerRules(id, entry.getKey(), entry.getValue().getRecommendation()))
                 .collect(Collectors.toSet());
@@ -81,12 +83,14 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
         final Set<Object> modified = new HashSet<>();
 
         addIfAdded(servers, modified, rawServer);
+        rawServerRoles.forEach(object -> addIfAdded(serverRoles, modified, object));
         rawServerRules.forEach(object -> addIfAdded(serverRules, modified, object));
         rawServerRulesAlloweds.forEach(object -> addIfAdded(serverRulesAlloweds, modified, object));
         rawServerRulesDisalloweds.forEach(object -> addIfAdded(serverRulesDisalloweds, modified, object));
 
         final Set<Object> deleted = new HashSet<>();
 
+        serverRoles.removeIf(deleteIfDeleted(deleted, rawServerRoles));
         serverRules.removeIf(deleteIfDeleted(deleted, rawServerRules));
         serverRulesAlloweds.removeIf(deleteIfDeleted(deleted, rawServerRulesAlloweds));
         serverRulesDisalloweds.removeIf(deleteIfDeleted(deleted, rawServerRulesDisalloweds));
@@ -112,7 +116,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
 
     @NotNull
     private static <T extends RawObject> Predicate<T> deleteIfDeleted(@NotNull final Set<Object> deleted,
-                                                                            @NotNull final Set<T> objects) {
+                                                                      @NotNull final Set<T> objects) {
         return object -> {
             final boolean result = objects.stream().noneMatch(object::actualEquals);
 
