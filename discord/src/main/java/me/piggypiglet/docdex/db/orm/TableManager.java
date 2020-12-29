@@ -35,6 +35,10 @@ public final class TableManager {
         this.structures = structures;
     }
 
+    public void initialize() {
+        structures.values().forEach(queryRunner::applySchema);
+    }
+
     public void loadAll(@NotNull final Class<?> clazz) {
         final Set<Object> objects = tables.get(clazz);
         final TableStructure table = structures.get(clazz);
@@ -47,6 +51,10 @@ public final class TableManager {
 
     public void save(@NotNull final Object object) {
         queryRunner.insert(structures.get(object.getClass()), toMap(object));
+    }
+
+    public void delete(@NotNull final Object object) {
+        queryRunner.delete(structures.get(object.getClass()), toMap(object));
     }
 
     @NotNull

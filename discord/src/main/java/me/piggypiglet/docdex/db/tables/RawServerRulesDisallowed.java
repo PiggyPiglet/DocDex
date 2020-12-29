@@ -2,8 +2,10 @@ package me.piggypiglet.docdex.db.tables;
 
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
+import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRuleId;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -12,16 +14,16 @@ import java.util.Objects;
 // https://www.piggypiglet.me
 // ------------------------------
 @Table("servers_rules_disallowed")
-public final class RawServerRulesDisallowed implements RawServerRuleId {
+public final class RawServerRulesDisallowed implements RawServerRuleId, RawObject {
     private final String server;
     private final String command;
-    @Identifier private final String disallowed;
+    @Identifier private final String id;
 
     public RawServerRulesDisallowed(@NotNull final String server, @NotNull final String command,
-                                    @NotNull final String disallowed) {
+                                    @NotNull final String id) {
         this.server = server;
         this.command = command;
-        this.disallowed = disallowed;
+        this.id = id;
     }
 
     @NotNull
@@ -39,7 +41,7 @@ public final class RawServerRulesDisallowed implements RawServerRuleId {
     @NotNull
     @Override
     public String getId() {
-        return disallowed;
+        return id;
     }
 
     @Override
@@ -47,12 +49,17 @@ public final class RawServerRulesDisallowed implements RawServerRuleId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final RawServerRulesDisallowed that = (RawServerRulesDisallowed) o;
-        return server.equals(that.server) && command.equals(that.command) && disallowed.equals(that.disallowed);
+        return server.equals(that.server) && command.equals(that.command) && id.equals(that.id);
+    }
+
+    @Override
+    public boolean actualEquals(final @Nullable Object o) {
+        return equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(server, command, disallowed);
+        return Objects.hash(server, command, id);
     }
 
     @Override
@@ -60,7 +67,7 @@ public final class RawServerRulesDisallowed implements RawServerRuleId {
         return "RawServerRulesDisallowed{" +
                 "id='" + server + '\'' +
                 ", key='" + command + '\'' +
-                ", disallowed='" + disallowed + '\'' +
+                ", disallowed='" + id + '\'' +
                 '}';
     }
 }

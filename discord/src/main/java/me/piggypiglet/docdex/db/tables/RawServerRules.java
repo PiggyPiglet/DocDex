@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.db.tables;
 
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
+import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRule;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ import java.util.Objects;
 // https://www.piggypiglet.me
 // ------------------------------
 @Table("servers_rules")
-public final class RawServerRules implements RawServerRule {
+public final class RawServerRules implements RawServerRule, RawObject {
     private final String server;
     @Identifier private final String command;
     private String recommendation;
@@ -50,12 +51,20 @@ public final class RawServerRules implements RawServerRule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final RawServerRules that = (RawServerRules) o;
+        return server.equals(that.server) && command.equals(that.command);
+    }
+
+    @Override
+    public boolean actualEquals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final RawServerRules that = (RawServerRules) o;
         return server.equals(that.server) && command.equals(that.command) && recommendation.equals(that.recommendation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(server, command, recommendation);
+        return Objects.hash(server, command);
     }
 
     @Override

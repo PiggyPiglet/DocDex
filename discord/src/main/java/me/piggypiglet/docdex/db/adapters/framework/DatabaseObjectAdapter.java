@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.db.adapters;
+package me.piggypiglet.docdex.db.adapters.framework;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,5 +12,6 @@ public interface DatabaseObjectAdapter<T> {
     @NotNull
     Set<T> loadFromRaw();
 
-    void applyToRaw(@NotNull final T object);
+    @NotNull
+    ModificationRequest applyToRaw(@NotNull final T object);
 }

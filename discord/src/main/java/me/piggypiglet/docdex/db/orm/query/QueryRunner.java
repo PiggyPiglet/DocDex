@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.db.orm.query;
 
 import co.aikar.idb.Database;
 import com.google.inject.Inject;
+import me.piggypiglet.docdex.db.orm.query.modification.DeleteQuery;
 import me.piggypiglet.docdex.db.orm.query.modification.InsertQuery;
 import me.piggypiglet.docdex.db.orm.query.retrieve.SelectQuery;
 import me.piggypiglet.docdex.db.orm.query.structure.ExistsQuery;
@@ -13,7 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 // ------------------------------
@@ -28,17 +32,19 @@ public final class QueryRunner {
     private final ExistsQuery exists;
     private final SchemaQuery schema;
     private final InsertQuery insert;
+    private final DeleteQuery delete;
     private final SelectQuery select;
 
     @Inject
     public QueryRunner(@NotNull final Database database, @NotNull final ExistsQuery exists,
                        @NotNull final SchemaQuery schema, @NotNull final InsertQuery insert,
-                       @NotNull final SelectQuery select) {
+                       @NotNull final DeleteQuery delete, @NotNull final SelectQuery select) {
         this.database = database;
 
         this.exists = exists;
         this.schema = schema;
         this.insert = insert;
+        this.delete = delete;
         this.select = select;
     }
 
@@ -64,23 +70,21 @@ public final class QueryRunner {
     }
 
     public void insert(@NotNull final TableStructure table, @NotNull final Map<String, Object> data) {
-        if (!exists(table)) {
-            applySchema(table);
-        }
-
         @Language("SQL") final String query = insert.generate(table, data);
         final String error = "Something went wrong when inserting into " + table.getName() + " with the following query:\n" + query;
 
         tryAndCatch(() -> database.executeUpdate(query), error);
     }
 
+    public void delete(@NotNull final TableStructure table, @NotNull final Map<String, Object> queries) {
+        @Language("SQL") final String query = delete.generate(table, queries);
+        final String error = "Something went wrong when deleting from " + table.getName() + " with the following query:\n" + query;
+
+        tryAndCatch(() -> database.executeUpdate(query), error);
+    }
+
     @NotNull
     public Set<Map<String, Object>> load(@NotNull final TableStructure table, @NotNull final Map<String, String> queries) {
-        if (!exists(table)) {
-            applySchema(table);
-            return Collections.emptySet();
-        }
-
         @Language("SQL") final String query = select.generate(table, queries);
         final String error = "Something went wrong when loading from " + table.getName() + " with the following query:\n" + query;
 

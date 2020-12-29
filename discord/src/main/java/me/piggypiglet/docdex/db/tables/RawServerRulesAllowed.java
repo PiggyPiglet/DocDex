@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.db.tables;
 
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
+import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRuleId;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,16 +13,16 @@ import java.util.Objects;
 // https://www.piggypiglet.me
 // ------------------------------
 @Table("servers_rules_allowed")
-public final class RawServerRulesAllowed implements RawServerRuleId {
+public final class RawServerRulesAllowed implements RawServerRuleId, RawObject {
     private final String server;
     private final String command;
-    @Identifier private final String allowed;
+    @Identifier private final String id;
 
     public RawServerRulesAllowed(@NotNull final String server, @NotNull final String command,
-                                 @NotNull final String allowed) {
+                                 @NotNull final String id) {
         this.server = server;
         this.command = command;
-        this.allowed = allowed;
+        this.id = id;
     }
 
     @NotNull
@@ -39,7 +40,7 @@ public final class RawServerRulesAllowed implements RawServerRuleId {
     @NotNull
     @Override
     public String getId() {
-        return allowed;
+        return id;
     }
 
     @Override
@@ -47,12 +48,17 @@ public final class RawServerRulesAllowed implements RawServerRuleId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final RawServerRulesAllowed that = (RawServerRulesAllowed) o;
-        return server.equals(that.server) && command.equals(that.command) && allowed.equals(that.allowed);
+        return server.equals(that.server) && command.equals(that.command) && id.equals(that.id);
+    }
+
+    @Override
+    public boolean actualEquals(final Object o) {
+        return equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(server, command, allowed);
+        return Objects.hash(server, command, id);
     }
 
     @Override
@@ -60,7 +66,7 @@ public final class RawServerRulesAllowed implements RawServerRuleId {
         return "RawServerRulesAllowed{" +
                 "id='" + server + '\'' +
                 ", key='" + command + '\'' +
-                ", allowed='" + allowed + '\'' +
+                ", allowed='" + id + '\'' +
                 '}';
     }
 }

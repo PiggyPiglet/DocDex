@@ -2,19 +2,24 @@ package me.piggypiglet.docdex.db.adapters.implementations;
 
 import com.google.inject.Inject;
 import me.piggypiglet.docdex.config.CommandRule;
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapter;
+import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
+import me.piggypiglet.docdex.db.adapters.framework.ModificationRequest;
 import me.piggypiglet.docdex.db.objects.Server;
 import me.piggypiglet.docdex.db.tables.RawServer;
 import me.piggypiglet.docdex.db.tables.RawServerRules;
 import me.piggypiglet.docdex.db.tables.RawServerRulesAllowed;
 import me.piggypiglet.docdex.db.tables.RawServerRulesDisallowed;
+import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRule;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRuleId;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 // ------------------------------
@@ -56,9 +61,64 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                 }).collect(Collectors.toSet());
     }
 
+    @NotNull
     @Override
-    public void applyToRaw(final @NotNull Server server) {
+    public ModificationRequest applyToRaw(final @NotNull Server server) {
+        final String id = server.getId();
 
+        final RawServer rawServer = new RawServer(id, server.getPrefix());
+
+        final Set<Map.Entry<String, CommandRule>> rules = server.getRules().entrySet();
+        final Set<RawServerRules> rawServerRules = rules.stream()
+                .map(entry -> new RawServerRules(id, entry.getKey(), entry.getValue().getRecommendation()))
+                .collect(Collectors.toSet());
+        final Set<RawServerRulesAllowed> rawServerRulesAlloweds = getRawRuleIds(server, CommandRule::getAllowed, RawServerRulesAllowed::new);
+        final Set<RawServerRulesDisallowed> rawServerRulesDisalloweds = getRawRuleIds(server, CommandRule::getDisallowed, RawServerRulesDisallowed::new);
+
+        final Set<Object> modified = new HashSet<>();
+
+        addIfAdded(servers, modified, rawServer);
+        rawServerRules.forEach(object -> addIfAdded(serverRules, modified, object));
+        rawServerRulesAlloweds.forEach(object -> addIfAdded(serverRulesAlloweds, modified, object));
+        rawServerRulesDisalloweds.forEach(object -> addIfAdded(serverRulesDisalloweds, modified, object));
+
+        final Set<Object> deleted = new HashSet<>();
+
+        serverRules.removeIf(deleteIfDeleted(deleted, rawServerRules));
+        serverRulesAlloweds.removeIf(deleteIfDeleted(deleted, rawServerRulesAlloweds));
+        serverRulesDisalloweds.removeIf(deleteIfDeleted(deleted, rawServerRulesDisalloweds));
+
+        return new ModificationRequest(modified, deleted);
+    }
+
+    private static <T extends RawObject> void addIfAdded(@NotNull final Set<T> set, @NotNull final Set<Object> resultSet,
+                                                         @NotNull final T object) {
+        if (set.add(object)) {
+            resultSet.add(object);
+        } else {
+            new HashSet<>(set).stream()
+                    .filter(object::equals)
+                    .filter(element -> !element.actualEquals(object))
+                    .forEach(element -> {
+                        set.remove(element);
+                        set.add(object);
+                        resultSet.add(object);
+                    });
+        }
+    }
+
+    @NotNull
+    private static <T extends RawObject> Predicate<T> deleteIfDeleted(@NotNull final Set<Object> deleted,
+                                                                            @NotNull final Set<T> objects) {
+        return object -> {
+            final boolean result = objects.stream().noneMatch(object::actualEquals);
+
+            if (result) {
+                deleted.add(object);
+            }
+
+            return result;
+        };
     }
 
     @NotNull
@@ -67,5 +127,20 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                 .filter(rule -> rule.getServer().equals(parent.getServer()) && rule.getCommand().equals(parent.getCommand()))
                 .map(RawServerRuleId::getId)
                 .collect(Collectors.toSet());
+    }
+
+    @NotNull
+    private static <T extends RawServerRuleId> Set<T> getRawRuleIds(@NotNull final Server server, @NotNull final Function<CommandRule, Set<String>> getter,
+                                                                    @NotNull final RawServerRuleIdConstructor<T> constructor) {
+        return server.getRules().entrySet().stream()
+                .flatMap(entry -> getter.apply(entry.getValue()).stream()
+                        .map(id -> constructor.construct(server.getId(), entry.getKey(), id)))
+                .collect(Collectors.toSet());
+    }
+
+    @FunctionalInterface
+    private interface RawServerRuleIdConstructor<T> {
+        @NotNull
+        T construct(@NotNull final String server, @NotNull final String command, @NotNull final String id);
     }
 }

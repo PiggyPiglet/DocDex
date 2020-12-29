@@ -37,7 +37,14 @@ public final class InsertQuery implements ModificationQuery {
                 .map(value -> "'" + value + "'")
                 .collect(Collectors.joining(", ")));
 
-        builder.append(");");
+        builder.append(") ON DUPLICATE KEY UPDATE ");
+
+        builder.append(table.getColumns().stream()
+                .map(TableColumn::getName)
+                .map(name -> name + "='" + data.get(name) + "'")
+                .collect(Collectors.joining(", ")));
+
+        builder.append(";");
 
         return builder.toString();
     }

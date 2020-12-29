@@ -4,6 +4,7 @@ import me.piggypiglet.docdex.config.CommandRule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -38,6 +39,19 @@ public final class Server {
     @NotNull
     public Map<String, CommandRule> getRules() {
         return rules;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Server server = (Server) o;
+        return id.equals(server.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapter;
+import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +52,8 @@ public final class DatabaseObjectRegisterable extends Registerable {
             final Type type = ((ParameterizedType) Arrays.stream(adapter.getClass().getGenericInterfaces())
                     .filter(i -> TypeLiteral.get(i).getRawType() == DatabaseObjectAdapter.class)
                     .findAny().get()).getActualTypeArguments()[0];
+
+            addBinding((Key<DatabaseObjectAdapter<?>>) Key.get(Types.newParameterizedType(DatabaseObjectAdapter.class, type)), adapter);
 
             final Set<?> set = adapter.loadFromRaw();
             adapterSets.put(adapter, set);
