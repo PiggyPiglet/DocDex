@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -13,12 +14,14 @@ import java.util.Objects;
 public final class Server {
     private final String id;
     private String prefix;
+    private final Set<String> roles;
     private final Map<String, CommandRule> rules;
 
     public Server(@NotNull final String id, @NotNull final String prefix,
-                  @NotNull final Map<String, CommandRule> rules) {
+                  @NotNull final Set<String> roles, @NotNull final Map<String, CommandRule> rules) {
         this.id = id;
         this.prefix = prefix;
+        this.roles = roles;
         this.rules = rules;
     }
 
@@ -34,6 +37,11 @@ public final class Server {
 
     public void setPrefix(@NotNull final String prefix) {
         this.prefix = prefix;
+    }
+
+    @NotNull
+    public Set<String> getRoles() {
+        return roles;
     }
 
     @NotNull

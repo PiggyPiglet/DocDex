@@ -45,7 +45,6 @@ public final class DatabaseObjectRegisterable extends Registerable {
 
         addBinding(new TypeLiteral<Set<DatabaseObjectAdapter<?>>>() {}, ADAPTERS, adapters);
 
-        final Map<DatabaseObjectAdapter<?>, Set<?>> adapterSets = new HashMap<>();
         final Map<Class<?>, DatabaseObjectAdapter<?>> adapterMap = new HashMap<>();
 
         adapters.forEach(adapter -> {
@@ -56,12 +55,10 @@ public final class DatabaseObjectRegisterable extends Registerable {
             addBinding((Key<DatabaseObjectAdapter<?>>) Key.get(Types.newParameterizedType(DatabaseObjectAdapter.class, type)), adapter);
 
             final Set<?> set = adapter.loadFromRaw();
-            adapterSets.put(adapter, set);
             adapterMap.put(TypeLiteral.get(type).getRawType(), adapter);
             addBinding((Key<Set<?>>) Key.get(Types.setOf(type)), set);
         });
 
-        addBinding(new TypeLiteral<Map<DatabaseObjectAdapter<?>, Set<?>>>() {}, ADAPTERS, adapterSets);
         addBinding(new TypeLiteral<Map<Class<?>, DatabaseObjectAdapter<?>>>() {}, ADAPTERS, adapterMap);
     }
 }

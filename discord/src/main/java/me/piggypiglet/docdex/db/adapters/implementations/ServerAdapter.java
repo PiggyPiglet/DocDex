@@ -5,10 +5,7 @@ import me.piggypiglet.docdex.config.CommandRule;
 import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
 import me.piggypiglet.docdex.db.adapters.framework.ModificationRequest;
 import me.piggypiglet.docdex.db.objects.Server;
-import me.piggypiglet.docdex.db.tables.RawServer;
-import me.piggypiglet.docdex.db.tables.RawServerRules;
-import me.piggypiglet.docdex.db.tables.RawServerRulesAllowed;
-import me.piggypiglet.docdex.db.tables.RawServerRulesDisallowed;
+import me.piggypiglet.docdex.db.tables.*;
 import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRule;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRuleId;
@@ -28,14 +25,17 @@ import java.util.stream.Collectors;
 // ------------------------------
 public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     private final Set<RawServer> servers;
+    private final Set<RawServerRoles> serverRoles;
     private final Set<RawServerRules> serverRules;
     private final Set<RawServerRulesAllowed> serverRulesAlloweds;
     private final Set<RawServerRulesDisallowed> serverRulesDisalloweds;
 
     @Inject
     public ServerAdapter(@NotNull final Set<RawServer> servers, @NotNull final Set<RawServerRules> serverRules,
-                         @NotNull final Set<RawServerRulesAllowed> serverRulesAlloweds, @NotNull final Set<RawServerRulesDisallowed> serverRulesDisalloweds) {
+                         @NotNull final Set<RawServerRoles> serverRoles, @NotNull final Set<RawServerRulesAllowed> serverRulesAlloweds,
+                         @NotNull final Set<RawServerRulesDisallowed> serverRulesDisalloweds) {
         this.servers = servers;
+        this.serverRoles = serverRoles;
         this.serverRules = serverRules;
         this.serverRulesAlloweds = serverRulesAlloweds;
         this.serverRulesDisalloweds = serverRulesDisalloweds;
@@ -46,6 +46,9 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     public Set<Server> loadFromRaw() {
         return servers.stream()
                 .map(server -> {
+                    final Set<String> roles = serverRoles.stream()
+                            .map(RawServerRoles::getId)
+                            .collect(Collectors.toSet());
                     final Map<String, CommandRule> rules = new HashMap<>();
 
                     serverRules.stream()
@@ -57,7 +60,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                                 rules.put(rule.getCommand(), new CommandRule(allowed, disallowed, rule.getRecommendation()));
                             });
 
-                    return new Server(server.getId(), server.getPrefix(), rules);
+                    return new Server(server.getId(), server.getPrefix(), roles, rules);
                 }).collect(Collectors.toSet());
     }
 
