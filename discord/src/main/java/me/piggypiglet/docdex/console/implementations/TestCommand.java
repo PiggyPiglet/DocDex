@@ -1,12 +1,15 @@
 package me.piggypiglet.docdex.console.implementations;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import me.piggypiglet.docdex.console.ConsoleCommand;
-import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
-import me.piggypiglet.docdex.db.orm.TableManager;
+import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 // ------------------------------
@@ -15,30 +18,22 @@ import java.util.Set;
 // ------------------------------
 public final class TestCommand extends ConsoleCommand {
     private final Set<Server> servers;
-    private final TableManager tableManager;
-    private final DatabaseObjectAdapter<Server> adapter;
+    private final DatabaseObjectAdapters adapters;
 
     @Inject
-    public TestCommand(@NotNull final Set<Server> servers, @NotNull final TableManager tableManager,
-                       @NotNull final DatabaseObjectAdapter<Server> adapter) {
+    public TestCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjectAdapters adapters) {
         super("test", "");
         this.servers = servers;
-        this.tableManager = tableManager;
-        this.adapter = adapter;
+        this.adapters = adapters;
     }
 
     @Override
     public void execute() {
-//        servers.add(new Server("6969", "d;", Map.of("test", new CommandRule(Set.of("121"), Set.of("4512"), "woo woo"))));
-//        servers.stream().findAny().ifPresent(server -> server.getRules().remove("test2"));
-//        servers.stream().findAny().ifPresent(server -> server.getRules().put("test2", new CommandRule(Sets.newHashSet("42"), Sets.newHashSet("41"), "ayy")));
-//        servers.stream().findAny().ifPresent(server -> server.getRules().get("test").getAllowed().remove("6868"));
+        final Map<String, CommandRule> rules = new HashMap<>();
+        rules.put("help", new CommandRule(Sets.newHashSet("339674158596358145", "411094432402636802"), Sets.newHashSet(), "You can\\'t use that command in this channel, please go to <#339674158596358145>."));
+        final Server server = new Server("164280494874165248", "d;", Sets.newHashSet("164525396354793472"), rules);
+        servers.add(server);
         msg(servers);
-        servers.stream()
-                .map(adapter::applyToRaw)
-                .forEach(request -> {
-                    request.getModified().forEach(tableManager::save);
-                    request.getDeleted().forEach(tableManager::delete);
-                });
+        adapters.save(server);
     }
 }
