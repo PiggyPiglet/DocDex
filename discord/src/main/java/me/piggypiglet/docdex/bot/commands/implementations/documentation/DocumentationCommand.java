@@ -68,7 +68,7 @@ public abstract class DocumentationCommand extends BotCommand {
         }
 
         if (args.size() == 0 || args.get(0).isBlank()) {
-            channel.sendMessage("Incorrect usage. Correct usage is: " + start + " [javadoc] <query> [limit/$(first result)]").queue();
+            channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " + start + " [javadoc] <query> [limit/$(first result)]").queue();
             return;
         }
 

@@ -24,9 +24,7 @@ public final class MysqlUtils {
     @NotNull
     public static String escapeSql(@NotNull final String string) {
         final int length = string.length();
-        // 1.1 for some reason? I'm guessing it's a good estimate for how many backslashes is needed per char.
-        // -2 because we don't have a ' prefix & suffix like the original impl.
-        final StringBuilder builder = new StringBuilder((int) (length * 1.1) - 2);
+        final StringBuilder builder = new StringBuilder();
 
         //
         // Note: buf.append(char) is _faster_ than appending in blocks, because the block append requires a System.arraycopy().... go figure...

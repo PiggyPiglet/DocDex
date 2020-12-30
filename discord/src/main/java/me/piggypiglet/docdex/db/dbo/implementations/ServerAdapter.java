@@ -90,10 +90,10 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
 
         final Set<Object> deleted = new HashSet<>();
 
-        serverRoles.removeIf(deleteIfDeleted(deleted, rawServerRoles));
-        serverRules.removeIf(deleteIfDeleted(deleted, rawServerRules));
-        serverRulesAlloweds.removeIf(deleteIfDeleted(deleted, rawServerRulesAlloweds));
-        serverRulesDisalloweds.removeIf(deleteIfDeleted(deleted, rawServerRulesDisalloweds));
+        deleteIfDeleted(serverRoles, role -> role.getServer().equals(id), rawServerRoles, deleted);
+        deleteIfDeleted(serverRules, rule -> rule.getServer().equals(id), rawServerRules, deleted);
+        deleteIfDeleted(serverRulesAlloweds, allowed -> allowed.getServer().equals(id), rawServerRulesAlloweds, deleted);
+        deleteIfDeleted(serverRulesDisalloweds, disallowed -> disallowed.getServer().equals(id), rawServerRulesDisalloweds, deleted);
 
         return new ModificationRequest(modified, deleted);
     }
@@ -114,18 +114,20 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
         }
     }
 
-    @NotNull
-    private static <T extends RawObject> Predicate<T> deleteIfDeleted(@NotNull final Set<Object> deleted,
-                                                                      @NotNull final Set<T> objects) {
-        return object -> {
-            final boolean result = objects.stream().noneMatch(object::actualEquals);
-
-            if (result) {
-                deleted.add(object);
+    private static <T> void deleteIfDeleted(@NotNull final Set<T> cached, @NotNull final Predicate<T> filter,
+                                            @NotNull final Set<T> converted, @NotNull final Set<Object> deleted) {
+        cached.removeIf(object -> {
+            if (!filter.test(object)) {
+                return false;
             }
 
-            return result;
-        };
+            if (!converted.contains(object)) {
+                deleted.add(object);
+                return true;
+            }
+
+            return false;
+        });
     }
 
     @NotNull

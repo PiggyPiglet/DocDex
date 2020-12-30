@@ -38,6 +38,6 @@ public abstract class ServerCommand {
     }
 
     public void sendUsage(@NotNull final Consumer<String> messageFunction) {
-        messageFunction.accept("Incorrect usage, use the command as follows: " + usage);
+        messageFunction.accept("**Incorrect usage:**\nCorrect usage is: " + usage);
     }
 }

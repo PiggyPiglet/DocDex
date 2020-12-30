@@ -5,14 +5,12 @@ import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.commands.framework.PermissionCommand;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.ServerCommand;
-import me.piggypiglet.docdex.db.utils.MysqlUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -33,11 +31,7 @@ public abstract class BotServerCommand extends BotCommand implements PermissionC
 
     @Override
     protected void execute(final @NotNull User user, final @NotNull Message message,
-                           @NotNull List<String> args) {
-        args = args.stream()
-                .map(MysqlUtils::escapeSql)
-                .collect(Collectors.toList());
-
+                           @NotNull final List<String> args) {
         if (args.size() < 1 || args.get(0).isBlank()) {
             command.sendUsage(string -> message.getChannel().sendMessage(string).queue());
             return;

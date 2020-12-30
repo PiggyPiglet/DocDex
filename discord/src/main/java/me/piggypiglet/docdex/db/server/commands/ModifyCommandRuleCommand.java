@@ -4,7 +4,6 @@ import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.util.ModificationOptions;
-import me.piggypiglet.docdex.db.utils.MysqlUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -40,7 +39,7 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
         }
 
         final String command = args.get(isRecommendation ? 2 : 3);
-        final String value = MysqlUtils.escapeSql(String.join(" ", args.subList(isRecommendation ? 3 : 4, args.size())));
+        final String value = String.join(" ", args.subList(isRecommendation ? 3 : 4, args.size()));
 
         final CommandRule rule = Objects.requireNonNull(Optional.ofNullable(server.getRules().get(command))
                 .orElseGet(() -> server.getRules().put(command, databaseObjects.createInstance(CommandRule.class))));

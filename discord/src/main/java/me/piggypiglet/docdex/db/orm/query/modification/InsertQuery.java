@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.db.orm.query.modification;
 
 import me.piggypiglet.docdex.db.orm.structure.TableColumn;
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
+import me.piggypiglet.docdex.db.utils.MysqlUtils;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,17 +35,17 @@ public final class InsertQuery implements ModificationQuery {
                 .map(TableColumn::getName)
                 .map(data::get)
                 .map(String::valueOf)
-                .map(value -> "'" + value + "'")
+                .map(value -> '\'' + MysqlUtils.escapeSql(value) + '\'')
                 .collect(Collectors.joining(", ")));
 
         builder.append(") ON DUPLICATE KEY UPDATE ");
 
         builder.append(table.getColumns().stream()
                 .map(TableColumn::getName)
-                .map(name -> name + "='" + data.get(name) + "'")
+                .map(name -> name + "='" + MysqlUtils.escapeSql(String.valueOf(data.get(name))) + '\'')
                 .collect(Collectors.joining(", ")));
 
-        builder.append(";");
+        builder.append(';');
 
         return builder.toString();
     }

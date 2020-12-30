@@ -30,8 +30,8 @@ public final class TestCommand extends ConsoleCommand {
     @Override
     public void execute() {
         final Map<String, CommandRule> rules = new HashMap<>();
-        rules.put("help", new CommandRule(Sets.newHashSet("339674158596358145", "411094432402636802"), Sets.newHashSet(), "You can\\'t use that command in this channel, please go to <#339674158596358145>."));
-        final Server server = new Server("164280494874165248", "d;", Sets.newHashSet("164525396354793472"), rules);
+        rules.put("help", new CommandRule(Sets.newHashSet("339674158596358145", "411094432402636802"), Sets.newHashSet(), "You can't use that command in this channel, please go to <#339674158596358145>."));
+        final Server server = new Server("164280494874165248", "bd;", Sets.newHashSet("164525396354793472"), rules);
         servers.add(server);
         msg(servers);
         adapters.save(server);

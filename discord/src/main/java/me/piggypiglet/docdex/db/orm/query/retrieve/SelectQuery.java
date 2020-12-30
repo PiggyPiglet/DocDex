@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.db.orm.query.retrieve;
 
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
+import me.piggypiglet.docdex.db.utils.MysqlUtils;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +26,7 @@ public final class SelectQuery {
         }
 
         builder.append(queries.entrySet().stream()
-                .map(entry -> entry.getKey() + '=' + entry.getValue())
+                .map(entry -> entry.getKey() + "='" + MysqlUtils.escapeSql(entry.getValue()) + '\'')
                 .collect(Collectors.joining(" AND ")));
 
         builder.append(";");
