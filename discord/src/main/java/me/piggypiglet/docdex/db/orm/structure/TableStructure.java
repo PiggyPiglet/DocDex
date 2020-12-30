@@ -11,14 +11,14 @@ import java.util.Set;
 public final class TableStructure {
     private final Class<?> clazz;
     private final String name;
-    private final TableColumn identifier;
+    private final Set<TableColumn> identifiers;
     private final Set<TableColumn> columns;
 
     public TableStructure(@NotNull final Class<?> clazz, @NotNull final String name,
-                          @NotNull final TableColumn identifier, @NotNull final Set<TableColumn> columns) {
+                          @NotNull final Set<TableColumn> identifiers, @NotNull final Set<TableColumn> columns) {
         this.clazz = clazz;
         this.name = name;
-        this.identifier = identifier;
+        this.identifiers = identifiers;
         this.columns = columns;
     }
 
@@ -33,8 +33,8 @@ public final class TableStructure {
     }
 
     @NotNull
-    public TableColumn getIdentifier() {
-        return identifier;
+    public Set<TableColumn> getIdentifiers() {
+        return identifiers;
     }
 
     @NotNull

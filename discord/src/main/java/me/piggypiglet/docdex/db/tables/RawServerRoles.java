@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.db.tables;
 
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
+import me.piggypiglet.docdex.db.orm.annotations.Length;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
 import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,9 @@ import java.util.Objects;
 // ------------------------------
 @Table("server_roles")
 public final class RawServerRoles implements RawObject {
-    @Identifier private final String server;
+    @Length(ID_LENGTH)
+    private final String server;
+    @Identifier @Length(ID_LENGTH)
     private final String id;
 
     public RawServerRoles(@NotNull final String server, @NotNull final String id) {

@@ -19,12 +19,12 @@ public final class TableStructureFactory {
 
     @NotNull
     public static TableStructure from(@NotNull final Class<?> clazz, @NotNull final String name,
-                                      @NotNull final Field identifier) {
+                                      @NotNull final Set<Field> identifiers) {
         final Set<Field> fields = Set.of(clazz.getDeclaredFields());
         final Set<TableColumn> columns = fields.stream()
                 .map(TableColumnFactory::from)
                 .collect(Collectors.toSet());
 
-        return new TableStructure(clazz, name, TableColumnFactory.from(identifier), columns);
+        return new TableStructure(clazz, name, identifiers.stream().map(TableColumnFactory::from).collect(Collectors.toSet()), columns);
     }
 }

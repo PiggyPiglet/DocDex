@@ -31,18 +31,16 @@ public final class TableStructuresRegisterable extends Registerable {
         this.tables = tables;
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public void execute() {
         final Map<Class<?>, TableStructure> structures = tables.stream()
                 .collect(Collectors.toMap(clazz -> clazz, clazz -> {
                     final String name = clazz.getAnnotation(Table.class).value();
-                    final Field identifier = Arrays.stream(clazz.getDeclaredFields())
+                    final Set<Field> identifiers = Arrays.stream(clazz.getDeclaredFields())
                             .filter(field -> field.isAnnotationPresent(Identifier.class))
-                            .findAny()
-                            .get();
+                            .collect(Collectors.toSet());
 
-                    return TableStructureFactory.from(clazz, name, identifier);
+                    return TableStructureFactory.from(clazz, name, identifiers);
                 }));
 
         addBinding(new TypeLiteral<Map<Class<?>, TableStructure>>() {}, TABLES, structures);

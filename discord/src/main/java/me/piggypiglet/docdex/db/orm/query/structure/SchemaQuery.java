@@ -2,9 +2,11 @@ package me.piggypiglet.docdex.db.orm.query.structure;
 
 import me.piggypiglet.docdex.db.orm.structure.TableColumn;
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
-import me.piggypiglet.docdex.db.orm.structure.objects.SqlDataStructures;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -27,19 +29,21 @@ public final class SchemaQuery implements StructureQuery {
                         .append(column.getDataStructure())
                         .append(" NOT NULL, "));
 
-        final TableColumn identifier = structure.getIdentifier();
+        final Set<TableColumn> identifiers = structure.getIdentifiers();
 
-        builder.append("PRIMARY KEY (`")
-                .append(identifier.getName())
-                .append("`");
+        builder.append("PRIMARY KEY (");
 
-        final SqlDataStructures dataStructure = identifier.getDataStructure();
+        builder.append(identifiers.stream()
+                .map(identifier -> {
+                    final String key = '`' + identifier.getName() + '`';
+                    final int length = identifier.getLength();
 
-        if (dataStructure.getLength() != -1) {
-            builder.append("(")
-                    .append(dataStructure.getLength())
-                    .append(")");
-        }
+                    if (length != -1) {
+                        return key + '(' + length + ')';
+                    }
+
+                    return key;
+                }).collect(Collectors.joining(", ")));
 
         builder.append(")) COLLATE='utf8_general_ci' ENGINE=InnoDB;");
 

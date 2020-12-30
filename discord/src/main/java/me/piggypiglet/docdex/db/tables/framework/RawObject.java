@@ -7,5 +7,7 @@ import org.jetbrains.annotations.Nullable;
 // https://www.piggypiglet.me
 // ------------------------------
 public interface RawObject {
+    int ID_LENGTH = 19;
+
     boolean actualEquals(@Nullable final Object o);
 }

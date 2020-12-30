@@ -10,10 +10,13 @@ import org.jetbrains.annotations.NotNull;
 public final class TableColumn {
     private final String name;
     private final SqlDataStructures dataStructure;
+    private final int length;
 
-    public TableColumn(@NotNull final String name, @NotNull final SqlDataStructures dataStructure) {
+    public TableColumn(@NotNull final String name, @NotNull final SqlDataStructures dataStructure,
+                       final int length) {
         this.name = name;
         this.dataStructure = dataStructure;
+        this.length = length;
     }
 
     @NotNull
@@ -24,5 +27,9 @@ public final class TableColumn {
     @NotNull
     public SqlDataStructures getDataStructure() {
         return dataStructure;
+    }
+
+    public int getLength() {
+        return length;
     }
 }

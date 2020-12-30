@@ -1,11 +1,13 @@
 package me.piggypiglet.docdex.db.orm.structure.factory;
 
 import com.google.gson.FieldNamingPolicy;
+import me.piggypiglet.docdex.db.orm.annotations.Length;
 import me.piggypiglet.docdex.db.orm.structure.TableColumn;
 import me.piggypiglet.docdex.db.orm.structure.objects.SqlDataStructures;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -25,6 +27,10 @@ public final class TableColumnFactory {
             throw new AssertionError(field.getType() + " is not an implemented sql data structure.");
         }
 
-        return new TableColumn(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES.translateName(field), dataStructure);
+        final int length = Optional.ofNullable(field.getAnnotation(Length.class))
+                .map(Length::value)
+                .orElse(dataStructure.getLength());
+
+        return new TableColumn(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES.translateName(field), dataStructure, length);
     }
 }

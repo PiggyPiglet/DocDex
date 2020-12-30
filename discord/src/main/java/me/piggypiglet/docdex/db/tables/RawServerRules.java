@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.db.tables;
 
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
+import me.piggypiglet.docdex.db.orm.annotations.Length;
 import me.piggypiglet.docdex.db.orm.annotations.Table;
 import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRule;
@@ -14,8 +15,10 @@ import java.util.Objects;
 // ------------------------------
 @Table("servers_rules")
 public final class RawServerRules implements RawServerRule, RawObject {
+    @Identifier @Length(ID_LENGTH)
     private final String server;
-    @Identifier private final String command;
+    @Identifier
+    private final String command;
     private String recommendation;
 
     public RawServerRules(@NotNull final String server, @NotNull final String command,
