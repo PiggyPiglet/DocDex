@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -113,7 +114,12 @@ public final class BotCommandHandler {
 
         final String start = prefix + match.get();
 
-        command.run(user, message, start);
+        try {
+            command.run(user, message, start);
+        } catch (PermissionException exception) {
+            message.getChannel().sendMessage("I'm missing the permission: " + exception.getPermission())
+                    .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+        }
     }
 
     @NotNull

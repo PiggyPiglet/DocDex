@@ -41,7 +41,9 @@ public final class PaginationManager {
             return;
         }
 
-        reaction.removeReaction(user).queue();
+        if (message.isFromGuild()) {
+            reaction.removeReaction(user).queue();
+        }
 
         final MessageReaction.ReactionEmote reactionEmote = reaction.getReactionEmote();
         final EmoteWrapper emote;
