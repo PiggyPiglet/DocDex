@@ -63,14 +63,17 @@ public final class JavadocPageDeserializer {
         final Multimap<String, Map.Entry<String, Element>> detailElements = HashMultimap.create();
 
         if (old) {
-            document.select(".details > ul.blockList > li.blockList > ul.blockList > li.blockList > h3").stream()
+            document.select(".details > ul.blockList > li.blockList ul.blockList > li.blockList > h3").stream()
                     .filter(element -> OLD_DETAIL_HEADERS.containsKey(element.text().toLowerCase()))
                     .forEach(element -> {
                         final String key = OLD_DETAIL_HEADERS.get(element.text().toLowerCase());
 
-                        element.parent().select("ul.blockList,ul.blockListLast").forEach(ul ->
-                            detailElements.put(key, Map.entry(link + '#' + ul.previousElementSibling().attr("name"), ul.selectFirst("li.blockList")))
-                        );
+                        element.parent().select("ul.blockList,ul.blockListLast").forEach(ul -> {
+                            String name = ul.previousElementSibling().attr("name");
+                            name = name.isBlank() ? ul.previousElementSibling().id() : name;
+
+                            detailElements.put(key, Map.entry(link + '#' + name, ul.selectFirst("li.blockList")));
+                        });
                     });
         } else {
             NEW_DETAIL_CLASSES.forEach((clazz, key) ->

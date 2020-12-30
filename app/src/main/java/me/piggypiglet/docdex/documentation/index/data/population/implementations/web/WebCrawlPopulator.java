@@ -75,9 +75,11 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         final Set<DocumentedObject> objects = new HashSet<>();
-        final Set<Map.Entry<String, String>> types = documents.stream().flatMap(document -> document.select("dl > dt > a").stream())
+        final Set<Map.Entry<String, String>> types = documents.stream().flatMap(document -> document.select("dl > dt").stream())
+                .map(element -> element.selectFirst("a"))
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
-                .map(element -> Map.entry(element.absUrl("href"), element.attr("href")))
+                .map(element -> Map.entry(element.absUrl("href"), element.attr("href")
+                        .replace("../", "").replace("./", "")))
                 .collect(Collectors.toSet());
 
         LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
@@ -100,7 +102,11 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 return;
             }
 
-            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue().replace("../", "")));
+            if (entry.getValue().contains("ExecutorService")) {
+                System.out.println(entry);
+            }
+
+            objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue()));
         }));
 
         final Map<String, DocumentedObject> map = new HashMap<>();

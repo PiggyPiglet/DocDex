@@ -26,6 +26,7 @@ public final class ServerCreator implements InstanceCreator<Server> {
 
     @NotNull
     public static Server createInstance(@NotNull final String id) {
+        //todo: use default prefix from config cuz hardcoded bad D:
         return new Server(id, "d;", new HashSet<>(), new HashMap<>());
     }
 }
