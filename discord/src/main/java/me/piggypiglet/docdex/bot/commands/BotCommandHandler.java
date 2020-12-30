@@ -117,7 +117,17 @@ public final class BotCommandHandler {
         try {
             command.run(user, message, start);
         } catch (PermissionException exception) {
-            message.getChannel().sendMessage("I'm missing the permission: " + exception.getPermission())
+            final String error = "I'm missing the permission: " + exception.getPermission();
+
+            if (exception.getPermission() == Permission.MESSAGE_WRITE) {
+                try {
+                    message.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(error).queue());
+                } catch (PermissionException exception2) {}
+
+                return;
+            }
+
+            message.getChannel().sendMessage(error)
                     .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
         }
     }

@@ -50,7 +50,7 @@ public final class JavadocsCommand extends BotCommand {
 
     @Inject
     public JavadocsCommand(@NotNull final Config config, @NotNull final PaginationManager paginationManager) {
-        super(Set.of("javadocs", "docs"), "", "Get a list of javadocs.");
+        super(Set.of("javadocs"), "", "Get a list of javadocs.");
         this.config = config;
         this.paginationManager = paginationManager;
     }
