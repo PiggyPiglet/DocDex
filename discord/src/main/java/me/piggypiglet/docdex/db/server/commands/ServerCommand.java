@@ -1,6 +1,6 @@
 package me.piggypiglet.docdex.db.server.commands;
 
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.Server;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 public abstract class ServerCommand {
     private final String usage;
     private final int args;
-    private final DatabaseObjectAdapters adapters;
+    private final DatabaseObjects adapters;
 
     protected ServerCommand(@NotNull final String usage, final int args,
-                            @NotNull final DatabaseObjectAdapters adapters) {
+                            @NotNull final DatabaseObjects adapters) {
         this.usage = usage;
         this.args = args;
         this.adapters = adapters;

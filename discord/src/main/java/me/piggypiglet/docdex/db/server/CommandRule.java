@@ -8,7 +8,6 @@ import java.util.Set;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-
 public final class CommandRule {
     private final Set<String> allowed;
     private final Set<String> disallowed;

@@ -1,10 +1,9 @@
 package me.piggypiglet.docdex.db.server.commands;
 
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.util.ModificationOptions;
-import me.piggypiglet.docdex.db.server.creation.CommandRuleCreator;
 import me.piggypiglet.docdex.db.utils.MysqlUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,8 +21,11 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
             "recommendation", ModificationTypes.RECOMMENDATION
     );
 
-    public ModifyCommandRuleCommand(@NotNull final String usage, @NotNull final DatabaseObjectAdapters adapters) {
-        super(usage,5, adapters);
+    private final DatabaseObjects databaseObjects;
+
+    public ModifyCommandRuleCommand(@NotNull final String usage, @NotNull final DatabaseObjects databaseObjects) {
+        super(usage,5, databaseObjects);
+        this.databaseObjects = databaseObjects;
     }
 
     @Override
@@ -41,7 +43,7 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
         final String value = MysqlUtils.escapeSql(String.join(" ", args.subList(isRecommendation ? 3 : 4, args.size())));
 
         final CommandRule rule = Objects.requireNonNull(Optional.ofNullable(server.getRules().get(command))
-                .orElseGet(() -> server.getRules().put(command, CommandRuleCreator.createInstance())));
+                .orElseGet(() -> server.getRules().put(command, databaseObjects.createInstance(CommandRule.class))));
 
         if (isRecommendation) {
             rule.setRecommendation(value);

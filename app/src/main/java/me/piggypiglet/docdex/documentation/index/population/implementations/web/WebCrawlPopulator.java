@@ -102,10 +102,6 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 return;
             }
 
-            if (entry.getValue().contains("ExecutorService")) {
-                System.out.println(entry);
-            }
-
             objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue()));
         }));
 

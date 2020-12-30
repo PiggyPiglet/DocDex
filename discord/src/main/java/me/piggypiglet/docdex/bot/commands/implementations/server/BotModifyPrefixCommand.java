@@ -1,7 +1,7 @@
 package me.piggypiglet.docdex.bot.commands.implementations.server;
 
 import com.google.inject.Inject;
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.ModifyPrefixCommand;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public final class BotModifyPrefixCommand extends BotServerCommand {
     private static final String USAGE = "<prefix>";
 
     @Inject
-    public BotModifyPrefixCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjectAdapters adapters) {
+    public BotModifyPrefixCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjects adapters) {
         super(Set.of("prefix"), USAGE, "Set the server's command prefix.", servers,
                 new ModifyPrefixCommand(USAGE, adapters));
     }

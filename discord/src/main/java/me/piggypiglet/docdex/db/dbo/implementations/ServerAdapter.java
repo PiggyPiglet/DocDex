@@ -1,8 +1,8 @@
-package me.piggypiglet.docdex.db.adapters.implementations;
+package me.piggypiglet.docdex.db.dbo.implementations;
 
 import com.google.inject.Inject;
-import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
-import me.piggypiglet.docdex.db.adapters.framework.ModificationRequest;
+import me.piggypiglet.docdex.db.dbo.framework.adapter.DatabaseObjectAdapter;
+import me.piggypiglet.docdex.db.dbo.framework.adapter.ModificationRequest;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.tables.*;

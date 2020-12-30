@@ -1,7 +1,7 @@
 package me.piggypiglet.docdex.bot.listeners;
 
 import com.google.inject.Inject;
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -19,11 +19,14 @@ import java.util.concurrent.Executors;
 public final class GuildJoinListener extends ListenerAdapter {
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(2);
 
+    private final ServerCreator creator;
     private final Set<Server> servers;
-    private final DatabaseObjectAdapters adapters;
+    private final DatabaseObjects adapters;
 
     @Inject
-    public GuildJoinListener(@NotNull final Set<Server> servers, @NotNull final DatabaseObjectAdapters adapters) {
+    public GuildJoinListener(@NotNull final ServerCreator creator, @NotNull final Set<Server> servers,
+                             @NotNull final DatabaseObjects adapters) {
+        this.creator = creator;
         this.servers = servers;
         this.adapters = adapters;
     }
@@ -31,7 +34,7 @@ public final class GuildJoinListener extends ListenerAdapter {
     @Override
     public void onGuildJoin(@NotNull final GuildJoinEvent event) {
         EXECUTOR.submit(() -> {
-            final Server server = ServerCreator.createInstance(event.getGuild().getId());
+            final Server server = creator.createInstance(event.getGuild().getId());
             servers.add(server);
             adapters.save(server);
         });

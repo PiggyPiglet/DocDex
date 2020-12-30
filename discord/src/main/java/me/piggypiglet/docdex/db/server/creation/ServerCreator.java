@@ -1,10 +1,11 @@
 package me.piggypiglet.docdex.db.server.creation;
 
-import com.google.gson.InstanceCreator;
+import com.google.inject.Inject;
+import me.piggypiglet.docdex.config.Config;
+import me.piggypiglet.docdex.db.dbo.framework.DatabaseObjectCreator;
 import me.piggypiglet.docdex.db.server.Server;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,21 +13,21 @@ import java.util.HashSet;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class ServerCreator implements InstanceCreator<Server> {
-    @NotNull
-    @Override
-    public Server createInstance(final Type type) {
-        return createInstance();
+public final class ServerCreator implements DatabaseObjectCreator<Server> {
+    private final Config config;
+
+    @Inject
+    public ServerCreator(@NotNull final Config config) {
+        this.config = config;
     }
 
-    @NotNull
-    public static Server createInstance() {
+    @Override
+    public @NotNull Server createInstance() {
         return createInstance("");
     }
 
     @NotNull
-    public static Server createInstance(@NotNull final String id) {
-        //todo: use default prefix from config cuz hardcoded bad D:
-        return new Server(id, "d;", new HashSet<>(), new HashMap<>());
+    public Server createInstance(@NotNull final String id) {
+        return new Server(id, config.getPrefix(), new HashSet<>(), new HashMap<>());
     }
 }

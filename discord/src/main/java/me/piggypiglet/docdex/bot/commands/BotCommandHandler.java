@@ -9,8 +9,6 @@ import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.documentation.SimpleCommand;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
-import me.piggypiglet.docdex.db.server.creation.CommandRuleCreator;
-import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -28,19 +26,22 @@ import java.util.concurrent.atomic.AtomicReference;
 // ------------------------------
 @Singleton
 public final class BotCommandHandler {
-    private static final Server DEFAULT_SERVER = ServerCreator.createInstance();
-    private static final CommandRule DEFAULT_RULE = CommandRuleCreator.createInstance();
 
     private final Set<Server> servers;
     private final Set<BotCommand> commands;
     private final BotCommand unknownCommand;
+    private final Server defaultServer;
+    private final CommandRule defaultCommandRule;
 
     @Inject
     public BotCommandHandler(@NotNull final Set<Server> servers, @NotNull @Named("jda commands") final Set<BotCommand> commands,
-                             @NotNull final SimpleCommand defaultCommand, @NotNull final HelpCommand helpCommand) {
+                             @NotNull final SimpleCommand defaultCommand, @NotNull final HelpCommand helpCommand,
+                             @NotNull @Named("default") final Server defaultServer, @NotNull @Named("default") final CommandRule defaultCommandRule) {
         this.servers = servers;
         this.commands = commands;
         this.unknownCommand = defaultCommand;
+        this.defaultServer = defaultServer;
+        this.defaultCommandRule = defaultCommandRule;
 
         commands.add(defaultCommand);
         commands.add(helpCommand);
@@ -52,9 +53,9 @@ public final class BotCommandHandler {
         if (message.isFromGuild()) {
             server = servers.stream()
                     .filter(element -> element.getId().equals(message.getGuild().getId()))
-                    .findAny().orElse(DEFAULT_SERVER);
+                    .findAny().orElse(defaultServer);
         } else {
-            server = DEFAULT_SERVER;
+            server = defaultServer;
         }
 
         final String prefix = server.getPrefix().toLowerCase();
@@ -80,7 +81,6 @@ public final class BotCommandHandler {
 
         if (command instanceof PermissionCommand) {
             if (!message.isFromGuild()) {
-                message.delete().queue();
                 message.getChannel().sendMessage("You cannot use this command outside of a server.")
                         .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
                 return;
@@ -98,7 +98,7 @@ public final class BotCommandHandler {
             }
         }
 
-        final CommandRule rule = server.getRules().getOrDefault(match.get(), DEFAULT_RULE);
+        final CommandRule rule = server.getRules().getOrDefault(match.get(), defaultCommandRule);
 
         final Set<String> allowed = rule.getAllowed();
         final Set<String> disallowed = rule.getDisallowed();

@@ -5,7 +5,6 @@ import com.google.inject.name.Named;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
 import me.piggypiglet.docdex.db.server.Server;
-import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import me.piggypiglet.docdex.scanning.annotations.Hidden;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,16 +21,17 @@ import java.util.TreeSet;
 // ------------------------------
 @Hidden
 public final class HelpCommand extends BotCommand {
-    private static final String DEFAULT_PREFIX = ServerCreator.createInstance().getPrefix();
-
     private final Set<BotCommand> commands;
     private final Set<Server> servers;
+    private final String defaultPrefix;
 
     @Inject
-    public HelpCommand(@NotNull @Named("jda commands") final Set<BotCommand> commands, @NotNull final Set<Server> servers) {
+    public HelpCommand(@NotNull @Named("jda commands") final Set<BotCommand> commands, @NotNull final Set<Server> servers,
+                       @NotNull @Named("default") final Server defaultServer) {
         super(Set.of("help"), "", "This page.");
         this.commands = commands;
         this.servers = servers;
+        this.defaultPrefix = defaultServer.getPrefix();
     }
 
     @Override
@@ -43,9 +43,9 @@ public final class HelpCommand extends BotCommand {
                     .filter(server -> server.getId().equals(message.getGuild().getId()))
                     .findAny()
                     .map(Server::getPrefix)
-                    .orElse(DEFAULT_PREFIX);
+                    .orElse(defaultPrefix);
         } else {
-            prefix = DEFAULT_PREFIX;
+            prefix = defaultPrefix;
         }
 
         final EmbedBuilder embed = new EmbedBuilder();

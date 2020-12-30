@@ -1,6 +1,6 @@
 package me.piggypiglet.docdex.db.server.commands;
 
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.util.ModificationOptions;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class ModifyRoleCommand extends ServerCommand {
-    public ModifyRoleCommand(@NotNull final String usage, @NotNull final DatabaseObjectAdapters adapters) {
+    public ModifyRoleCommand(@NotNull final String usage, @NotNull final DatabaseObjects adapters) {
         super(usage, 3, adapters);
     }
 

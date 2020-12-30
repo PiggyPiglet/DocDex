@@ -3,7 +3,7 @@ package me.piggypiglet.docdex.console.implementations;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import me.piggypiglet.docdex.console.ConsoleCommand;
-import me.piggypiglet.docdex.db.adapters.DatabaseObjectAdapters;
+import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import org.jetbrains.annotations.NotNull;
@@ -18,10 +18,10 @@ import java.util.Set;
 // ------------------------------
 public final class TestCommand extends ConsoleCommand {
     private final Set<Server> servers;
-    private final DatabaseObjectAdapters adapters;
+    private final DatabaseObjects adapters;
 
     @Inject
-    public TestCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjectAdapters adapters) {
+    public TestCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjects adapters) {
         super("test", "");
         this.servers = servers;
         this.adapters = adapters;

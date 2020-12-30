@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.db.adapters.framework;
+package me.piggypiglet.docdex.db.dbo.framework.adapter;
 
 import org.jetbrains.annotations.NotNull;
 

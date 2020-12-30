@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.db.adapters.registerables;
+package me.piggypiglet.docdex.db.dbo.registerables;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -8,7 +8,7 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
-import me.piggypiglet.docdex.db.adapters.framework.DatabaseObjectAdapter;
+import me.piggypiglet.docdex.db.dbo.framework.adapter.DatabaseObjectAdapter;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
