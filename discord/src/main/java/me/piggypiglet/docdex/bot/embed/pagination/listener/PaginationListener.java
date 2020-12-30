@@ -10,12 +10,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class PaginationListener extends ListenerAdapter {
+    private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(10);
+
     private final Set<String> ids;
     private final PaginationManager paginationManager;
 
@@ -27,18 +31,20 @@ public final class PaginationListener extends ListenerAdapter {
 
     @Override
     public void onMessageReactionAdd(@NotNull final MessageReactionAddEvent event) {
-        if (Optional.ofNullable(event.getUser()).map(User::isBot).orElse(true)) {
-            return;
-        }
-
-        final String id = event.getMessageId();
-
-        event.getChannel().retrieveMessageById(id).queue(message -> {
-            if (!ids.contains(id)) {
+        EXECUTOR.submit(() -> {
+            if (Optional.ofNullable(event.getUser()).map(User::isBot).orElse(true)) {
                 return;
             }
 
-            paginationManager.process(message, event.getUser(), event.getReaction());
+            final String id = event.getMessageId();
+
+            event.getChannel().retrieveMessageById(id).queue(message -> {
+                if (!ids.contains(id)) {
+                    return;
+                }
+
+                paginationManager.process(message, event.getUser(), event.getReaction());
+            });
         });
     }
 
