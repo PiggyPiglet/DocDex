@@ -11,6 +11,8 @@ import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -38,16 +40,18 @@ public final class DatabaseObjectCreatorRegisterable extends Registerable {
                         .collect(Collectors.toMap(DatabaseObjectCreatorRegisterable::getType, creator -> creator));
 
         addBinding(new TypeLiteral<Map<Class<?>, DatabaseObjectCreator<?>>>() {}, CREATORS, creators);
-        creators.forEach((clazz, creator) -> bind(clazz, creator.createInstance()));
+        creators.forEach((clazz, creator) -> bindDefault(clazz, creator.createInstance()));
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void bind(@NotNull final Class<?> clazz, @NotNull final Object object) {
-        addBinding((Class<T>) clazz, (T) object);
+    private <T> void bindDefault(@NotNull final Class<?> clazz, @NotNull final Object object) {
+        addBinding((Class<T>) clazz, DEFAULT, (T) object);
     }
 
     @NotNull
     private static Class<?> getType(@NotNull final DatabaseObjectCreator<?> creator) {
-        return TypeLiteral.get(creator.getClass().getTypeParameters()[0]).getRawType();
+        return TypeLiteral.get(((ParameterizedType) Arrays.stream(creator.getClass().getGenericInterfaces())
+                .filter(i -> TypeLiteral.get(i).getRawType() == DatabaseObjectCreator.class)
+                .findAny().get()).getActualTypeArguments()[0]).getRawType();
     }
 }
