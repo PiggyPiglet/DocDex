@@ -6,7 +6,10 @@ import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.util.ModificationOptions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 // ------------------------------
@@ -41,8 +44,12 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
         final String command = args.get(isRecommendation ? 2 : 3);
         final String value = String.join(" ", args.subList(isRecommendation ? 3 : 4, args.size()));
 
-        final CommandRule rule = Objects.requireNonNull(Optional.ofNullable(server.getRules().get(command))
-                .orElseGet(() -> server.getRules().put(command, databaseObjects.createInstance(CommandRule.class))));
+        final CommandRule rule = Optional.ofNullable(server.getRules().get(command))
+                .orElseGet(() -> {
+                    final CommandRule rule1 = databaseObjects.createInstance(CommandRule.class);
+                    server.getRules().put(command, rule1);
+                    return rule1;
+                });
 
         if (isRecommendation) {
             rule.setRecommendation(value);
