@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation project(":api")
+    implementation project(":common")
     implementation "com.google.inject:guice:4.2.3"
     implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "com.kcthota:emoji4j:+"

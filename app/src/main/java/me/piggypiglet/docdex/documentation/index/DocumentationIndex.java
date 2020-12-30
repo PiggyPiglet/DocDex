@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.Javadoc;
-import me.piggypiglet.docdex.documentation.index.data.storage.implementations.MongoStorage;
+import me.piggypiglet.docdex.documentation.index.storage.implementations.MongoStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.jetbrains.annotations.NotNull;
