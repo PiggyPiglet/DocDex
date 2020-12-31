@@ -58,25 +58,20 @@ public final class HelpCommand extends BotCommand {
             prefix = defaultPrefix;
         }
 
-        final EmbedBuilder embed = new EmbedBuilder();
         final List<String> helpMessages = new ArrayList<>();
 
-        commands.stream().filter(command -> command != this).forEach(command ->
-                command.getMatches().forEach(match ->
-                        helpMessages.add(
-                                "**" +
-                                        prefix +
-                                        match +
-                                        (command.getUsage().isBlank() ? "" : ' ' + command.getUsage()) +
-                                        ":**\n• " +
-                                        command.getDescription()
-                        )
-                )
-        );
+        commands.stream().filter(command -> command != this).forEach(command -> {
+            final String aliases = "**Command(s):** " + Lists.partition(new ArrayList<>(command.getMatches()), 3).stream()
+                    .map(list -> String.join(", ", list.stream().map(match -> prefix + match).collect(Collectors.toSet())))
+                    .collect(Collectors.joining("\n⠀⠀⠀⠀⠀ ⠀⠀⠀⠀"));
+            final String usage = "**Usage:** " + prefix + command.getMatches().iterator().next() + ' ' + command.getUsage();
+            final String description = "**Description:** " + command.getDescription();
+            helpMessages.add(aliases + '\n' + usage + '\n' + description + '\n');
+        });
 
         helpMessages.sort(Comparator.comparingInt(String::length));
 
-        final List<MessageEmbed> pages = Lists.partition(helpMessages, 8).stream()
+        final List<MessageEmbed> pages = Lists.partition(helpMessages, 4).stream()
                 .map(list -> String.join("\n", list))
                 .map(page -> new EmbedBuilder(EMBED).setDescription(page).build())
                 .collect(Collectors.toList());

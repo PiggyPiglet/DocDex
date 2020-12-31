@@ -34,17 +34,17 @@ public final class TypeComponentSerializer {
     }
 
     @NotNull
-    public static List<EmbedBuilder> serialize(@NotNull final DocumentedObject object, @NotNull final TypeComponents component) {
+    public static List<EmbedBuilder> toEmbeds(@NotNull final DocumentedObject object, @NotNull final TypeComponents component) {
         if (!DocumentedTypes.isType(object.getType())) {
             return Collections.emptyList();
         }
 
         final TypeMetadata metadata = (TypeMetadata) object.getMetadata();
-        final List<List<String>> pages = Lists.partition(new ArrayList<>(COMPONENT_GETTERS.get(component).apply(metadata)), 20);
+        final List<List<String>> pages = Lists.partition(new ArrayList<>(COMPONENT_GETTERS.get(component).apply(metadata)), 15);
 
         return pages.stream()
                 .map(page -> String.join("\n", page))
-                .map(page -> new EmbedBuilder().addField(component.getFormattedName(), "```\n" + page + "```", false))
+                .map(page -> new EmbedBuilder().addField(component.getFormattedPlural() + ':', "```\n" + page + "```", false))
                 .collect(Collectors.toList());
     }
 }

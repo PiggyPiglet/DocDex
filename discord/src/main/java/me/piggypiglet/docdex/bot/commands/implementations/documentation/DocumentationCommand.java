@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
-import me.piggypiglet.docdex.bot.embed.documentation.SimpleObjectSerializer;
+import me.piggypiglet.docdex.bot.embed.documentation.DocumentationObjectSerializer;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.documentation.IndexURLBuilder;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
@@ -132,12 +132,11 @@ public abstract class DocumentationCommand extends BotCommand {
                     if ((objects.size() == 1 && limit.get() != 1) || returnClosest.get()) {
                         final DocumentedObject object = objects.get(0);
 
-                        if (object.getDescription().length() > 900) {
-                            message.getChannel().sendMessage("This object is too big to be viewed in discord, please refer to it's javadoc page: " + object.getLink()).queue();
+                        if (!checkAndReturnError(object).isBlank()) {
                             return;
                         }
 
-                        execute(message, SimpleObjectSerializer.toEmbed(user, javadoc, object), object);
+                        execute(message, DocumentationObjectSerializer.toEmbed(user, javadoc, object), object);
                         return;
                     }
 
@@ -155,6 +154,11 @@ public abstract class DocumentationCommand extends BotCommand {
 
     protected abstract void execute(final @NotNull Message message, @NotNull final EmbedBuilder defaultEmbed,
                                     final @NotNull DocumentedObject object);
+
+    @NotNull
+    protected String checkAndReturnError(@NotNull final DocumentedObject object) {
+        return "";
+    }
 
     private static void queueAndDelete(@NotNull final MessageAction message) {
         message.queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));

@@ -46,14 +46,19 @@ public final class TypeComponentCommand extends DocumentationCommand {
                            final @NotNull DocumentedObject object) {
         final String upperMessage = message.getContentRaw().toUpperCase().replace(upperPrefix, "");
         final TypeComponents component = TypeComponents.valueOf(upperMessage.substring(0, upperMessage.indexOf(' ')));
-        final List<MessageEmbed> pages = TypeComponentSerializer.serialize(object, component).stream()
+        final List<MessageEmbed> pages = TypeComponentSerializer.toEmbeds(object, component).stream()
                 .peek(embed -> EmbedUtils.merge(defaultEmbed, embed))
                 .map(EmbedBuilder::build)
                 .collect(Collectors.toList());
         final MessageChannel channel = message.getChannel();
 
         if (pages.size() > 9) {
-            channel.sendMessage("There are too many " + component.getFormattedName().toLowerCase().replace(":", "") + " to display in a paginated message. Please refer to the web page: <" + object.getLink() + '>').queue();
+            channel.sendMessage("There are too many " + component.getFormattedPlural().toLowerCase() + " to display in a paginated message. Please refer to the web page: <" + object.getLink() + '>').queue();
+            return;
+        }
+
+        if (pages.size() == 0) {
+            channel.sendMessage(object.getName() + " does not have any " + component.getFormattedPlural().toLowerCase() + '.').queue();
             return;
         }
 

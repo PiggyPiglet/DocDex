@@ -7,24 +7,24 @@ import org.jetbrains.annotations.NotNull;
 // https://www.piggypiglet.me
 // ------------------------------
 public enum TypeComponents {
-    EXTENSIONS("Extensions:"),
-    IMPLEMENTATIONS("Implementations:"),
-    ALL_IMPLEMENTATIONS("All Implementations:"),
-    SUPER_INTERFACES("Super Interfaces:"),
-    SUB_INTERFACES("Sub Interfaces:"),
-    SUB_CLASSES("Sub Classes:"),
-    IMPLEMENTING_CLASSES("Implementing Classes:"),
-    METHODS("Methods:"),
-    FIELDS("Fields:");
+    EXTENSIONS("Extensions"),
+    IMPLEMENTATIONS("Implementations"),
+    ALL_IMPLEMENTATIONS("All Implementations"),
+    SUPER_INTERFACES("Super Interfaces"),
+    SUB_INTERFACES("Sub Interfaces"),
+    SUB_CLASSES("Sub Classes"),
+    IMPLEMENTING_CLASSES("Implementing Classes"),
+    METHODS("Methods"),
+    FIELDS("Fields");
 
-    private final String formattedName;
+    private final String formattedPlural;
 
-    TypeComponents(@NotNull final String formattedName) {
-        this.formattedName = formattedName;
+    TypeComponents(@NotNull final String formattedPlural) {
+        this.formattedPlural = formattedPlural;
     }
 
     @NotNull
-    public String getFormattedName() {
-        return formattedName;
+    public String getFormattedPlural() {
+        return formattedPlural;
     }
 }
