@@ -11,9 +11,10 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -49,7 +50,7 @@ public final class HelpCommand extends BotCommand {
         }
 
         final EmbedBuilder embed = new EmbedBuilder();
-        final Set<String> helpMessages = new TreeSet<>(Comparator.comparingInt(String::length));
+        final List<String> helpMessages = new ArrayList<>();
 
         commands.stream().filter(command -> command != this).forEach(command ->
                 command.getMatches().forEach(match ->
@@ -63,6 +64,8 @@ public final class HelpCommand extends BotCommand {
                         )
                 )
         );
+
+        helpMessages.sort(Comparator.comparingInt(String::length));
 
         embed.setDescription(String.join("\n", helpMessages));
         embed.setColor(EmbedUtils.COLOUR);
