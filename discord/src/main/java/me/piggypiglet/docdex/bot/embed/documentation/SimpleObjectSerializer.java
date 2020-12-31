@@ -42,7 +42,7 @@ public final class SimpleObjectSerializer {
                                        @NotNull final DocumentedObject object) {
         final EmbedBuilder builder = new EmbedBuilder();
         builder.setColor(EmbedUtils.COLOUR);
-        builder.setTitle(DataUtils.getFqn(object), object.getLink());
+        builder.setTitle(DataUtils.getFqn(object), object.getLink().replace(" ", "%20"));
         builder.setDescription("```java\n" + generateSignature(object) + "```");
         builder.setFooter("Requested by: " + requester.getName() + " • " + javadoc);
 
