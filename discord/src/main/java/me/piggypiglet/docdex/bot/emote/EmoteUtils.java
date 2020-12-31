@@ -1,6 +1,8 @@
 package me.piggypiglet.docdex.bot.emote;
 
+import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +21,11 @@ public final class EmoteUtils {
     public static void addEmote(@NotNull final Message message, @NotNull final EmoteWrapper emote) {
         Optional.ofNullable(emote.getEmote())
                 .map(message::addReaction)
-                .ifPresentOrElse(RestAction::queue, () -> message.addReaction(Objects.requireNonNull(emote.getUnicode())).queue());
+                .ifPresentOrElse(RestAction::queue, () -> message.addReaction(Objects.requireNonNull(emote.getUnicode()))
+                        .queue(success -> {}, failure -> {
+                            if (failure instanceof PermissionException) {
+                                PermissionUtils.sendPermissionError(message, ((PermissionException) failure).getPermission());
+                            }
+                        }));
     }
 }

@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.commands.framework.PermissionCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.documentation.SimpleCommand;
+import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import net.dv8tion.jda.api.Permission;
@@ -117,18 +118,7 @@ public final class BotCommandHandler {
         try {
             command.run(user, message, start);
         } catch (PermissionException exception) {
-            final String error = "I'm missing the permission: " + exception.getPermission();
-
-            if (exception.getPermission() == Permission.MESSAGE_WRITE) {
-                try {
-                    message.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(error).queue());
-                } catch (PermissionException exception2) {}
-
-                return;
-            }
-
-            message.getChannel().sendMessage(error)
-                    .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+            PermissionUtils.sendPermissionError(message, exception.getPermission());
         }
     }
 
