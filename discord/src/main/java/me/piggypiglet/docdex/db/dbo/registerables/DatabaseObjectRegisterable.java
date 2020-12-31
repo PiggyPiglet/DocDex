@@ -12,6 +12,8 @@ import me.piggypiglet.docdex.db.dbo.framework.adapter.DatabaseObjectAdapter;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 // ------------------------------
 public final class DatabaseObjectRegisterable extends Registerable {
     private static final Named ADAPTERS = Names.named("adapters");
+    private static final Logger LOGGER = LoggerFactory.getLogger("MySQL");
 
     private final Scanner scanner;
 
@@ -55,6 +58,7 @@ public final class DatabaseObjectRegisterable extends Registerable {
             addBinding((Key<DatabaseObjectAdapter<?>>) Key.get(Types.newParameterizedType(DatabaseObjectAdapter.class, type)), adapter);
 
             final Set<?> set = adapter.loadFromRaw();
+            LOGGER.info("Loaded " + set.size() + ' ' + type.getTypeName() + "'s.");
             adapterMap.put(TypeLiteral.get(type).getRawType(), adapter);
             addBinding((Key<Set<?>>) Key.get(Types.setOf(type)), set);
         });
