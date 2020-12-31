@@ -62,7 +62,7 @@ public final class InfoCommand extends BotCommand {
                     embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
                     embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);
                     embed.addField("Javadocs", formatNumber(JsonParser.parseString(json).getAsJsonArray().size()) + " (Default: " + config.getDefaultJavadoc() + ')', true);
-                    embed.setFooter("DocDex v1.0.0");
+                    embed.setFooter("DocDex v" + getClass().getPackage().getImplementationVersion());
 
                     message.getChannel().sendMessage(embed.build()).queue();
                 });

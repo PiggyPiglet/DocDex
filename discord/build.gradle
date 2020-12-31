@@ -28,4 +28,8 @@ dependencies {
 
 shadowJar {
     archiveFileName.set("bot.jar")
+
+    manifest {
+        attributes 'Implementation-Version': version
+    }
 }
