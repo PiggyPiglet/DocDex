@@ -132,7 +132,9 @@ public abstract class DocumentationCommand extends BotCommand {
                     if ((objects.size() == 1 && limit.get() != 1) || returnClosest.get()) {
                         final DocumentedObject object = objects.get(0);
 
-                        if (!checkAndReturnError(object).isBlank()) {
+                        final String error = checkAndReturnError(object);
+                        if (!error.isBlank()) {
+                            message.getChannel().sendMessage(error).queue();
                             return;
                         }
 

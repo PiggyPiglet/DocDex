@@ -64,7 +64,7 @@ public final class HelpCommand extends BotCommand {
             final String aliases = "**Command(s):** " + Lists.partition(new ArrayList<>(command.getMatches()), 3).stream()
                     .map(list -> String.join(", ", list.stream().map(match -> prefix + match).collect(Collectors.toSet())))
                     .collect(Collectors.joining("\n⠀⠀⠀⠀⠀ ⠀⠀⠀⠀"));
-            final String usage = "**Usage:** " + prefix + command.getMatches().iterator().next() + ' ' + command.getUsage();
+            final String usage = "**Example:** " + prefix + command.getMatches().iterator().next() + ' ' + command.getUsage();
             final String description = "**Description:** " + command.getDescription();
             helpMessages.add(aliases + '\n' + usage + '\n' + description + '\n');
         });

@@ -24,6 +24,18 @@ public final class SimpleObjectSerializer {
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 
+    private static final Map<String, Function<TypeMetadata, Integer>> TYPE_NUMBER_GETTERS = Map.of(
+            "extensions", type -> type.getExtensions().size(),
+            "implementations", type -> type.getImplementations().size(),
+            "all implementations", type -> type.getAllImplementations().size(),
+            "super interfaces", type -> type.getSuperInterfaces().size(),
+            "sub interfaces", type -> type.getSubInterfaces().size(),
+            "sub classes", type -> type.getSubClasses().size(),
+            "implementing classes", type -> type.getImplementingClasses().size(),
+            "methods", type -> type.getMethods().size(),
+            "fields", type -> type.getFields().size()
+    );
+
     private static final Map<String, Function<MethodMetadata, String>> METHOD_GETTERS = Map.of(
             "Returns:", MethodMetadata::getReturnsDescription,
             "Parameters:", metadata -> formatEntrySet(metadata.getParameterDescriptions().entrySet()),
@@ -37,7 +49,7 @@ public final class SimpleObjectSerializer {
     @NotNull
     public static EmbedBuilder toEmbed(@NotNull final DocumentedObject object) {
         final EmbedBuilder builder = new EmbedBuilder();
-        builder.setDescription("```java\n" + generateSignature(object) + "```");
+        builder.setDescription(description(object));
 
         final Map<String, String> values = new LinkedHashMap<>();
 
@@ -65,7 +77,10 @@ public final class SimpleObjectSerializer {
     }
 
     @NotNull
-    private static String generateSignature(@NotNull final DocumentedObject object) {
+    private static String description(@NotNull final DocumentedObject object) {
+        final String signature;
+        String typeNumbers = null;
+
         switch (object.getType()) {
             case CLASS:
             case INTERFACE:
@@ -89,7 +104,13 @@ public final class SimpleObjectSerializer {
                             .collect(Collectors.joining(", ")));
                 }
 
-                return type.toString();
+                signature = type.toString();
+                typeNumbers = TYPE_NUMBER_GETTERS.entrySet().stream()
+                        .map(entry -> Map.entry(entry.getKey(), entry.getValue().apply(typeMetadata)))
+                        .filter(entry -> entry.getValue() > 0)
+                        .map(entry -> entry.getValue() + " " + entry.getKey())
+                        .collect(Collectors.joining(", ", "", "."));
+                break;
 
             case METHOD:
             case CONSTRUCTOR:
@@ -110,15 +131,25 @@ public final class SimpleObjectSerializer {
                             .collect(Collectors.joining(", ")));
                 }
 
-                return method.toString();
+                signature = method.toString();
+                break;
 
             case FIELD:
-                return annotationsAndModifiers(object) +
+                signature = annotationsAndModifiers(object) +
                         ((DetailMetadata) object.getMetadata()).getReturns() + ' ' +
                         object.getName();
+                break;
+
+            default:
+                return "";
         }
 
-        return "";
+        if (typeNumbers != null) {
+            final int i = typeNumbers.lastIndexOf(',');
+            typeNumbers = object.getName() + " has " + typeNumbers.substring(0, i) + ", and " + typeNumbers.substring(i + 1);
+        }
+
+        return "```java\n" + signature + "```" + (typeNumbers == null ? "" : '\n' + typeNumbers);
     }
 
     @NotNull

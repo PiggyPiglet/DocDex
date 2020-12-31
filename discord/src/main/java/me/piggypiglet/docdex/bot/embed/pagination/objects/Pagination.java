@@ -3,6 +3,7 @@ package me.piggypiglet.docdex.bot.embed.pagination.objects;
 import com.google.common.collect.Iterables;
 import me.piggypiglet.docdex.bot.emote.EmoteUtils;
 import me.piggypiglet.docdex.bot.emote.EmoteWrapper;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -74,7 +75,18 @@ public final class Pagination {
                 return this;
             }
 
-            return page(DEFAULT_EMOTES.get(i), page);
+            final EmbedBuilder builder = new EmbedBuilder(page);
+            final String pageNum = "Page " + (i + 1);
+
+            final MessageEmbed.Footer footer = page.getFooter();
+
+            if (footer != null) {
+                builder.setFooter(pageNum + " • " + footer.getText(), footer.getIconUrl());
+            } else {
+                builder.setFooter(pageNum);
+            }
+
+            return page(DEFAULT_EMOTES.get(i), builder.build());
         }
 
         @NotNull
