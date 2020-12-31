@@ -45,6 +45,6 @@ public final class HttpServer extends NanoHTTPD {
             return response;
         }
 
-        return newFixedLengthResponse("test");
+        return newFixedLengthResponse("You probably want to go to /index.");
     }
 }
