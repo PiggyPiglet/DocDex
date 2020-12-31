@@ -1,8 +1,5 @@
 package me.piggypiglet.docdex.bot.commands.implementations;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
@@ -27,9 +24,6 @@ import java.util.Set;
 // ------------------------------
 public final class InfoCommand extends BotCommand {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private static final Gson GSON = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
 
     private static final String PIG_URL = "https://piggypiglet.me";
     private static final String PIG_ICON = "https://cdn.piggypiglet.me/personal/img/pigygon.png";
