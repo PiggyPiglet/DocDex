@@ -58,7 +58,7 @@ public abstract class DocumentationCommand extends BotCommand {
 
     @Override
     public void run(final @NotNull User user, final @NotNull Message message,
-                    final @NotNull String start) {
+                    final int start) {
         final List<String> args = args(message, start);
         final MessageChannel channel = message.getChannel();
 

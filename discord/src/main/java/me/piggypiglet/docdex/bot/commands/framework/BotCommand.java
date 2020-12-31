@@ -44,7 +44,7 @@ public abstract class BotCommand {
                            @NotNull final List<String> args) {}
 
     public void run(@NotNull final User user, @NotNull final Message message,
-                    @NotNull final String start) {
+                    final int start) {
         execute(user, message);
         execute(user, message, args(message, start));
     }
@@ -65,7 +65,7 @@ public abstract class BotCommand {
     }
 
     @NotNull
-    protected static List<String> args(@NotNull final Message message, @NotNull final String start) {
-        return Arrays.asList(SPACE_DELIMITER.split(message.getContentRaw().replace(start, "").trim()));
+    protected static List<String> args(@NotNull final Message message, final int start) {
+        return Arrays.asList(SPACE_DELIMITER.split(message.getContentRaw().substring(start).trim()));
     }
 }

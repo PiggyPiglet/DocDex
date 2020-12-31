@@ -112,7 +112,7 @@ public final class BotCommandHandler {
             return;
         }
 
-        final String start = prefix + match.get();
+        final int start = (prefix + match.get()).length();
 
         try {
             command.run(user, message, start);
