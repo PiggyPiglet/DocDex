@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.NumberFormat;
 import java.util.Set;
 
 // ------------------------------
@@ -25,10 +26,11 @@ import java.util.Set;
 public final class InfoCommand extends BotCommand {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
+    private static final String GITHUB = "https://github.com/PiggyPiglet/DocDex";
+    private static final String INVITE = "https://piggypiglet.me/docdex";
     private static final String PIG_URL = "https://piggypiglet.me";
-    private static final String PIG_ICON = "https://cdn.piggypiglet.me/personal/img/pigygon.png";
 
-    private static final String DOCDEX_URL = "https://github.com/PiggyPiglet/DocDex";
+    private static final NumberFormat FORMATTER = NumberFormat.getInstance();
 
     private final Config config;
 
@@ -48,25 +50,25 @@ public final class InfoCommand extends BotCommand {
                     final EmbedBuilder embed = new EmbedBuilder();
                     final SnowflakeCacheView<Guild> guilds = user.getJDA().getGuildCache();
 
-                    embed.setTitle("DocDex", DOCDEX_URL);
+                    embed.setAuthor("DocDex | Info");
                     embed.setThumbnail(EmbedUtils.ICON);
                     embed.setColor(EmbedUtils.COLOUR);
                     embed.setDescription(
+                            String.format("[Website](%s) | [Github](%s) | [Invite](%s)\n\n", config.getUrl(), GITHUB, INVITE) +
                             "DocDex (Documentation Index) is a JSON web API which provides an endpoint that returns " +
                             "information on a particular javadoc object, from a fuzzy query. This bot uses this API to " +
                             "provide the information in discord. The bot is made in Java 11 using JDA."
                     );
                     embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
-                    embed.addField("Source", "[Github](" + DOCDEX_URL + ')', true);
-                    embed.addField("Invite", "https://piggypiglet.me/docdex", true);
-                    embed.addField("Servers", String.valueOf(guilds.size()), true);
-                    embed.addField("Users", String.valueOf(guilds.stream().mapToInt(Guild::getMemberCount).sum()), true);
-                    embed.addField("Javadocs", String.valueOf(JsonParser.parseString(json).getAsJsonArray().size()), true);
-                    embed.addField("URL", config.getUrl(), true);
+                    embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);
                     embed.addField("Default Javadoc", config.getDefaultJavadoc(), true);
-                    embed.setFooter("by PiggyPiglet", PIG_ICON);
+                    embed.addField("Javadocs", String.valueOf(JsonParser.parseString(json).getAsJsonArray().size()), true);
 
                     message.getChannel().sendMessage(embed.build()).queue();
                 });
+    }
+
+    private static String formatNumber(final long number) {
+        return FORMATTER.format(number);
     }
 }

@@ -1,20 +1,22 @@
 package me.piggypiglet.docdex.bot.commands.implementations;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
+import me.piggypiglet.docdex.bot.embed.pagination.PaginationManager;
+import me.piggypiglet.docdex.bot.embed.pagination.objects.Pagination;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.scanning.annotations.Hidden;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -22,17 +24,24 @@ import java.util.Set;
 // ------------------------------
 @Hidden
 public final class HelpCommand extends BotCommand {
+    private static final MessageEmbed EMBED = new EmbedBuilder()
+            .setColor(EmbedUtils.COLOUR)
+            .setAuthor("Help:", null, EmbedUtils.ICON)
+            .build();
+
     private final Set<BotCommand> commands;
     private final Set<Server> servers;
     private final String defaultPrefix;
+    private final PaginationManager paginationManager;
 
     @Inject
     public HelpCommand(@NotNull @Named("jda commands") final Set<BotCommand> commands, @NotNull final Set<Server> servers,
-                       @NotNull @Named("default") final Server defaultServer) {
+                       @NotNull @Named("default") final Server defaultServer, @NotNull final PaginationManager paginationManager) {
         super(Set.of("help"), "", "This page.");
         this.commands = commands;
         this.servers = servers;
         this.defaultPrefix = defaultServer.getPrefix();
+        this.paginationManager = paginationManager;
     }
 
     @Override
@@ -56,20 +65,26 @@ public final class HelpCommand extends BotCommand {
                 command.getMatches().forEach(match ->
                         helpMessages.add(
                                 "**" +
-                                prefix +
-                                match +
-                                (command.getUsage().isBlank() ? "" : ' ' + command.getUsage()) +
-                                ":**\n• " +
-                                command.getDescription()
+                                        prefix +
+                                        match +
+                                        (command.getUsage().isBlank() ? "" : ' ' + command.getUsage()) +
+                                        ":**\n• " +
+                                        command.getDescription()
                         )
                 )
         );
 
         helpMessages.sort(Comparator.comparingInt(String::length));
 
-        embed.setDescription(String.join("\n", helpMessages));
-        embed.setColor(EmbedUtils.COLOUR);
-        embed.setAuthor("Help:", null, EmbedUtils.ICON);
-        message.getChannel().sendMessage(embed.build()).queue();
+        final List<MessageEmbed> pages = Lists.partition(helpMessages, 8).stream()
+                .map(list -> String.join("\n", list))
+                .map(page -> new EmbedBuilder(EMBED).setDescription(page).build())
+                .collect(Collectors.toList());
+        final Pagination pagination = Pagination.builder()
+                .pages(pages)
+                .build();
+
+        Optional.ofNullable(pagination.send(message.getChannel())).ifPresent(action -> action.queue(sentMessage ->
+            paginationManager.addPaginatedMessage(sentMessage.getId(), pagination.getPages())));
     }
 }

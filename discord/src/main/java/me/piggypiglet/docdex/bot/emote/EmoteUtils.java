@@ -21,11 +21,12 @@ public final class EmoteUtils {
     public static void addEmote(@NotNull final Message message, @NotNull final EmoteWrapper emote) {
         Optional.ofNullable(emote.getEmote())
                 .map(message::addReaction)
-                .ifPresentOrElse(RestAction::queue, () -> message.addReaction(Objects.requireNonNull(emote.getUnicode()))
-                        .queue(success -> {}, failure -> {
-                            if (failure instanceof PermissionException) {
-                                PermissionUtils.sendPermissionError(message, ((PermissionException) failure).getPermission());
-                            }
-                        }));
+                .ifPresentOrElse(RestAction::queue, () -> {
+                    try {
+                        message.addReaction(Objects.requireNonNull(emote.getUnicode())).queue();
+                    } catch (PermissionException exception) {
+                        PermissionUtils.sendPermissionError(message, exception.getPermission());
+                    }
+                });
     }
 }
