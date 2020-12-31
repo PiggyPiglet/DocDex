@@ -7,6 +7,8 @@ import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -18,6 +20,7 @@ import java.util.concurrent.Executors;
 // ------------------------------
 public final class GuildJoinListener extends ListenerAdapter {
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(2);
+    private static final Logger LOGGER = LoggerFactory.getLogger("Bot");
 
     private final ServerCreator creator;
     private final Set<Server> servers;
@@ -37,6 +40,8 @@ public final class GuildJoinListener extends ListenerAdapter {
             final Server server = creator.createInstance(event.getGuild().getId());
             servers.add(server);
             adapters.save(server);
+
+            LOGGER.info("Joined " + event.getGuild().getName());
         });
     }
 }
