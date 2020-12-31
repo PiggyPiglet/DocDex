@@ -62,6 +62,8 @@ public final class InfoCommand extends BotCommand {
                     embed.addField("Servers", String.valueOf(guilds.size()), true);
                     embed.addField("Users", String.valueOf(guilds.stream().mapToInt(Guild::getMemberCount).sum()), true);
                     embed.addField("Javadocs", String.valueOf(JsonParser.parseString(json).getAsJsonArray().size()), true);
+                    embed.addField("URL", config.getUrl(), true);
+                    embed.addField("Default Javadoc", config.getDefaultJavadoc(), true);
                     embed.setFooter("by PiggyPiglet", PIG_ICON);
 
                     message.getChannel().sendMessage(embed.build()).queue();
