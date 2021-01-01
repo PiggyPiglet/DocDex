@@ -47,6 +47,8 @@ There's also an optional limit parameter you can add on, which will limit the am
 In addition to the index, a second endpoint is exposed `/javadocs`, which provides a list of all the loaded javadocs.
 
 ### Discord Bot
+You can either use the public instance (which uses https://docdex.helpch.at) or run your own. The public invite is https://piggypiglet.me/docdex.
+
 ```
 java -Xmx1G -jar bot.jar
 ```

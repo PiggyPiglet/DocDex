@@ -95,11 +95,7 @@ public final class DocumentedObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DocumentedObject object = (DocumentedObject) o;
-        return deprecated == object.deprecated && link.equals(object.link) &&
-                type == object.type && packaj.equals(object.packaj) &&
-                name.equals(object.name) && description.equals(object.description) &&
-                annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) &&
-                modifiers.equals(object.modifiers) && metadata.equals(object.metadata);
+        return deprecated == object.deprecated && link.equals(object.link) && type == object.type && packaj.equals(object.packaj) && name.equals(object.name) && description.equals(object.description) && annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) && metadata.equals(object.metadata);
     }
 
     @Override
