@@ -20,7 +20,7 @@ public final class OldParameterDeserializer {
     public static void deserialize(@NotNull final Element details, @NotNull final DocumentedMethodBuilder builder) {
         final String pre = details.selectFirst("pre").text();
 
-        Arrays.stream(LIST_DELIMITER.split(pre.substring(pre.indexOf('(') + 1, pre.indexOf(')')).replace("\n", "")))
+        Arrays.stream(LIST_DELIMITER.split(pre.substring(pre.lastIndexOf('(') + 1, pre.lastIndexOf(')')).replace("\n", "")))
                 .filter(param -> !param.isBlank())
                 .map(String::trim)
                 .forEach(builder::parameters);

@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DataUtils {
-    private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
+    private static final Pattern SPACE_DELIMITER = Pattern.compile("[\u00a0 ]");
 
     private DataUtils() {
         throw new AssertionError("This class cannot be instantiated.");
