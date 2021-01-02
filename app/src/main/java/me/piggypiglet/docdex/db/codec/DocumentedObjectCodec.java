@@ -33,17 +33,23 @@ public final class DocumentedObjectCodec implements CollectibleCodec<MongoDocume
 
     @Override
     public BsonValue getDocumentId(@NotNull final MongoDocumentedObject document) {
-        return new BsonString(document.getName());
+        return new BsonString(document.getIdentifier());
     }
 
     @Override
     public MongoDocumentedObject decode(final BsonReader reader, final DecoderContext decoderContext) {
         final Document document = DOCUMENT_CODEC.decode(reader, decoderContext);
 
-        return new MongoDocumentedObject(
-                document.getString("name"),
-                GSON.fromJson(GSON.toJsonTree(document.get("object")), DocumentedObject.class)
-        );
+        return MongoDocumentedObject.builder(GSON.fromJson(GSON.toJsonTree(document.get("object")), DocumentedObject.class))
+                .identifier(document.getString("identifier"))
+                .name(document.getString("name"))
+                .fqn(document.getString("fqn"))
+                .fullParams(document.getString("fullParams"))
+                .typeParams(document.getString("typeParams"))
+                .fqnTypeParams(document.getString("fqnTypeParams"))
+                .nameParams(document.getString("nameParams"))
+                .fqnNameParams(document.getString("fqnNameParams"))
+                .build();
     }
 
     @Override

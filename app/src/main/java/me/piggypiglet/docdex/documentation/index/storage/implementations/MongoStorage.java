@@ -11,14 +11,15 @@ import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.db.objects.MongoDocumentedObject;
 import me.piggypiglet.docdex.documentation.index.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
+import me.piggypiglet.docdex.documentation.utils.ParameterTypes;
+import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +29,7 @@ import java.util.stream.Stream;
 // ------------------------------
 public final class MongoStorage implements IndexStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger("MongoStorage");
-    private static final List<IndexModel> INDEXES = Stream.of("name")
+    private static final List<IndexModel> INDEXES = Stream.of("identifier")
             .map(Indexes::hashed)
             .map(IndexModel::new)
             .collect(Collectors.toList());
@@ -42,31 +43,91 @@ public final class MongoStorage implements IndexStorage {
 
     @Override
     public void save(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
-        final String name = DataUtils.getName(javadoc);
+        final String javadocName = DataUtils.getName(javadoc);
 
-        LOGGER.info("Attempting to save " + name + " to MongoDB.");
+        LOGGER.info("Attempting to save " + javadocName + " to MongoDB.");
 
         try {
-            database.createCollection(name);
+            database.createCollection(javadocName);
         } catch (MongoCommandException exception) {
-            LOGGER.info("Not saving " + name + " to MongoDB as it already exists.");
+            LOGGER.info("Not saving " + javadocName + " to MongoDB as it already exists.");
             return;
         }
 
-        final MongoCollection<MongoDocumentedObject> collection = database.getCollection(name, MongoDocumentedObject.class);
+        final MongoCollection<MongoDocumentedObject> collection = database.getCollection(javadocName, MongoDocumentedObject.class);
+        final Map<DocumentedObject, Set<MongoDocumentedObject.Builder>> mongoObjects = new HashMap<>();
+
+        objects.forEach((key, object) -> {
+            mongoObjects.putIfAbsent(object, new HashSet<>());
+
+            final boolean fqn = key.contains(".");
+            final Set<MongoDocumentedObject.Builder> builders = mongoObjects.get(object).stream()
+                    .filter(builder -> fqn ? builder.getFqn() == null : builder.getName() == null)
+                    .collect(Collectors.toSet());
+
+            if (builders.isEmpty()) {
+                final MongoDocumentedObject.Builder builder = MongoDocumentedObject.builder(object);
+                mongoObjects.get(object).add(builder);
+
+                if (fqn) {
+                    builder.fqn(key);
+                } else {
+                    builder.name(key);
+                }
+            } else {
+                builders.forEach(builder -> {
+                    if (fqn) {
+                        builder.fqn(key);
+                    } else {
+                        builder.name(key);
+                    }
+                });
+            }
+        });
+
+        mongoObjects.forEach((object, builders) -> builders.forEach(builder -> {
+            final String fqn = builder.getFqn();
+
+            if (object.getType() == DocumentedTypes.METHOD || object.getType() == DocumentedTypes.CONSTRUCTOR) {
+                final Map<ParameterTypes, String> params = DataUtils.getParams(object);
+                final String name = builder.getName();
+
+                final String fullParams = '(' + params.get(ParameterTypes.FULL) + ')';
+                final String typeParams = '(' + params.get(ParameterTypes.TYPE) + ')';
+                final String nameParams = '(' + params.get(ParameterTypes.NAME) + ')';
+
+                builder.identifier(fqn + fullParams)
+                        .fullParams(name + fullParams)
+                        .typeParams(name + typeParams)
+                        .fqnTypeParams(fqn + typeParams)
+                        .nameParams(name + nameParams)
+                        .fqnNameParams(fqn + nameParams);
+            } else {
+                builder.identifier(fqn)
+                        .fullParams("")
+                        .typeParams("")
+                        .fqnTypeParams("")
+                        .nameParams("")
+                        .fqnNameParams("");
+            }
+        }));
 
         collection.createIndexes(INDEXES);
-        collection.insertMany(objects.entrySet().stream()
-                .map(entry -> new MongoDocumentedObject(entry.getKey(), entry.getValue()))
+        collection.insertMany(mongoObjects.values().stream()
+                .flatMap(Collection::stream)
+                .map(MongoDocumentedObject.Builder::build)
                 .collect(Collectors.toList()));
-        LOGGER.info("Saved " + name + " to mongo.");
+        LOGGER.info("Saved " + javadocName + " to mongo.");
     }
 
     @NotNull
-    public Optional<DocumentedObject> get(@NotNull final Javadoc javadoc, @NotNull final String name) {
+    public Optional<DocumentedObject> get(@NotNull final Javadoc javadoc, @NotNull final Map<String, String> filters) {
         final MongoCollection<MongoDocumentedObject> collection = database.getCollection(DataUtils.getName(javadoc), MongoDocumentedObject.class);
+        final Bson filter = Filters.and(filters.entrySet().stream()
+                .map(entry -> Filters.eq(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toSet()));
 
-        return Optional.ofNullable(collection.find(Filters.eq("name", name)).first())
+        return Optional.ofNullable(collection.find(filter).first())
                 .map(MongoDocumentedObject::getObject);
     }
 }
