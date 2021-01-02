@@ -182,7 +182,6 @@ public final class DocumentationIndex {
         )
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(object -> FuzzySearch.ratio(object.getValue(), finalQuery))))
                 .limit(limit)
-                .peek(System.out::println)
                 .map(entry -> storage.get(javadoc, Map.of(DataUtils.fromParameterType(entry.getKey(), fqn).getName(), entry.getValue()))
                         .map(documentedObject -> new DocumentedObjectResult(entry.getValue(), documentedObject))
                         .orElse(null))
