@@ -50,10 +50,6 @@ public final class MethodDeserializer {
         parameters = killChars(parameters, '<', '>');
         parameters = killChars(parameters, '(', ')');
 
-        if (parameters.contains("(") || parameters.contains(")")) {
-            System.out.println(parameters);
-        }
-
         Arrays.stream(LIST_DELIMITER.split(parameters))
                 .filter(param -> !param.isBlank())
                 .map(String::trim)

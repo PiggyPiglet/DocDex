@@ -9,7 +9,7 @@ import me.piggypiglet.docdex.bot.embed.documentation.DocumentationObjectSerializ
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.documentation.IndexURLBuilder;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.utils.DataUtils;
+import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -36,12 +37,12 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public abstract class DocumentationCommand extends BotCommand {
-    private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\- ]");
+    private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\-, ()]");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
-    private static final Type OBJECT_LIST = Types.listOf(DocumentedObject.class);
+    private static final Type OBJECT_LIST = Types.listOf(DocumentedObjectResult.class);
 
     private final Config config;
 
@@ -52,7 +53,7 @@ public abstract class DocumentationCommand extends BotCommand {
 
     protected DocumentationCommand(@NotNull final Set<String> matches, @NotNull final String description,
                                    @NotNull final Config config) {
-        super(matches, "[javadoc] <query> [limit/$(first result)]", description);
+        super(matches, "[javadoc] [limit/$(first result)] <query>", description);
         this.config = config;
     }
 
@@ -63,57 +64,60 @@ public abstract class DocumentationCommand extends BotCommand {
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
-            channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_#\\- `").queue();
+            queueAndDelete(channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_#-, ()`"));
             return;
         }
 
         if (args.size() == 0 || args.get(0).isBlank()) {
-            channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " + start + " [javadoc] <query> [limit/$(first result)]").queue();
+            queueAndDelete(channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " + start + " [javadoc] [limit/$(first result)] <query>"));
             return;
         }
 
-        final AtomicInteger limit = new AtomicInteger(-1);
-        final AtomicBoolean returnClosest = new AtomicBoolean();
-
-        try {
-            String limitArg = null;
-
-            if (args.size() > 2) {
-                limitArg = args.get(2);
-            } else if (args.size() == 2) {
-                limitArg = args.get(1);
-            }
-
-            if (limitArg != null) {
-                if (limitArg.equals("$")) {
-                    returnClosest.set(true);
-                } else {
-                    limit.set(Integer.parseInt(limitArg));
-                }
-            }
-        } catch (Exception e) {}
-
-        final String javadoc;
+        final AtomicReference<String> javadoc = new AtomicReference<>(config.getDefaultJavadoc());
+        final AtomicInteger limit = new AtomicInteger();
+        final AtomicBoolean returnClosest = new AtomicBoolean(false);
         final String query;
 
-        if (args.size() >= 2) {
-            if (limit.get() != -1 || returnClosest.get()) {
-                javadoc = config.getDefaultJavadoc();
-                query = args.get(0);
-            } else {
-                javadoc = args.get(0);
-                query = args.get(1);
+        if (args.size() == 1) {
+            query = String.join(" ", args);
+        } else if (args.size() == 2) {
+            final String first = args.get(0);
+
+            try {
+                limit.set(Integer.parseInt(first));
+            } catch (NumberFormatException exception) {
+                if (first.equals("$")) {
+                    returnClosest.set(true);
+                } else {
+                    javadoc.set(first);
+                }
             }
+
+            query = String.join(" ", args.subList(1, args.size()));
         } else {
-            javadoc = config.getDefaultJavadoc();
-            query = args.get(0);
+            javadoc.set(args.get(0));
+
+            final String second = args.get(1);
+
+            try {
+                limit.set(Integer.parseInt(second));
+            } catch (NumberFormatException exception) {
+                if (second.equals("$")) {
+                    returnClosest.set(true);
+                } else {
+                    queueAndDelete(message.getChannel().sendMessage("Invalid limit."));
+                    return;
+                }
+            }
+
+            query = String.join(" ", args.subList(2, args.size()));
         }
 
         final IndexURLBuilder urlBuilder = new IndexURLBuilder()
-                .javadoc(javadoc.toLowerCase())
-                .query(query);
+                .javadoc(javadoc.get().toLowerCase())
+                .query(query.replace(" ", "%20"));
 
-        if (limit.get() != -1) {
+        if (limit.get() != 0) {
             urlBuilder.limit(limit.get());
         }
 
@@ -123,14 +127,14 @@ public abstract class DocumentationCommand extends BotCommand {
                 .thenApply(HttpResponse::body)
                 .thenAccept(json -> {
                     if (json.equalsIgnoreCase("null")) {
-                        channel.sendMessage("Unknown javadoc: " + javadoc + '.').queue();
+                        queueAndDelete(channel.sendMessage("Unknown javadoc: " + javadoc.get() + '.'));
                         return;
                     }
 
-                    final List<DocumentedObject> objects = GSON.fromJson(json, OBJECT_LIST);
+                    final List<DocumentedObjectResult> objects = GSON.fromJson(json, OBJECT_LIST);
 
-                    if ((objects.size() == 1 && limit.get() != 1) || returnClosest.get()) {
-                        final DocumentedObject object = objects.get(0);
+                    if ((objects.size() == 1 && limit.get() == 0) || returnClosest.get()) {
+                        final DocumentedObject object = objects.get(0).getObject();
 
                         final String error = checkAndReturnError(object);
                         if (!error.isBlank()) {
@@ -138,12 +142,12 @@ public abstract class DocumentationCommand extends BotCommand {
                             return;
                         }
 
-                        execute(message, DocumentationObjectSerializer.toEmbed(user, javadoc, object), object);
+                        execute(message, DocumentationObjectSerializer.toEmbed(user, javadoc.get(), object), object);
                         return;
                     }
 
                     final String suggestions = objects.stream()
-                            .map(DataUtils::getFqn)
+                            .map(DocumentedObjectResult::getName)
                             .collect(Collectors.joining("\n"));
 
                     channel.sendMessage("There was no direct match for that query, did you mean any of the following?: ```\n" + suggestions + "```")
@@ -163,6 +167,6 @@ public abstract class DocumentationCommand extends BotCommand {
     }
 
     private static void queueAndDelete(@NotNull final MessageAction message) {
-        message.queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+        message.queue(sentMessage -> sentMessage.delete().queueAfter(20, TimeUnit.SECONDS));
     }
 }

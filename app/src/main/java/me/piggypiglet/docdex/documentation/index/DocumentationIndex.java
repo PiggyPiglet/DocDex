@@ -15,6 +15,9 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -180,6 +183,7 @@ public final class DocumentationIndex {
                 types.stream().map(array -> Map.entry(ParameterTypes.TYPE, array)),
                 names.stream().map(array -> Map.entry(ParameterTypes.NAME, array))
         )
+                .filter(distinctByKey(Map.Entry::getValue))
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(object -> FuzzySearch.ratio(object.getValue(), finalQuery))))
                 .limit(limit)
                 .map(entry -> storage.get(javadoc, Map.of(DataUtils.fromParameterType(entry.getKey(), fqn).getName(), entry.getValue()))
@@ -211,5 +215,11 @@ public final class DocumentationIndex {
                         .orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private static <T> Predicate<T> distinctByKey(@NotNull final Function<? super T, ?> keyExtractor) {
+        final Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 }
