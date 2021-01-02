@@ -20,6 +20,7 @@ public final class MethodDeserializer {
     static final Pattern LINE_DELIMITER = Pattern.compile("\n");
     static final Pattern LIST_DELIMITER = Pattern.compile(",");
     static final Pattern CONTENT_DELIMITER = Pattern.compile(" - ");
+    private static final Pattern EXCESS_WHITESPACE = Pattern.compile("\\s\\s+");
 
     private MethodDeserializer() {
         throw new AssertionError("This class cannot be instantiated.");
@@ -36,11 +37,27 @@ public final class MethodDeserializer {
 
         builder.type(constructor ? DocumentedTypes.CONSTRUCTOR : DocumentedTypes.METHOD);
 
+        String parameters;
+
         if (old) {
-            OldParameterDeserializer.deserialize(details, builder);
+            parameters = OldParameterDeserializer.deserialize(details, builder.getName());
         } else {
-            NewParameterDeserializer.deserialize(details, builder);
+            parameters = NewParameterDeserializer.deserialize(details);
         }
+
+        parameters = LINE_DELIMITER.matcher(parameters).replaceAll("");
+        parameters = EXCESS_WHITESPACE.matcher(parameters).replaceAll(" ");
+        parameters = killChars(parameters, '<', '>');
+        parameters = killChars(parameters, '(', ')');
+
+        if (parameters.contains("(") || parameters.contains(")")) {
+            System.out.println(parameters);
+        }
+
+        Arrays.stream(LIST_DELIMITER.split(parameters))
+                .filter(param -> !param.isBlank())
+                .map(String::trim)
+                .forEach(builder::parameters);
 
         Optional.ofNullable(details.selectFirst("dl")).ifPresent(dl -> {
             final Elements elements = dl.children();
@@ -85,5 +102,34 @@ public final class MethodDeserializer {
         });
 
         return builder.build();
+    }
+
+    @NotNull
+    private static String killChars(@NotNull final String string, final char prefix,
+                                    final char suffix) {
+        final StringBuilder builder = new StringBuilder();
+
+        int count = 0;
+        for (int i = 0; i < string.length(); ++i) {
+            final char character = string.charAt(i);
+
+            if (character == prefix) {
+                ++count;
+            }
+
+            if (character == suffix) {
+                if (--count == 0) {
+                    continue;
+                }
+            }
+
+            if (count != 0) {
+                continue;
+            }
+
+            builder.append(character);
+        }
+
+        return builder.toString();
     }
 }

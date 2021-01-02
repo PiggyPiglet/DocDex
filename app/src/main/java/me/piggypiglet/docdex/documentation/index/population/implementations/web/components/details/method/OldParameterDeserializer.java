@@ -1,12 +1,7 @@
 package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.method;
 
-import me.piggypiglet.docdex.documentation.objects.detail.method.DocumentedMethodBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;
-
-import java.util.Arrays;
-
-import static me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.method.MethodDeserializer.LIST_DELIMITER;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -17,12 +12,10 @@ public final class OldParameterDeserializer {
         throw new AssertionError("This class cannot be instantiated.");
     }
 
-    public static void deserialize(@NotNull final Element details, @NotNull final DocumentedMethodBuilder builder) {
-        final String pre = details.selectFirst("pre").text();
-
-        Arrays.stream(LIST_DELIMITER.split(pre.substring(pre.lastIndexOf('(') + 1, pre.lastIndexOf(')')).replace("\n", "")))
-                .filter(param -> !param.isBlank())
-                .map(String::trim)
-                .forEach(builder::parameters);
+    static String deserialize(@NotNull final Element details, @NotNull final String name) {
+        final String pre = details.selectFirst("pre").text()
+                .replace(name + '(', "\\")
+                .replace(name + '\u200b' + '(', "\\");
+        return pre.substring(pre.indexOf('\\') + 1, pre.lastIndexOf(')'));
     }
 }
