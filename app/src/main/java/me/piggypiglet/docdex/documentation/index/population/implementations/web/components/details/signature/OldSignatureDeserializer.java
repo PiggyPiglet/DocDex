@@ -33,7 +33,12 @@ public final class OldSignatureDeserializer {
                 .replace(name + "\u200b(", "\\");
 
         if (!replacedPre.contains("\\")) {
-            replacedPre = replacedPre.replace(' ' + name, "\\");
+            replacedPre = replacedPre.replace(' ' + name, "\\")
+                    .replace('\u00a0' + name, "\\");
+        }
+
+        if (!replacedPre.contains("\\")) {
+            System.out.println(name + " - " + replacedPre);
         }
 
         final Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(replacedPre.substring(0, replacedPre.lastIndexOf('\\')));
