@@ -69,7 +69,8 @@ public abstract class DocumentationCommand extends BotCommand {
         }
 
         if (args.size() == 0 || args.get(0).isBlank()) {
-            queueAndDelete(channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " + start + " [javadoc] [limit/$(first result)] <query>"));
+            queueAndDelete(channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " +
+                    message.getContentRaw().substring(0, start) + " [javadoc] [limit/$(first result)] <query>"));
             return;
         }
 
