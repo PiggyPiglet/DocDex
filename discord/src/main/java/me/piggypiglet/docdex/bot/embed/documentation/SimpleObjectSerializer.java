@@ -146,7 +146,12 @@ public final class SimpleObjectSerializer {
 
         if (typeNumbers != null) {
             final int i = typeNumbers.lastIndexOf(',');
-            typeNumbers = object.getName() + " has " + typeNumbers.substring(0, i) + ", and " + typeNumbers.substring(i + 1);
+
+            if (i != -1) {
+                typeNumbers = typeNumbers.substring(0, i) + ", and " + typeNumbers.substring(i + 1);
+            }
+
+            typeNumbers = object.getName() + " has " + typeNumbers;
         }
 
         return "```java\n" + signature + "```" + (typeNumbers == null ? "" : '\n' + typeNumbers);
