@@ -19,7 +19,7 @@ import static me.piggypiglet.docdex.documentation.index.population.implementatio
 // https://www.piggypiglet.me
 // ------------------------------
 public final class OldSignatureDeserializer {
-    private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@.+?(?=[ \\n])");
+    private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@.+?(?=\\n|(?<!,) )");
 
     private OldSignatureDeserializer() {
         throw new AssertionError("This class cannot be instantiated.");
@@ -28,9 +28,17 @@ public final class OldSignatureDeserializer {
     public static <R extends DocumentedObject.Builder<R> & DocumentedDetailBuilder<R>> void deserialize(@NotNull final Element details, @NotNull final R builder,
                                                                                                         @NotNull final String name) {
         final Element pre = details.selectFirst("pre");
-        final Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(pre.text());
+        String replacedPre = pre.text()
+                .replace(name + '(', "\\")
+                .replace(name + "\u200b(", "\\");
 
+        if (!replacedPre.contains("\\")) {
+            replacedPre = replacedPre.replace(' ' + name, "\\");
+        }
+
+        final Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(replacedPre.substring(0, replacedPre.lastIndexOf('\\')));
         final Set<String> annotations = new HashSet<>();
+
         while (annotationMatcher.find()) {
             annotations.add(annotationMatcher.group());
         }
@@ -38,11 +46,24 @@ public final class OldSignatureDeserializer {
         final AtomicReference<String> preTextReference = new AtomicReference<>(pre.text());
 
         pre.select("a").stream()
-                .filter(anchor -> annotations.contains(anchor.text()))
-                .peek(annotation -> preTextReference.set(preTextReference.get().replace(annotation.text(), "")))
-                .map(annotation -> annotation.text(annotation.text().substring(1)))
-                .map(DeserializationUtils::generateFqn)
-                .forEach(annotation -> builder.annotations('@' + annotation));
+                .filter(anchor -> anchor.hasAttr("title"))
+                .forEach(anchor -> annotations.stream()
+                        .filter(annotation -> {
+                            if (annotation.contains("(")) {
+                                return annotation.substring(0, annotation.indexOf('(')).equals(anchor.text());
+                            }
+
+                            return annotation.equals(anchor.text());
+                        })
+                        .findAny().ifPresent(annotation -> {
+                            preTextReference.set(preTextReference.get()
+                                    .replace(annotation + '\n', "")
+                                    .replace(annotation + ' ', ""));
+                            builder.annotations(annotation.replace(
+                                    anchor.text().substring(1),
+                                    DeserializationUtils.generateFqn(anchor).replace("@", "")
+                            ));
+                        }));
 
         final String preText = preTextReference.get().trim();
         final String[] preSplit = SPACE_DELIMITER.split(preText);
@@ -50,7 +71,12 @@ public final class OldSignatureDeserializer {
 
         int lastModifierIndex = 0;
         for (int i = 0; i < preSplit.length; ++i) {
-            if (preSplit[i].toLowerCase().startsWith(lowerName + '(')) {
+            final boolean isMethod = preSplit[i].toLowerCase().startsWith(lowerName + '(') ||
+                    preSplit[i].toLowerCase().startsWith(lowerName + "\u200b(");
+            final boolean isField = preSplit[i].toLowerCase().equals(lowerName) &&
+                    i == preSplit.length - 1;
+
+            if (isMethod || isField) {
                 builder.returns(preSplit[i - 1]);
                 lastModifierIndex = i - 2;
                 break;

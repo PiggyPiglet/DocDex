@@ -38,10 +38,6 @@ public final class DetailDeserializer {
 
         builder.name(name);
 
-        if (name.equalsIgnoreCase(owner)) {
-            builder.returns(name);
-        }
-
         Optional.ofNullable(details.selectFirst(".block")).ifPresent(description ->
                 builder.description(description.text()));
 

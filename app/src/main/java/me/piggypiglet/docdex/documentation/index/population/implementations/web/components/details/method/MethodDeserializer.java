@@ -35,6 +35,11 @@ public final class MethodDeserializer {
         DetailDeserializer.deserialize(details, link, packaj, owner, builder, old);
         final boolean constructor = builder.getName().equalsIgnoreCase(owner);
 
+        if (constructor) {
+            builder.modifiers(builder.getReturns());
+            builder.returns(builder.getName());
+        }
+
         builder.type(constructor ? DocumentedTypes.CONSTRUCTOR : DocumentedTypes.METHOD);
 
         String parameters;

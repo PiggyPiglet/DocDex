@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -25,7 +27,10 @@ public final class EmbedUtils {
             function(MessageEmbed::getImage, (builder, image) -> builder.setImage(image.getUrl())),
             function(MessageEmbed::getThumbnail, (builder, thumbnail) -> builder.setThumbnail(thumbnail.getUrl())),
             function(MessageEmbed::getTimestamp, EmbedBuilder::setTimestamp),
-            function(MessageEmbed::getTitle, EmbedBuilder::setTitle)
+            function(embed -> Map.of(
+                    "title", Optional.ofNullable(embed.getTitle()).orElse(""),
+                    "url", Optional.ofNullable(embed.getUrl()).orElse("")
+            ), (builder, map) -> builder.setTitle(map.getOrDefault("title", null), map.getOrDefault("url", null)))
     );
 
     private EmbedUtils() {

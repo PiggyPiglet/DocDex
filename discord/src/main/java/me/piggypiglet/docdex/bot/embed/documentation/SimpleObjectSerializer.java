@@ -94,13 +94,13 @@ public final class SimpleObjectSerializer {
 
                 if (!typeMetadata.getExtensions().isEmpty()) {
                     type.append("\nextends ").append(typeMetadata.getExtensions().stream()
-                            .map(SimpleObjectSerializer::getName)
+                            .map(SimpleObjectSerializer::getAnnotationName)
                             .collect(Collectors.joining(", ")));
                 }
 
                 if (!typeMetadata.getImplementations().isEmpty()) {
                     type.append("\nimplements ").append(typeMetadata.getImplementations().stream()
-                            .map(SimpleObjectSerializer::getName)
+                            .map(SimpleObjectSerializer::getAnnotationName)
                             .collect(Collectors.joining(", ")));
                 }
 
@@ -127,7 +127,7 @@ public final class SimpleObjectSerializer {
                 if (!methodMetadata.getThrows().isEmpty()) {
                     method.append("\nthrows ").append(methodMetadata.getThrows().stream()
                             .map(Map.Entry::getKey)
-                            .map(SimpleObjectSerializer::getName)
+                            .map(SimpleObjectSerializer::getAnnotationName)
                             .collect(Collectors.joining(", ")));
                 }
 
@@ -159,12 +159,15 @@ public final class SimpleObjectSerializer {
 
     @NotNull
     private static String annotationsAndModifiers(@NotNull final DocumentedObject object) {
-        return (object.getAnnotations().isEmpty() ? "" : '@' + object.getAnnotations().stream().map(SimpleObjectSerializer::getName).collect(Collectors.joining(" @")) + '\n') +
+        return (object.getAnnotations().isEmpty() ? "" : '@' + object.getAnnotations().stream()
+                .map(SimpleObjectSerializer::getAnnotationName)
+                .collect(Collectors.joining(" @")) + '\n') +
                 (object.getModifiers().isEmpty() ? "" : String.join(" ", object.getModifiers()) + ' ');
     }
 
     @NotNull
-    private static String getName(@NotNull final String fqn) {
-        return fqn.substring(fqn.lastIndexOf('.') + 1);
+    private static String getAnnotationName(@NotNull final String fqn) {
+        final int parenthesis = fqn.indexOf('(');
+        return fqn.substring(fqn.substring(0, parenthesis == -1 ? fqn.length() : parenthesis).lastIndexOf('.') + 1);
     }
 }
