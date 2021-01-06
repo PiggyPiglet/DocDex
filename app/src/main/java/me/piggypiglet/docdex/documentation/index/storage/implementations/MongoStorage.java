@@ -5,7 +5,6 @@ import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.IndexModel;
 import com.mongodb.client.model.Indexes;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.db.objects.MongoDocumentedObject;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -29,10 +27,7 @@ import java.util.stream.Stream;
 // ------------------------------
 public final class MongoStorage implements IndexStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger("MongoStorage");
-    private static final List<IndexModel> INDEXES = Stream.of("identifier")
-            .map(Indexes::hashed)
-            .map(IndexModel::new)
-            .collect(Collectors.toList());
+    private static final Bson INDEX = Indexes.hashed("identifier");
 
     private final MongoDatabase database;
 
@@ -112,7 +107,7 @@ public final class MongoStorage implements IndexStorage {
             }
         }));
 
-        collection.createIndexes(INDEXES);
+        collection.createIndex(INDEX);
         collection.insertMany(mongoObjects.values().stream()
                 .flatMap(Collection::stream)
                 .map(MongoDocumentedObject.Builder::build)

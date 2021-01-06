@@ -24,7 +24,7 @@ public final class MethodMetadata implements DetailMetadata {
     private final String returnsDescription;
     @SerializedName("throws") @JsonAdapter(EntrySetAdapter.class) private final Set<Map.Entry<String, String>> throwing;
 
-    MethodMetadata(@NotNull final String owner, @NotNull final Set<String> parameters,
+    public MethodMetadata(@NotNull final String owner, @NotNull final Set<String> parameters,
                    @NotNull final Map<String, String> parameterDescriptions, @NotNull final String returns,
                    @NotNull final String returnsDescription, @NotNull final Set<Map.Entry<String, String>> throwing) {
         this.owner = owner;
@@ -70,6 +70,7 @@ public final class MethodMetadata implements DetailMetadata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final MethodMetadata that = (MethodMetadata) o;
+
         return owner.equals(that.owner) && parameters.equals(that.parameters) && parameterDescriptions.equals(that.parameterDescriptions) && returns.equals(that.returns) && returnsDescription.equals(that.returnsDescription) && throwing.equals(that.throwing);
     }
 
