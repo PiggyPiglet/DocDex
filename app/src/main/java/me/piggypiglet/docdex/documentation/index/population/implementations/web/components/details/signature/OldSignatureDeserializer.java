@@ -37,10 +37,6 @@ public final class OldSignatureDeserializer {
                     .replace('\u00a0' + name, "\\");
         }
 
-        if (!replacedPre.contains("\\")) {
-            System.out.println(name + " - " + replacedPre);
-        }
-
         final Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(replacedPre.substring(0, replacedPre.lastIndexOf('\\')));
         final Set<String> annotations = new HashSet<>();
 

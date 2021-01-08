@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.documentation.index.population.implementations.web
 
 import com.google.common.collect.Lists;
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
@@ -41,7 +42,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
     @NotNull
     @Override
-    public Map<String, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
+    public Map<DocumentedObjectKey, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
         final long millis = System.currentTimeMillis();
         final String javadocName = DataUtils.getName(javadoc);
         final Document mainDocument = connect(javadoc.getLink());
@@ -105,12 +106,11 @@ public final class WebCrawlPopulator implements IndexPopulator {
             objects.addAll(JavadocPageDeserializer.deserialize(page, javadoc.getActualLink() + '/' + entry.getValue()));
         }));
 
-        final Map<String, DocumentedObject> map = new HashMap<>();
-
-        objects.forEach(object -> {
-            map.put(DataUtils.getFqn(object).toLowerCase(), object);
-            map.put(DataUtils.getName(object).toLowerCase(), object);
-        });
+        final Map<DocumentedObjectKey, DocumentedObject> map = objects.stream()
+                .collect(Collectors.toMap(object -> new DocumentedObjectKey(
+                        DataUtils.getFqn(object).toLowerCase(),
+                        DataUtils.getName(object).toLowerCase()
+                ), object -> object));
 
         LOGGER.info("Indexing type children with parent methods for " + javadocName);
 
@@ -136,14 +136,17 @@ public final class WebCrawlPopulator implements IndexPopulator {
                                     System.out.println(type.getName() + " - " + heir + " - " + method);
                                 }
                             })*/
-                            .map(map::get)
-                            //todo: something is null and I don't know what yet
-                            .filter(Objects::nonNull)
+                            .map(fqn -> map.entrySet().stream().filter(entry -> entry.getKey().getFqn().equals(fqn)).findAny())
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .map(Map.Entry::getValue)
                             .forEach(method -> {
                                 final String addendum = '#' + method.getName().toLowerCase();
 
-                                map.put(DataUtils.getFqn(heir).toLowerCase() + addendum, method);
-                                map.put(DataUtils.getName(heir).toLowerCase() + addendum, method);
+                                map.put(new DocumentedObjectKey(
+                                        DataUtils.getFqn(heir).toLowerCase() + addendum,
+                                        DataUtils.getName(heir).toLowerCase() + addendum
+                                ), method);
                             })
             );
         }
@@ -164,7 +167,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
     }
 
     @NotNull
-    private static Set<DocumentedObject> getChildren(@NotNull final Map<String, DocumentedObject> map, @NotNull final DocumentedObject object) {
+    private static Set<DocumentedObject> getChildren(@NotNull final Map<DocumentedObjectKey, DocumentedObject> map, @NotNull final DocumentedObject object) {
         final TypeMetadata typeMetadata = (TypeMetadata) object.getMetadata();
 
         final Set<DocumentedObject> subClasses = convertFromFqn(map, typeMetadata.getSubClasses());
@@ -186,12 +189,14 @@ public final class WebCrawlPopulator implements IndexPopulator {
     }
 
     @NotNull
-    private static Set<DocumentedObject> convertFromFqn(@NotNull final Map<String, DocumentedObject> map,
+    private static Set<DocumentedObject> convertFromFqn(@NotNull final Map<DocumentedObjectKey, DocumentedObject> map,
                                                         @NotNull final Set<String> fqns) {
         return fqns.stream()
                 .map(String::toLowerCase)
-                .map(map::get)
-                .filter(Objects::nonNull)
+                .map(fqn -> map.entrySet().stream().filter(entry -> entry.getKey().getFqn().equals(fqn)).findAny())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(Map.Entry::getValue)
                 .collect(Collectors.toSet());
     }
 

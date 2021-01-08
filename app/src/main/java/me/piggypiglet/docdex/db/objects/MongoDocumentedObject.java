@@ -39,7 +39,7 @@ public final class MongoDocumentedObject {
 
     @NotNull
     public String getIdentifier() {
-        return name;
+        return identifier;
     }
 
     @NotNull

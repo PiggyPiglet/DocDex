@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.storage.implementations.MongoStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
@@ -49,9 +50,11 @@ public final class DocumentationIndex {
         this.storage = storage;
     }
 
-    public void populate(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
-        for (final Map.Entry<String, DocumentedObject> entry : objects.entrySet()) {
-            final String key = entry.getKey();
+    public void populate(@NotNull final Javadoc javadoc, @NotNull final Map<DocumentedObjectKey, DocumentedObject> objects) {
+        for (final Map.Entry<DocumentedObjectKey, DocumentedObject> entry : objects.entrySet()) {
+            final DocumentedObjectKey key = entry.getKey();
+            final String name = key.getName();
+            final String fqn = key.getFqn();
             final DocumentedObject object = entry.getValue();
             final Multimap<Javadoc, String> names;
             final Multimap<Javadoc, String> fqns;
@@ -68,23 +71,16 @@ public final class DocumentationIndex {
                 case CONSTRUCTOR:
                 case METHOD:
                     final Map<ParameterTypes, String> params = DataUtils.getParams(object);
-                    final Multimap<Javadoc, String> full;
-                    final Multimap<Javadoc, String> type;
-                    final Multimap<Javadoc, String> name;
+                    final String fullParam = '(' + params.get(ParameterTypes.FULL) + ')';
+                    final String typeParam = '(' + params.get(ParameterTypes.TYPE) + ')';
+                    final String nameParam = '(' + params.get(ParameterTypes.NAME) + ')';
 
-                    if (key.contains(".")) {
-                        full = fullFqnMethods;
-                        type = typeFqnMethods;
-                        name = nameFqnMethods;
-                    } else {
-                        full = fullMethods;
-                        type = typeMethods;
-                        name = nameMethods;
-                    }
-
-                    full.get(javadoc).add(key + '(' + params.get(ParameterTypes.FULL) + ')');
-                    type.get(javadoc).add(key + '(' + params.get(ParameterTypes.TYPE) + ')');
-                    name.get(javadoc).add(key + '(' + params.get(ParameterTypes.NAME) + ')');
+                    fullMethods.get(javadoc).add(name + fullParam);
+                    fullFqnMethods.get(javadoc).add(fqn + fullParam);
+                    typeMethods.get(javadoc).add(name + typeParam);
+                    typeFqnMethods.get(javadoc).add(fqn + typeParam);
+                    nameMethods.get(javadoc).add(name + nameParam);
+                    nameFqnMethods.get(javadoc).add(fqn + nameParam);
                     continue;
 
                 case FIELD:
@@ -96,11 +92,8 @@ public final class DocumentationIndex {
                     continue;
             }
 
-            if (key.contains(".")) {
-                fqns.put(javadoc, key);
-            } else {
-                names.put(javadoc, key);
-            }
+            fqns.put(javadoc, fqn);
+            names.put(javadoc, name);
         }
     }
 

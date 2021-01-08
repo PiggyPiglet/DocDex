@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.documentation.index.population;
 
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,5 +15,5 @@ public interface IndexPopulator {
     boolean shouldPopulate(@NotNull final Javadoc javadoc);
 
     @NotNull
-    Map<String, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc);
+    Map<DocumentedObjectKey, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc);
 }

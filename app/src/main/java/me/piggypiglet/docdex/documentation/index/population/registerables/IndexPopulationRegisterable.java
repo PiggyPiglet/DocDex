@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.DocumentationIndex;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.index.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
@@ -64,7 +65,7 @@ public final class IndexPopulationRegisterable extends Registerable {
         javadocs.forEach(javadoc ->
                 futures.add(CompletableFuture.runAsync(() ->
                         populators.stream().filter(populator -> populator.shouldPopulate(javadoc)).findAny().ifPresent(populator -> {
-                            final Map<String, DocumentedObject> objects = populator.provideObjects(javadoc);
+                            final Map<DocumentedObjectKey, DocumentedObject> objects = populator.provideObjects(javadoc);
 
                             storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);

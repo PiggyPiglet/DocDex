@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.db.objects.MongoDocumentedObject;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
@@ -18,7 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // ------------------------------
@@ -37,7 +40,7 @@ public final class MongoStorage implements IndexStorage {
     }
 
     @Override
-    public void save(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
+    public void save(@NotNull final Javadoc javadoc, @NotNull final Map<DocumentedObjectKey, DocumentedObject> objects) {
         final String javadocName = DataUtils.getName(javadoc);
 
         LOGGER.info("Attempting to save " + javadocName + " to MongoDB.");
@@ -50,42 +53,18 @@ public final class MongoStorage implements IndexStorage {
         }
 
         final MongoCollection<MongoDocumentedObject> collection = database.getCollection(javadocName, MongoDocumentedObject.class);
-        final Map<DocumentedObject, Set<MongoDocumentedObject.Builder>> mongoObjects = new HashMap<>();
+        final List<MongoDocumentedObject> mongoObjects = objects.entrySet().stream().map(entry -> {
+            final DocumentedObjectKey key = entry.getKey();
+            final DocumentedObject object = entry.getValue();
 
-        objects.forEach((key, object) -> {
-            mongoObjects.putIfAbsent(object, new HashSet<>());
-
-            final boolean fqn = key.contains(".");
-            final Set<MongoDocumentedObject.Builder> builders = mongoObjects.get(object).stream()
-                    .filter(builder -> fqn ? builder.getFqn() == null : builder.getName() == null)
-                    .collect(Collectors.toSet());
-
-            if (builders.isEmpty()) {
-                final MongoDocumentedObject.Builder builder = MongoDocumentedObject.builder(object);
-                mongoObjects.get(object).add(builder);
-
-                if (fqn) {
-                    builder.fqn(key);
-                } else {
-                    builder.name(key);
-                }
-            } else {
-                builders.forEach(builder -> {
-                    if (fqn) {
-                        builder.fqn(key);
-                    } else {
-                        builder.name(key);
-                    }
-                });
-            }
-        });
-
-        mongoObjects.forEach((object, builders) -> builders.forEach(builder -> {
-            final String fqn = builder.getFqn();
+            final MongoDocumentedObject.Builder builder = MongoDocumentedObject.builder(object)
+                    .name(key.getName())
+                    .fqn(key.getFqn());
+            final String fqn = key.getFqn();
 
             if (object.getType() == DocumentedTypes.METHOD || object.getType() == DocumentedTypes.CONSTRUCTOR) {
                 final Map<ParameterTypes, String> params = DataUtils.getParams(object);
-                final String name = builder.getName();
+                final String name = key.getName();
 
                 final String fullParams = '(' + params.get(ParameterTypes.FULL) + ')';
                 final String typeParams = '(' + params.get(ParameterTypes.TYPE) + ')';
@@ -105,13 +84,12 @@ public final class MongoStorage implements IndexStorage {
                         .nameParams("")
                         .fqnNameParams("");
             }
-        }));
+
+            return builder.build();
+        }).collect(Collectors.toList());
 
         collection.createIndex(INDEX);
-        collection.insertMany(mongoObjects.values().stream()
-                .flatMap(Collection::stream)
-                .map(MongoDocumentedObject.Builder::build)
-                .collect(Collectors.toList()));
+        collection.insertMany(mongoObjects);
         LOGGER.info("Saved " + javadocName + " to mongo.");
     }
 

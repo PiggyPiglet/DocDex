@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.documentation.index.storage.implementations;
 
 import com.google.gson.Gson;
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
@@ -24,7 +25,7 @@ public final class FlatFileStorage implements IndexStorage {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public void save(@NotNull final Javadoc javadoc, @NotNull final Map<String, DocumentedObject> objects) {
+    public void save(@NotNull final Javadoc javadoc, @NotNull final Map<DocumentedObjectKey, DocumentedObject> objects) {
         final String fileName = DataUtils.getName(javadoc) + ".json";
         final File file = new File("docs", fileName);
 

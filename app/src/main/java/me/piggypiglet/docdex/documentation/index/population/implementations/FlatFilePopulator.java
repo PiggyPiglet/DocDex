@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.util.Types;
 import me.piggypiglet.docdex.config.Javadoc;
+import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.adaptation.creation.FieldMetadataCreator;
@@ -45,14 +46,14 @@ public final class FlatFilePopulator implements IndexPopulator {
     @SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
     @NotNull
     @Override
-    public Map<String, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
+    public Map<DocumentedObjectKey, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
         final String fileName = String.join("-", javadoc.getNames()) + ".json";
         final File file = new File("docs", fileName);
 
         LOGGER.info("Loading pre-built index from " + fileName);
 
         try {
-            return Optional.of((Map<String, DocumentedObject>) GSON.fromJson(FileUtils.readFile(file), DESERIALIZED_TYPE))
+            return Optional.of((Map<DocumentedObjectKey, DocumentedObject>) GSON.fromJson(FileUtils.readFile(file), DESERIALIZED_TYPE))
                     .stream()
                     // i don't like this but gotta get that log lol
                     .peek(set -> LOGGER.info("Finished loading " + fileName))
