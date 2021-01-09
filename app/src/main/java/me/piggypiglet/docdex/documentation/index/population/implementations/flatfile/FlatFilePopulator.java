@@ -1,11 +1,11 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations;
+package me.piggypiglet.docdex.documentation.index.population.implementations.flatfile;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.util.Types;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
+import me.piggypiglet.docdex.documentation.index.population.implementations.flatfile.adaptation.ObjectMapAdapter;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.adaptation.creation.FieldMetadataCreator;
 import me.piggypiglet.docdex.documentation.objects.adaptation.creation.MethodMetadataCreator;
@@ -20,10 +20,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+
+import static me.piggypiglet.docdex.documentation.index.population.implementations.flatfile.adaptation.ObjectMapAdapter.DESERIALIZED_TYPE;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -35,8 +36,8 @@ public final class FlatFilePopulator implements IndexPopulator {
             .registerTypeAdapter(TypeMetadata.class, new TypeMetadataCreator())
             .registerTypeAdapter(MethodMetadata.class, new MethodMetadataCreator())
             .registerTypeAdapter(FieldMetadata.class, new FieldMetadataCreator())
+            .registerTypeAdapter(DESERIALIZED_TYPE, new ObjectMapAdapter())
             .create();
-    private static final Type DESERIALIZED_TYPE = Types.mapOf(String.class, DocumentedObject.class);
 
     @Override
     public boolean shouldPopulate(final @NotNull Javadoc javadoc) {

@@ -1,8 +1,10 @@
 package me.piggypiglet.docdex.documentation.index.storage.implementations;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
+import me.piggypiglet.docdex.documentation.index.population.implementations.flatfile.adaptation.ObjectMapAdapter;
 import me.piggypiglet.docdex.documentation.index.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
@@ -15,13 +17,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import static me.piggypiglet.docdex.documentation.index.population.implementations.flatfile.adaptation.ObjectMapAdapter.DESERIALIZED_TYPE;
+
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class FlatFileStorage implements IndexStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger("FlatFileStorage");
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(DESERIALIZED_TYPE, new ObjectMapAdapter())
+            .create();
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
@@ -48,7 +54,7 @@ public final class FlatFileStorage implements IndexStorage {
         }
 
         try {
-            FileUtils.writeFile(file, GSON.toJson(objects));
+            FileUtils.writeFile(file, GSON.toJson(objects, DESERIALIZED_TYPE));
         } catch (IOException exception) {
             LOGGER.error("Something went wrong when saving " + fileName, exception);
             return;

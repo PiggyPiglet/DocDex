@@ -13,7 +13,7 @@ import java.util.stream.StreamSupport;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class EntrySetAdapter implements JsonSerializer<Set<Map.Entry<String, String>>>, JsonDeserializer<Set<Map.Entry<String, String>>> {
+public final class StringEntrySetAdapter implements JsonSerializer<Set<Map.Entry<String, String>>>, JsonDeserializer<Set<Map.Entry<String, String>>> {
     @NotNull
     @Override
     public JsonElement serialize(@NotNull final Set<Map.Entry<String, String>> src, @NotNull final Type typeOfSrc,

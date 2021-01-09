@@ -6,8 +6,10 @@ import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
+import me.piggypiglet.docdex.documentation.objects.detail.method.MethodMetadata;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;
+import me.piggypiglet.docdex.documentation.utils.ParameterTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.Jsoup;
@@ -34,6 +36,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
             DocumentedTypes.CLASS, DocumentedTypes.INTERFACE,
             DocumentedTypes.ANNOTATION, DocumentedTypes.ENUM
     ).map(DocumentedTypes::getName).map(String::toLowerCase).collect(Collectors.toSet());
+    private static final Map<ParameterTypes, String> DEFAULT_PARAMETERS = Arrays.stream(ParameterTypes.values())
+            .collect(Collectors.toMap(parameterType -> parameterType, parameterType -> ""));
 
     @Override
     public boolean shouldPopulate(final @NotNull Javadoc javadoc) {
@@ -109,7 +113,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
         final Map<DocumentedObjectKey, DocumentedObject> map = objects.stream()
                 .collect(Collectors.toMap(object -> new DocumentedObjectKey(
                         DataUtils.getName(object).toLowerCase(),
-                        DataUtils.getFqn(object).toLowerCase()
+                        DataUtils.getFqn(object).toLowerCase(),
+                        object.getMetadata() instanceof MethodMetadata ? DataUtils.getParams(object) : DEFAULT_PARAMETERS
                 ), object -> object));
 
         LOGGER.info("Indexing type children with parent methods for " + javadocName);
@@ -145,7 +150,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
                                 map.put(new DocumentedObjectKey(
                                         DataUtils.getName(heir).toLowerCase() + addendum,
-                                        DataUtils.getFqn(heir).toLowerCase() + addendum
+                                        DataUtils.getFqn(heir).toLowerCase() + addendum,
+                                        DataUtils.getParams(method)
                                 ), method);
                             })
             );
