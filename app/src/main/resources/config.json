@@ -12,8 +12,13 @@
 
   "javadocs": [
     {
-      "names": ["jdk"],
-      "link": "http://localhost/docs/jdk/overview-summary.html",
+      "names": ["jdk", "jdk11"],
+      "link": "http://localhost/docs/jdk11/index.html",
+      "actual_link": "https://docs.oracle.com/en/java/javase/11/docs/api"
+    },
+    {
+      "names": ["jdk8"],
+      "link": "http://localhost/docs/jdk8/overview-summary.html",
       "actual_link": "https://docs.oracle.com/javase/8/docs/api"
     },
     {
@@ -300,6 +305,66 @@
       "names": ["worldguard"],
       "link": "http://localhost/docs/worldguard/overview-summary.html",
       "actual_link": "https://helpch.at/docs/worldguard"
+    },
+    {
+      "names": ["commons-cli"],
+      "link": "http://localhost/docs/commons-cli/org/apache/commons/cli/package-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-cli"
+    },
+    {
+      "names": ["commons-codec"],
+      "link": "http://localhost/docs/commons-codec/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-codec"
+    },
+    {
+      "names": ["commons-collections4"],
+      "link": "http://localhost/docs/commons-collections4/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-collections4"
+    },
+    {
+      "names": ["commons-compress"],
+      "link": "http://localhost/docs/commons-compress/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-compress"
+    },
+    {
+      "names": ["commons-configuration"],
+      "link": "http://localhost/docs/commons-configuration/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-configuration"
+    },
+    {
+      "names": ["commons-crypto"],
+      "link": "http://localhost/docs/commons-crypto/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-crypto"
+    },
+    {
+      "names": ["commons-email"],
+      "link": "http://localhost/docs/commons-email/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-email"
+    },
+    {
+      "names": ["commons-io"],
+      "link": "http://localhost/docs/commons-io/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-io"
+    },
+    {
+      "names": ["commons-lang3"],
+      "link": "http://localhost/docs/commons-lang3/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-lang3"
+    },
+    {
+      "names": ["commons-logging"],
+      "link": "http://localhost/docs/commons-logging/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-logging"
+    },
+    {
+      "names": ["commons-text"],
+      "link": "http://localhost/docs/commons-text/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/commons-text"
+    },
+    {
+      "names": ["guava"],
+      "link": "http://localhost/docs/guava",
+      "actual_link": "https://helpch.at/docs/guava"
     }
   ]
 }

@@ -55,9 +55,8 @@ public final class InfoCommand extends BotCommand {
                     embed.setColor(EmbedUtils.COLOUR);
                     embed.setDescription(
                             String.format("[Website](%s) | [Github](%s) | [Invite](%s)\n\n", config.getUrl(), GITHUB, INVITE) +
-                            "DocDex (Documentation Index) is a JSON web API which provides an endpoint that returns " +
-                            "information on a particular javadoc object, from a fuzzy query. This bot uses this API to " +
-                            "provide the information in Discord. The bot is made in Java 11 using JDA."
+                            "DocDex (Documentation Index) is a bot developed using JDA and Java 11, which can display information" +
+                            "on javadoc objects, from a fuzzy query."
                     );
                     embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
                     embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);

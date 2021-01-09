@@ -193,6 +193,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                                                         @NotNull final Set<String> fqns) {
         return fqns.stream()
                 .map(String::toLowerCase)
+                // todo: change this to map#get
                 .map(fqn -> map.entrySet().stream().filter(entry -> entry.getKey().getFqn().equals(fqn)).findAny())
                 .filter(Optional::isPresent)
                 .map(Optional::get)
