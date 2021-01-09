@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.method;
 
 import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.DetailDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.utils.DeserializationUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.detail.method.DocumentedMethodBuilder;
@@ -20,7 +21,6 @@ public final class MethodDeserializer {
     static final Pattern LINE_DELIMITER = Pattern.compile("\n");
     static final Pattern LIST_DELIMITER = Pattern.compile(",");
     static final Pattern CONTENT_DELIMITER = Pattern.compile(" - ");
-    private static final Pattern EXCESS_WHITESPACE = Pattern.compile("\\s\\s+");
 
     private MethodDeserializer() {
         throw new AssertionError("This class cannot be instantiated.");
@@ -51,9 +51,9 @@ public final class MethodDeserializer {
         }
 
         parameters = LINE_DELIMITER.matcher(parameters).replaceAll("");
-        parameters = EXCESS_WHITESPACE.matcher(parameters).replaceAll(" ");
-        parameters = killChars(parameters, '<', '>');
-        parameters = killChars(parameters, '(', ')');
+        parameters = DeserializationUtils.removeExcessWhitespace(parameters);
+        parameters = DeserializationUtils.killChars(parameters, '<', '>');
+        parameters = DeserializationUtils.killChars(parameters, '(', ')');
 
         Arrays.stream(LIST_DELIMITER.split(parameters))
                 .filter(param -> !param.isBlank())
@@ -103,34 +103,5 @@ public final class MethodDeserializer {
         });
 
         return builder.build();
-    }
-
-    @NotNull
-    private static String killChars(@NotNull final String string, final char prefix,
-                                    final char suffix) {
-        final StringBuilder builder = new StringBuilder();
-
-        int count = 0;
-        for (int i = 0; i < string.length(); ++i) {
-            final char character = string.charAt(i);
-
-            if (character == prefix) {
-                ++count;
-            }
-
-            if (character == suffix) {
-                if (--count == 0) {
-                    continue;
-                }
-            }
-
-            if (count != 0) {
-                continue;
-            }
-
-            builder.append(character);
-        }
-
-        return builder.toString();
     }
 }

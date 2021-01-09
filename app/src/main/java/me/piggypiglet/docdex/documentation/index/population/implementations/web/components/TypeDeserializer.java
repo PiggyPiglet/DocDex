@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public final class TypeDeserializer {
     private static final Pattern LINE_DELIMITER = Pattern.compile("\n");
     private static final Pattern SPACE_DELIMITER = Pattern.compile(" ");
+    private static final Pattern ANNOTATION_DELIMITER = Pattern.compile("@");
 
     private static final Map<String, BiConsumer<DocumentedTypeBuilder, Set<String>>> HEADER_SETTERS = Map.of(
             "all implemented interfaces:", DocumentedTypeBuilder::allImplementations,
@@ -43,25 +44,16 @@ public final class TypeDeserializer {
 
         final Element pre = description.selectFirst("pre");
         final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(pre.text()))
-                .filter(line -> !line.startsWith("@"))
+                .filter(line -> !line.startsWith("@") && !line.endsWith(")"))
                 .collect(Collectors.toList());
-        final List<String> declarationAnchors = Optional.ofNullable(pre.selectFirst("span"))
+        final Element span = pre.selectFirst("span");
+        final List<String> declarationAnchors = Optional.ofNullable(span)
                 .map(Element::nextElementSiblings)
                 .map(elements -> elements.select("a"))
                 .stream()
                 .flatMap(Collection::stream)
                 .map(DeserializationUtils::generateFqn)
                 .collect(Collectors.toList());
-
-        Optional.ofNullable(pre.selectFirst("span"))
-                .map(Element::previousElementSiblings)
-                .map(elements -> elements.select("a"))
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(element -> element.text().startsWith("@"))
-                .map(element -> element.text(element.text().substring(1)))
-                .map(element -> '@' + DeserializationUtils.generateFqn(element))
-                .forEach(builder::annotations);
 
         DocumentedTypes type = DocumentedTypes.UNKNOWN;
 
@@ -120,6 +112,37 @@ public final class TypeDeserializer {
                     }
                     break;
             }
+        }
+
+        final Set<Element> annotationAnchors = Optional.ofNullable(span)
+                .map(Element::previousElementSiblings)
+                .map(elements -> elements.select("a"))
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(element -> element.attr("title").startsWith("annotation in "))
+                .collect(Collectors.toSet());
+
+        final StringBuilder annotations = new StringBuilder();
+
+        for (final String line : LINE_DELIMITER.split(pre.text())) {
+            if (line.endsWith(builder.getName())) {
+                break;
+            }
+
+            annotations.append(line);
+        }
+
+        for (final String annotation : ANNOTATION_DELIMITER.split(annotations.toString())) {
+            final Element anchor = annotationAnchors.stream()
+                    .filter(element -> annotation.startsWith(element.text().substring(1)))
+                    .findAny().orElse(null);
+
+            if (anchor == null) {
+                continue;
+            }
+
+            final String fqnAnnotation = ('@' + annotation.replaceFirst(anchor.text(), DeserializationUtils.generateFqn(anchor)));
+            builder.annotations(DeserializationUtils.removeExcessWhitespace(fqnAnnotation).trim());
         }
 
         Optional.ofNullable(description.selectFirst(".block")).ifPresent(descriptionBlock ->

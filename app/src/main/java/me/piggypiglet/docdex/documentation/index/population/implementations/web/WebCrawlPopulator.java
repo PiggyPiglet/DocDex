@@ -115,7 +115,10 @@ public final class WebCrawlPopulator implements IndexPopulator {
                         DataUtils.getName(object).toLowerCase(),
                         DataUtils.getFqn(object).toLowerCase(),
                         object.getMetadata() instanceof MethodMetadata ? DataUtils.getParams(object) : DEFAULT_PARAMETERS
-                ), object -> object));
+                ), object -> object, (object1, object2) -> object1));
+        final Map<String, DocumentedObject> fqns = map.entrySet().stream()
+                .filter(entry -> entry.getValue().getMetadata() instanceof TypeMetadata)
+                .collect(Collectors.toMap(entry -> entry.getKey().getFqn(), Map.Entry::getValue));
 
         LOGGER.info("Indexing type children with parent methods for " + javadocName);
 
@@ -133,7 +136,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 continue;
             }
 
-            getChildren(map, type).forEach(heir ->
+            getChildren(fqns, type).forEach(heir ->
                     ((TypeMetadata) type.getMetadata()).getMethods().stream()
                             .map(String::toLowerCase)
 /*                            .peek(method -> {
@@ -141,10 +144,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
                                     System.out.println(type.getName() + " - " + heir + " - " + method);
                                 }
                             })*/
-                            .map(fqn -> map.entrySet().stream().filter(entry -> entry.getKey().getFqn().equals(fqn)).findAny())
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .map(Map.Entry::getValue)
+                            .map(fqns::get)
+                            .filter(Objects::nonNull)
                             .forEach(method -> {
                                 final String addendum = '#' + method.getName().toLowerCase();
 
@@ -173,7 +174,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
     }
 
     @NotNull
-    private static Set<DocumentedObject> getChildren(@NotNull final Map<DocumentedObjectKey, DocumentedObject> map, @NotNull final DocumentedObject object) {
+    private static Set<DocumentedObject> getChildren(@NotNull final Map<String, DocumentedObject> map, @NotNull final DocumentedObject object) {
         final TypeMetadata typeMetadata = (TypeMetadata) object.getMetadata();
 
         final Set<DocumentedObject> subClasses = convertFromFqn(map, typeMetadata.getSubClasses());
@@ -195,15 +196,12 @@ public final class WebCrawlPopulator implements IndexPopulator {
     }
 
     @NotNull
-    private static Set<DocumentedObject> convertFromFqn(@NotNull final Map<DocumentedObjectKey, DocumentedObject> map,
+    private static Set<DocumentedObject> convertFromFqn(@NotNull final Map<String, DocumentedObject> map,
                                                         @NotNull final Set<String> fqns) {
         return fqns.stream()
                 .map(String::toLowerCase)
-                // todo: change this to map#get
-                .map(fqn -> map.entrySet().stream().filter(entry -> entry.getKey().getFqn().equals(fqn)).findAny())
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(Map.Entry::getValue)
+                .map(map::get)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
