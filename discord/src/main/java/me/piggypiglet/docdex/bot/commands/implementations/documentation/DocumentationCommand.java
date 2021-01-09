@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 // ------------------------------
 public abstract class DocumentationCommand extends BotCommand {
     private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\-, ()]");
+    private static final Pattern ARGUMENT_PATTERN = Pattern.compile("([ ](?![^(]*\\)))");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -165,6 +166,12 @@ public abstract class DocumentationCommand extends BotCommand {
     @NotNull
     protected String checkAndReturnError(@NotNull final DocumentedObject object) {
         return "";
+    }
+
+    @NotNull
+    @Override
+    protected List<String> args(final @NotNull Message message, final int start) {
+        return Arrays.asList(ARGUMENT_PATTERN.split(message.getContentRaw().substring(start).trim()));
     }
 
     private static void queueAndDelete(@NotNull final MessageAction message) {

@@ -65,7 +65,7 @@ public abstract class BotCommand {
     }
 
     @NotNull
-    protected static List<String> args(@NotNull final Message message, final int start) {
+    protected List<String> args(@NotNull final Message message, final int start) {
         return Arrays.asList(SPACE_DELIMITER.split(message.getContentRaw().substring(start).trim()));
     }
 }

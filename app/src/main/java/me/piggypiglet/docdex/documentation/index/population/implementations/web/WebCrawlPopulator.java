@@ -144,8 +144,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
                                 final String addendum = '#' + method.getName().toLowerCase();
 
                                 map.put(new DocumentedObjectKey(
-                                        DataUtils.getFqn(heir).toLowerCase() + addendum,
-                                        DataUtils.getName(heir).toLowerCase() + addendum
+                                        DataUtils.getName(heir).toLowerCase() + addendum,
+                                        DataUtils.getFqn(heir).toLowerCase() + addendum
                                 ), method);
                             })
             );
