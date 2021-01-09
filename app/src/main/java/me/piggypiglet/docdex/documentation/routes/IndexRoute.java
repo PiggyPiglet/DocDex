@@ -51,6 +51,6 @@ public final class IndexRoute extends JsonRoute {
             return null;
         }
 
-        return index.get(javadoc, query, limit);
+        return index.get(javadoc, query.replace("%20", " "), limit);
     }
 }
