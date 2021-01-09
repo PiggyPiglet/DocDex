@@ -108,8 +108,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
         final Map<DocumentedObjectKey, DocumentedObject> map = objects.stream()
                 .collect(Collectors.toMap(object -> new DocumentedObjectKey(
-                        DataUtils.getFqn(object).toLowerCase(),
-                        DataUtils.getName(object).toLowerCase()
+                        DataUtils.getName(object).toLowerCase(),
+                        DataUtils.getFqn(object).toLowerCase()
                 ), object -> object));
 
         LOGGER.info("Indexing type children with parent methods for " + javadocName);
