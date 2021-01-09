@@ -41,7 +41,7 @@ public final class GuildJoinListener extends ListenerAdapter {
             servers.add(server);
             adapters.save(server);
 
-            LOGGER.info("Joined " + event.getGuild().getName());
+            LOGGER.info("Joined " + event.getGuild().getName() + '(' + event.getGuild().getId() + ')');
         });
     }
 }
