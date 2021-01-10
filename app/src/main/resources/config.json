@@ -24,7 +24,7 @@
     {
       "names": ["jda"],
       "link": "http://localhost/docs/jda",
-      "actual_link": "https://helpch.at/docs/jda"
+      "actual_link": "https://docs.docdex.helpch.at/jda"
     },
     {
       "names": ["1.16.4", "latest", "spigot"],
@@ -34,372 +34,372 @@
     {
       "names": ["1.16.3"],
       "link":"http://localhost/docs/1.16.3",
-      "actual_link": "https://helpch.at/docs/1.16.3"
+      "actual_link": "https://docs.docdex.helpch.at/1.16.3"
     },
     {
       "names": ["1.16.2"],
       "link": "http://localhost/docs/1.16.2",
-      "actual_link": "https://helpch.at/docs/1.16.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.16.2"
     },
     {
       "names": ["1.16.1"],
       "link": "http://localhost/docs/1.16.1",
-      "actual_link": "https://helpch.at/docs/1.16.1"
+      "actual_link": "https://docs.docdex.helpch.at/1.16.1"
     },
     {
       "names": ["1.15.2"],
       "link": "http://localhost/docs/1.15.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.15.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.15.2"
     },
     {
       "names": ["1.15.1"],
       "link": "http://localhost/docs/1.15.1/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.15.1"
+      "actual_link": "https://docs.docdex.helpch.at/1.15.1"
     },
     {
       "names": ["1.15"],
       "link": "http://localhost/docs/1.15/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.15"
+      "actual_link": "https://docs.docdex.helpch.at/1.15"
     },
     {
       "names": ["1.14.4"],
       "link": "http://localhost/docs/1.14.4/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.14.4"
+      "actual_link": "https://docs.docdex.helpch.at/1.14.4"
     },
     {
       "names": ["1.14.3"],
       "link": "http://localhost/docs/1.14.3/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.14.3"
+      "actual_link": "https://docs.docdex.helpch.at/1.14.3"
     },
     {
       "names": ["1.14.2"],
       "link": "http://localhost/docs/1.14.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.14.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.14.2"
     },
     {
       "names": ["1.14.1"],
       "link": "http://localhost/docs/1.14.1/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.14.1"
+      "actual_link": "https://docs.docdex.helpch.at/1.14.1"
     },
     {
       "names": ["1.14"],
       "link": "http://localhost/docs/1.14/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.14"
+      "actual_link": "https://docs.docdex.helpch.at/1.14"
     },
     {
       "names": ["1.13.2"],
       "link": "http://localhost/docs/1.13.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.13.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.13.2"
     },
     {
       "names": ["1.13.1"],
       "link": "http://localhost/docs/1.13.1/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.13.1"
+      "actual_link": "https://docs.docdex.helpch.at/1.13.1"
     },
     {
       "names": ["1.13"],
       "link": "http://localhost/docs/1.13/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.13"
+      "actual_link": "https://docs.docdex.helpch.at/1.13"
     },
     {
       "names": ["1.12.2"],
       "link": "http://localhost/docs/1.12.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.12.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.12.2"
     },
     {
       "names": ["1.12.1"],
       "link": "http://localhost/docs/1.12.1/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.12.1"
+      "actual_link": "https://docs.docdex.helpch.at/1.12.1"
     },
     {
       "names": ["1.12"],
       "link": "http://localhost/docs/1.12/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.12"
+      "actual_link": "https://docs.docdex.helpch.at/1.12"
     },
     {
       "names": ["1.11.2"],
       "link": "http://localhost/docs/1.11.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.11.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.11.2"
     },
     {
       "names": ["1.11.1"],
       "link": "http://localhost/docs/1.11.1/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.11.1"
+      "actual_link": "https://docs.docdex.helpch.at/1.11.1"
     },
     {
       "names": ["1.11"],
       "link": "http://localhost/docs/1.11/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.11"
+      "actual_link": "https://docs.docdex.helpch.at/1.11"
     },
     {
       "names": ["1.10.2"],
       "link": "http://localhost/docs/1.10.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.10.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.10.2"
     },
     {
       "names": ["1.10"],
       "link": "http://localhost/docs/1.10/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.10"
+      "actual_link": "https://docs.docdex.helpch.at/1.10"
     },
     {
       "names": ["1.9.4"],
       "link": "http://localhost/docs/1.9.4/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.9.4"
+      "actual_link": "https://docs.docdex.helpch.at/1.9.4"
     },
     {
       "names": ["1.9.2"],
       "link": "http://localhost/docs/1.9.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.9.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.9.2"
     },
     {
       "names": ["1.9"],
       "link": "http://localhost/docs/1.9/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.9"
+      "actual_link": "https://docs.docdex.helpch.at/1.9"
     },
     {
       "names": ["1.8.8"],
       "link": "http://localhost/docs/1.8.8/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8.8"
+      "actual_link": "https://docs.docdex.helpch.at/1.8.8"
     },
     {
       "names": ["1.8.7"],
       "link": "http://localhost/docs/1.8.7/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8.7"
+      "actual_link": "https://docs.docdex.helpch.at/1.8.7"
     },
     {
       "names": ["1.8.6"],
       "link": "http://localhost/docs/1.8.6/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8.6"
+      "actual_link": "https://docs.docdex.helpch.at/1.8.6"
     },
     {
       "names": ["1.8.5"],
       "link": "http://localhost/docs/1.8.5/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8.5"
+      "actual_link": "https://docs.docdex.helpch.at/1.8.5"
     },
     {
       "names": ["1.8.4"],
       "link": "http://localhost/docs/1.8.4/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8.4"
+      "actual_link": "https://docs.docdex.helpch.at/1.8.4"
     },
     {
       "names": ["1.8.3"],
       "link": "http://localhost/docs/1.8.3/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8.3"
+      "actual_link": "https://docs.docdex.helpch.at/1.8.3"
     },
     {
       "names": ["1.8"],
       "link": "http://localhost/docs/1.8/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.8"
+      "actual_link": "https://docs.docdex.helpch.at/1.8"
     },
     {
       "names": ["1.7.10"],
       "link": "http://localhost/docs/1.7.10/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.7.10"
+      "actual_link": "https://docs.docdex.helpch.at/1.7.10"
     },
     {
       "names": ["1.7.9"],
       "link": "http://localhost/docs/1.7.9/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.7.9"
+      "actual_link": "https://docs.docdex.helpch.at/1.7.9"
     },
     {
       "names": ["1.7.8"],
       "link": "http://localhost/docs/1.7.8/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.7.8"
+      "actual_link": "https://docs.docdex.helpch.at/1.7.8"
     },
     {
       "names": ["1.7.5"],
       "link": "http://localhost/docs/1.7.5/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.7.5"
+      "actual_link": "https://docs.docdex.helpch.at/1.7.5"
     },
     {
       "names": ["1.7.2"],
       "link": "http://localhost/docs/1.7.2/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/1.7.2"
+      "actual_link": "https://docs.docdex.helpch.at/1.7.2"
     },
     {
       "names": ["paper-1.16", "paper"],
       "link": "http://localhost/docs/paper-1.16/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.16"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.16"
     },
     {
       "names": ["paper-1.15"],
       "link": "http://localhost/docs/paper-1.15/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.15"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.15"
     },
     {
       "names": ["paper-1.14"],
       "link": "http://localhost/docs/paper-1.14/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.14"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.14"
     },
     {
       "names": ["paper-1.13"],
       "link": "http://localhost/docs/paper-1.13/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.13"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.13"
     },
     {
       "names": ["paper-1.12"],
       "link": "http://localhost/docs/paper-1.12/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.12"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.12"
     },
     {
       "names": ["paper-1.11"],
       "link": "http://localhost/docs/paper-1.11/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.11"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.11"
     },
     {
       "names": ["paper-1.10"],
       "link": "http://localhost/docs/paper-1.10/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.10"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.10"
     },
     {
       "names": ["paper-1.9"],
       "link": "http://localhost/docs/paper-1.9/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/paper-1.9"
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.9"
     },
     {
       "names": ["adventure"],
       "link": "http://localhost/docs/adventure",
-      "actual_link": "https://helpch.at/docs/adventure"
+      "actual_link": "https://docs.docdex.helpch.at/adventure"
     },
     {
       "names": ["bungeecord", "bungee"],
       "link": "http://localhost/docs/bungeecord/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/bungeecord"
+      "actual_link": "https://docs.docdex.helpch.at/bungeecord"
     },
     {
       "names": ["bungeecord-chat", "bungee-chat"],
       "link": "http://localhost/docs/bungeecord-chat/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/bungeecord-chat"
+      "actual_link": "https://docs.docdex.helpch.at/bungeecord-chat"
     },
     {
       "names": ["waterfall"],
       "link": "http://localhost/docs/waterfall/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/waterfall"
+      "actual_link": "https://docs.docdex.helpch.at/waterfall"
     },
     {
       "names": ["waterfall-chat"],
       "link": "http://localhost/docs/waterfall-chat/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/waterfall-chat"
+      "actual_link": "https://docs.docdex.helpch.at/waterfall-chat"
     },
     {
       "names": ["gson"],
       "link": "http://localhost/docs/gson/com.google.gson/module-summary.html",
-      "actual_link": "https://helpch.at/docs/gson"
+      "actual_link": "https://docs.docdex.helpch.at/gson"
     },
     {
       "names": ["guice"],
       "link": "http://localhost/docs/guice/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/guice"
+      "actual_link": "https://docs.docdex.helpch.at/guice"
     },
     {
       "names": ["luckperms", "lp"],
       "link": "http://localhost/docs/luckperms/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/luckperms"
+      "actual_link": "https://docs.docdex.helpch.at/luckperms"
     },
     {
       "names": ["snakeyaml"],
       "link": "http://localhost/docs/snakeyaml/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/snakeyaml"
+      "actual_link": "https://docs.docdex.helpch.at/snakeyaml"
     },
     {
       "names": ["sponge"],
       "link": "http://localhost/docs/sponge/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/sponge"
+      "actual_link": "https://docs.docdex.helpch.at/sponge"
     },
     {
       "names": ["velocity"],
       "link": "http://localhost/docs/velocity",
-      "actual_link": "https://helpch.at/docs/velocity"
+      "actual_link": "https://docs.docdex.helpch.at/velocity"
     },
     {
       "names": ["worldedit"],
       "link": "http://localhost/docs/worldedit/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/worldedit"
+      "actual_link": "https://docs.docdex.helpch.at/worldedit"
     },
     {
       "names": ["worldguard"],
       "link": "http://localhost/docs/worldguard/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/worldguard"
+      "actual_link": "https://docs.docdex.helpch.at/worldguard"
     },
     {
       "names": ["commons-cli"],
       "link": "http://localhost/docs/commons-cli/org/apache/commons/cli/package-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-cli"
+      "actual_link": "https://docs.docdex.helpch.at/commons-cli"
     },
     {
       "names": ["commons-codec"],
       "link": "http://localhost/docs/commons-codec/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-codec"
+      "actual_link": "https://docs.docdex.helpch.at/commons-codec"
     },
     {
       "names": ["commons-collections4"],
       "link": "http://localhost/docs/commons-collections4/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-collections4"
+      "actual_link": "https://docs.docdex.helpch.at/commons-collections4"
     },
     {
       "names": ["commons-compress"],
       "link": "http://localhost/docs/commons-compress/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-compress"
+      "actual_link": "https://docs.docdex.helpch.at/commons-compress"
     },
     {
       "names": ["commons-configuration"],
       "link": "http://localhost/docs/commons-configuration/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-configuration"
+      "actual_link": "https://docs.docdex.helpch.at/commons-configuration"
     },
     {
       "names": ["commons-crypto"],
       "link": "http://localhost/docs/commons-crypto/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-crypto"
+      "actual_link": "https://docs.docdex.helpch.at/commons-crypto"
     },
     {
       "names": ["commons-email"],
       "link": "http://localhost/docs/commons-email/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-email"
+      "actual_link": "https://docs.docdex.helpch.at/commons-email"
     },
     {
       "names": ["commons-io"],
       "link": "http://localhost/docs/commons-io/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-io"
+      "actual_link": "https://docs.docdex.helpch.at/commons-io"
     },
     {
       "names": ["commons-lang3"],
       "link": "http://localhost/docs/commons-lang3/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-lang3"
+      "actual_link": "https://docs.docdex.helpch.at/commons-lang3"
     },
     {
       "names": ["commons-logging"],
       "link": "http://localhost/docs/commons-logging/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-logging"
+      "actual_link": "https://docs.docdex.helpch.at/commons-logging"
     },
     {
       "names": ["commons-text"],
       "link": "http://localhost/docs/commons-text/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/commons-text"
+      "actual_link": "https://docs.docdex.helpch.at/commons-text"
     },
     {
       "names": ["guava"],
       "link": "http://localhost/docs/guava",
-      "actual_link": "https://helpch.at/docs/guava"
+      "actual_link": "https://docs.docdex.helpch.at/guava"
     },
     {
       "names": ["fawe"],
       "link": "http://localhost/docs/fawe/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/fawe"
+      "actual_link": "https://docs.docdex.helpch.at/fawe"
     },
     {
       "names": ["fawe-bukkit"],
       "link": "http://localhost/docs/fawe-bukkit/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/fawe-bukkit"
+      "actual_link": "https://docs.docdex.helpch.at/fawe-bukkit"
     },
     {
       "names": ["plotsquared"],
       "link": "http://localhost/docs/plotsquared/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/plotsquared"
+      "actual_link": "https://docs.docdex.helpch.at/plotsquared"
     },
     {
       "names": ["plotsquared-bukkit"],
       "link": "http://localhost/docs/plotsquared-bukkit/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/plotsquared-bukkit"
+      "actual_link": "https://docs.docdex.helpch.at/plotsquared-bukkit"
     }
   ]
 }
