@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -28,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 // ------------------------------
 @Singleton
 public final class BotCommandHandler {
-
     private final Set<Server> servers;
     private final Set<BotCommand> commands;
     private final BotCommand unknownCommand;
@@ -83,8 +83,7 @@ public final class BotCommandHandler {
 
         if (command instanceof PermissionCommand) {
             if (!message.isFromGuild()) {
-                message.getChannel().sendMessage("You cannot use this command outside of a server.")
-                        .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+                sendAndDelete(message.getChannel().sendMessage("You cannot use this command outside of a server."));
                 return;
             }
 
@@ -94,8 +93,7 @@ public final class BotCommandHandler {
                     .map(Role::getId)
                     .noneMatch(server.getRoles()::contains)) {
                 message.delete().queue();
-                message.getChannel().sendMessage("You do not have permission to use this command.")
-                        .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+                sendAndDelete(message.getChannel().sendMessage("You do not have permission to use this command."));
                 return;
             }
         }
@@ -108,8 +106,7 @@ public final class BotCommandHandler {
 
         if (!(allowed.isEmpty() || allowed.contains(channel)) || (!disallowed.isEmpty() && disallowed.contains(channel))) {
             message.delete().queue();
-            message.getChannel().sendMessage(rule.getRecommendation())
-                    .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+            sendAndDelete(message.getChannel().sendMessage(rule.getRecommendation()));
             return;
         }
 
@@ -125,5 +122,9 @@ public final class BotCommandHandler {
     @NotNull
     public Set<BotCommand> getCommands() {
         return commands;
+    }
+
+    private static void sendAndDelete(@NotNull final MessageAction action) {
+        action.queue(message -> message.delete().queueAfter(15, TimeUnit.SECONDS, success -> {}, failure -> {}));
     }
 }
