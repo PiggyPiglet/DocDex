@@ -6,8 +6,6 @@ import me.piggypiglet.docdex.bot.commands.registerables.BotCommandsRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDAListenerRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDAPresenceRegisterable;
 import me.piggypiglet.docdex.bot.registerables.JDARegisterable;
-import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
-import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
 import me.piggypiglet.docdex.db.dbo.registerables.DatabaseObjectCreatorRegisterable;
 import me.piggypiglet.docdex.db.dbo.registerables.DatabaseObjectRegisterable;
 import me.piggypiglet.docdex.db.orm.registerables.TableObjectsRegisterable;
@@ -33,9 +31,6 @@ public final class BotBootstrap extends DocDexBootstrap {
             TablesRegisterable.class,
             DatabaseObjectCreatorRegisterable.class,
             DatabaseObjectRegisterable.class,
-
-            ConsoleCommandsRegisterable.class,
-            ConsoleCommandListenerRegisterable.class,
 
             JDAPresenceRegisterable.class,
             BotCommandsRegisterable.class,

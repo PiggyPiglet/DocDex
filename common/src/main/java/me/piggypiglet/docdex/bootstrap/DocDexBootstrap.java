@@ -5,6 +5,8 @@ import com.google.inject.Injector;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.bootstrap.implementations.StartMessageRegisterable;
 import me.piggypiglet.docdex.bootstrap.implementations.StartupHookRegisterable;
+import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
+import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FileObjectsRegisterable;
 import me.piggypiglet.docdex.file.registerables.FilesRegisterable;
 import me.piggypiglet.docdex.guice.ExceptionalInjector;
@@ -37,6 +39,8 @@ public abstract class DocDexBootstrap {
     );
 
     private static final List<Class<? extends Registerable>> LAST_REGISTERABLES = List.of(
+            ConsoleCommandsRegisterable.class,
+            ConsoleCommandListenerRegisterable.class,
             StartMessageRegisterable.class
     );
 

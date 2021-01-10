@@ -3,5 +3,6 @@ rootProject.name = "DocDex"
 include(
         "common",
         "app",
-        "discord"
+        "discord",
+        "updater"
 )
