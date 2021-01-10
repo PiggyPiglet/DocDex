@@ -7,14 +7,12 @@ import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.commands.framework.PermissionCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.documentation.SimpleCommand;
+import me.piggypiglet.docdex.bot.listeners.GuildJoinHandler;
 import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
@@ -32,16 +30,19 @@ public final class BotCommandHandler {
     private final Set<Server> servers;
     private final Set<BotCommand> commands;
     private final BotCommand unknownCommand;
+    private final GuildJoinHandler guildJoinHandler;
     private final Server defaultServer;
     private final CommandRule defaultCommandRule;
 
     @Inject
     public BotCommandHandler(@NotNull final Set<Server> servers, @NotNull @Named("jda commands") final Set<BotCommand> commands,
                              @NotNull final SimpleCommand defaultCommand, @NotNull final HelpCommand helpCommand,
-                             @NotNull @Named("default") final Server defaultServer, @NotNull @Named("default") final CommandRule defaultCommandRule) {
+                             @NotNull final GuildJoinHandler guildJoinHandler, @NotNull @Named("default") final Server defaultServer,
+                             @NotNull @Named("default") final CommandRule defaultCommandRule) {
         this.servers = servers;
         this.commands = commands;
         this.unknownCommand = defaultCommand;
+        this.guildJoinHandler = guildJoinHandler;
         this.defaultServer = defaultServer;
         this.defaultCommandRule = defaultCommandRule;
 
@@ -53,9 +54,11 @@ public final class BotCommandHandler {
         final Server server;
 
         if (message.isFromGuild()) {
+            final Guild guild = message.getGuild();
+
             server = servers.stream()
-                    .filter(element -> element.getId().equals(message.getGuild().getId()))
-                    .findAny().orElse(defaultServer);
+                    .filter(element -> element.getId().equals(guild.getId()))
+                    .findAny().orElse(guildJoinHandler.joinGuild(guild).join());
         } else {
             server = defaultServer;
         }

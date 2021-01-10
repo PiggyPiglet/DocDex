@@ -1,0 +1,9 @@
+plugins {
+    id 'application'
+}
+
+mainClassName = 'me.piggypiglet.docdex.bootstrap.DocDexBootstrap'
+
+dependencies {
+    implementation project(":common")
+}
