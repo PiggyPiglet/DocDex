@@ -262,9 +262,24 @@
       "actual_link": "https://helpch.at/docs/adventure"
     },
     {
-      "names": ["chat"],
-      "link": "http://localhost/docs/chat/overview-summary.html",
-      "actual_link": "https://helpch.at/docs/chat"
+      "names": ["bungeecord", "bungee"],
+      "link": "http://localhost/docs/bungeecord/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/bungeecord"
+    },
+    {
+      "names": ["bungeecord-chat", "bungee-chat"],
+      "link": "http://localhost/docs/bungeecord-chat/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/bungeecord-chat"
+    },
+    {
+      "names": ["waterfall"],
+      "link": "http://localhost/docs/waterfall/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/waterfall"
+    },
+    {
+      "names": ["waterfall-chat"],
+      "link": "http://localhost/docs/waterfall-chat/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/waterfall-chat"
     },
     {
       "names": ["gson"],
@@ -277,7 +292,7 @@
       "actual_link": "https://helpch.at/docs/guice"
     },
     {
-      "names": ["luckperms"],
+      "names": ["luckperms", "lp"],
       "link": "http://localhost/docs/luckperms/overview-summary.html",
       "actual_link": "https://helpch.at/docs/luckperms"
     },
@@ -365,6 +380,26 @@
       "names": ["guava"],
       "link": "http://localhost/docs/guava",
       "actual_link": "https://helpch.at/docs/guava"
+    },
+    {
+      "names": ["fawe"],
+      "link": "http://localhost/docs/fawe/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/fawe"
+    },
+    {
+      "names": ["fawe-bukkit"],
+      "link": "http://localhost/docs/fawe-bukkit/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/fawe-bukkit"
+    },
+    {
+      "names": ["plotsquared"],
+      "link": "http://localhost/docs/plotsquared/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/plotsquared"
+    },
+    {
+      "names": ["plotsquared-bukkit"],
+      "link": "http://localhost/docs/plotsquared-bukkit/overview-summary.html",
+      "actual_link": "https://helpch.at/docs/plotsquared-bukkit"
     }
   ]
 }
