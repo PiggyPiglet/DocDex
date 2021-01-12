@@ -129,7 +129,7 @@ exit;
 This will create a database called docdex, create a user called docdex on the host `localhost`,
 give all permissions to the user `docdex` on `localhost` to the database `docdex`,
 and then it'll exit the connection.
-> Make sure to change to replace {password} with a secure, randomly generated password.
+> Make sure to replace {password} with a secure, randomly generated password.
 
 #### Configuration
 The bots config is split up into sections like the apps, with some basic bot details at the top,
