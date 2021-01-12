@@ -15,6 +15,8 @@ import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class MongoRegisterable extends Registerable {
+    private static final Logger LOGGER = LoggerFactory.getLogger("MongoStorage");
+
     private final MongoConfig mongo;
     private final Scanner scanner;
 
@@ -46,10 +50,12 @@ public final class MongoRegisterable extends Registerable {
                         CodecRegistries.fromCodecs(new ArrayList<>(codecs))
                 ))
                 .build();
+
         final MongoClient client = create(mongo, options);
+        final MongoDatabase database = client.getDatabase(mongo.getDatabase());
 
         addBinding(MongoClient.class, client);
-        addBinding(MongoDatabase.class, client.getDatabase(mongo.getDatabase()));
+        addBinding(MongoDatabase.class, database);
     }
 
     @NotNull

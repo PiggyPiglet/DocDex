@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -166,6 +167,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
     private static Document connect(@NotNull final String url) {
         try {
             return Jsoup.connect(url).maxBodySize(0).timeout(10000).get();
+        } catch (ConnectException exception) {
+            LOGGER.error("Something went wrong when connecting to " + url + ", is the link valid, and are the javadocs actually there?");
         } catch (IOException exception) {
             LOGGER.error("Something went wrong when connecting to " + url, exception);
         }

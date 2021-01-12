@@ -6,6 +6,8 @@ import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.file.FileManager;
 import me.piggypiglet.docdex.file.annotations.File;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
@@ -14,6 +16,8 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class FilesRegisterable extends Registerable {
+    private static final Logger LOGGER = LoggerFactory.getLogger("FileManager");
+
     private final Set<Class<?>> fileClasses;
     private final FileManager fileManager;
 
@@ -27,7 +31,14 @@ public final class FilesRegisterable extends Registerable {
     public void execute() {
         for (final Class<?> clazz : fileClasses) {
             final File data = clazz.getAnnotation(File.class);
-            fileManager.loadFile(clazz, data.internalPath(), data.externalPath());
+
+            if (!fileManager.loadFile(clazz, data.internalPath(), data.externalPath())) {
+                if (data.stopOnFirstCreate()) {
+                    LOGGER.info("This is the first time you've ran this program. Please populate the generated " + data.externalPath() + " file before starting the app again.");
+
+                    System.exit(0);
+                }
+            }
         }
     }
 }

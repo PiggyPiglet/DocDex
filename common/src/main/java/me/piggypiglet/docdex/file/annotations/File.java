@@ -18,4 +18,6 @@ public @interface File {
 
     @NotNull
     String externalPath();
+
+    boolean stopOnFirstCreate() default false;
 }

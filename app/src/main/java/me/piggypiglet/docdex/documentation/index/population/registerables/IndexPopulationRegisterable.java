@@ -11,6 +11,7 @@ import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
 import me.piggypiglet.docdex.documentation.index.storage.IndexStorage;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
+import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,11 @@ public final class IndexPopulationRegisterable extends Registerable {
                 futures.add(CompletableFuture.runAsync(() ->
                         populators.stream().filter(populator -> populator.shouldPopulate(javadoc)).findAny().ifPresent(populator -> {
                             final Map<DocumentedObjectKey, DocumentedObject> objects = populator.provideObjects(javadoc);
+
+                            if (objects.isEmpty()) {
+                                LOGGER.error("No objects were indexed for " + DataUtils.getName(javadoc) + '.');
+                                return;
+                            }
 
                             storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);

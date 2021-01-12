@@ -9,15 +9,65 @@ Documentation Index (DocDex) is a utility API which scans javadocs on the web, c
 ```
 > Archives will be in app/build/libs/ and discord/build/libs/
 
-## Usage
-Requirements:
+## Requirements/Installation
 - Java 11
-- MongoDB
+
+I recommend using SDKMAN to install java
+
+SDKMAN:
+```bash
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh" # run this if you don't want to open a new terminal
+sdk install java 11.0.9.hs
+```
 
 ### API App
+#### Requirements/Installation
+- MongoDB
+
+> https://docs.mongodb.com/manual/installation/#mongodb-community-edition-installation-tutorials
+
+#### Usage
 ```bash
 java -Xmx2G -jar docdex.jar
 ```
+
+#### Configuration
+There are 3 main parts to the configuration, the HTTP settings, mongodb settings,
+and javadoc settings. The HTTP stuff is extremely self explanatory, with a host
+and a port. If this is confusing, there's honestly no point of going any further.
+
+The Mongo section has some basic details, including the host & port, along with a 
+database name. You do not need to create the database manually, docdex will do that
+for you. If you've never used mongo before and are only installing it for the
+purpose of using docdex, ignore the username and password. By default mongo is not
+authenticated, just make sure it's not also publicly accessible.
+
+The javadocs section may be a bit more confusing, here's the basic schematic:
+```
+javadocs: array [
+    javadoc: object {
+        names: array [string "jdk", string "jdk11"],
+        link: string "http://localhost/docs/jdk11/index.html",
+        actual_link: string "https://docs.oracle.com/en/java/javase/11/docs/api"
+    }
+]
+```
+
+- The names include anything that the javadoc should be referenced as in code. The usage
+here would be in the index route, with the javadoc parameter. e.g. `javadoc=jdk`, or
+`javadoc=jdk11`.
+- The link should be a link to your locally hosted instance of the javadoc you're
+indexing. It's absolutely essential that you localhost the javadocs, otherwise your IP
+may be blacklisted for an attempted attack. It also probably straight up won't work.
+Additionally, the link needs to refer to a "no frames" version of the javadoc. If you're
+not sure how to achieve this, simply click the no frames button on the javadoc page. It'll
+be near the top, next to FRAMES, NEXT, and PREV.
+- The actual link is a publicly accessible version of the same javadoc that'll be used
+when linking to the object in the api. This should not point to a particular index file,
+but rather the webroot directory of the javadoc, such as in the example above.
+
+#### Info
 Make sure to populate the config.json with your javadocs. On first start, it'll crawl the sites (which can take a while), and then save the indexes to file & database. As mentioned earlier, you should only run this on local sites. Doing otherwise will result in extremely long crawl times, or your ip being banned from said site. Multiple javadoc sites are loaded concurrently to help with speed.
 
 The idea is that after a crawl, the index will be saved into a file (json). This allows the index to easily be moved around. There's two population methods in DocDex, crawl, which scans the web javadocs, and flatfile, which loads from the json file(s). Flatfile is much faster than crawl, so you should always use prebuilt indexes if possible.
@@ -50,11 +100,102 @@ There's also an optional limit parameter you can add on, which will limit the am
 In addition to the index, a second endpoint is exposed `/javadocs`, which provides a list of all the loaded javadocs.
 
 ### Discord Bot
+#### Requirements/Installation
+- MySQL
+
+> https://opensource.com/article/20/10/mariadb-mysql-linux <br/>
+> Don't forget to secure the installation
+
+This may be a bit of a hassle, but the bot requires MySQL as it's designed to be a
+public bot, and therefore stores individual server settings. Once MySQL (or a
+fork such as MariaDB) is installed, you'll need to create a database and user for it.
+To do so is relatively trivial, first start off with connecting to mysql.
+
+```bash
+mysql -u root -p
+```
+You'll then be prompted to enter the password you used when securing the installation.
+Don't be worried if you can't see the characters as you're typing them in, this is
+intentional.
+
+You'll then want to run these commands individually, in order:
+```bash
+CREATE DATABASE docdex;
+CREATE USER 'docdex'@'localhost' IDENTIFIED BY '{password}';
+GRANT ALL PRIVILEGES ON docdex.* TO 'docdex'@'localhost';
+FLUSH PRIVILEGES;
+exit;
+```
+This will create a database called docdex, create a user called docdex on the host `localhost`,
+give all permissions to the user `docdex` on `localhost` to the database `docdex`,
+and then it'll exit the connection.
+> Make sure to change to replace {password} with a secure, randomly generated password.
+
+#### Configuration
+The bots config is split up into sections like the apps, with some basic bot details at the top,
+a section for mysql settings, and a section for the bots presence/activity settings. Here
+is the basic structure of the bot settings:
+```
+token: string "dsdjaklsdjkladj"
+prefix: string "d;"
+url: string "https://docdex.helpch.at"
+default_javadoc: "jdk"
+```
+
+This is fairly self explanatory. The token refers to your bot's token, which can be fetched from
+your [discord application](https://discord.com/developers/applications). The prefix is the
+default prefix of the bot, however keep in mind it can be changed on a per server basis.
+The url refers to your docdex app instance. Do not append any of the routes onto the end,
+the bot will do that for you. The default javadoc is the default javadoc the search & metadata
+commands will use. I recommend leaving it as jdk.
+
+The mysql settings structure is as follows:
+```
+host: string "127.0.0.1"
+port: int 3306
+username: string "docdex"
+password: string "1234"
+
+database: string "database"
+table_prefix: string "docdex_"
+pool_size: int 10
+```
+
+The first half is todo with your connection, and the second todo with the actual database
+itself. The host should refer to whatever your mysql instance is being hosted on. If localhost,
+use `127.0.0.1` or `localhost`. If you're using an external instance, use its public ip.
+The username and password are the same that we used in the mysql setup earlier. If you left
+it as is, the username should be `docdex`, and the password whatever you replaced `{password}`
+with.
+
+The database name, likewise, if left as is from the mysql setup above, should be `docdex`.
+The table prefix refers to what all the tables in the database are prefixed with. You probably
+don't need to change this. The pool size is how many connections to the database are actively
+maintained at any one time. 10 is a very fair number, and it's unlikely you'll ever need to increase
+it. You may actually want to consider decreasing it.
+
+```
+status: enum "online"
+activity: enum "watching"
+message: string "the docs (d;help)"
+```
+
+The status refers to the online status of your bot, e.g. online, offline, etc. The value
+MUST be one of the values listed [here](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/OnlineStatus.html).
+It is case insensitive. The activity once again, is another enum value (also case insensitive),
+and must be one of the values listed [here](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/entities/Activity.ActivityType.html).
+Keep in mind, bots cannot have a custom, or a streaming status. `DEFAULT` refers to the
+`playing` status. The message can be any string. This example presence would look like this:<br/>
+![presence](https://cdn.piggypiglet.me/docdex/presence.png)
+
+#### Usage
 You can either use the public instance (which uses https://docdex.helpch.at) or run your own. The public invite is https://piggypiglet.me/docdex.
 
 ```
 java -Xmx1G -jar bot.jar
 ```
+
+#### Info
 On first run, a config will generate, and the application will probably spew a few errors. Populate the config with your token, along with your docdex link, and if you wish to limit certain commands to particular channels, you can do so via the config. The default prefix is `d;`, and you should familiarise yourself with the commands which are accessible via `d;help`.
 
 > - Paginations will cease to function after 15 minutes with no activity. i.e. if someone hasn't reacted to a pagination for 15 minutes, the pagination will no longer work.

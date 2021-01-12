@@ -1,8 +1,6 @@
 package me.piggypiglet.docdex.bootstrap;
 
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
-import me.piggypiglet.docdex.console.registerables.ConsoleCommandListenerRegisterable;
-import me.piggypiglet.docdex.console.registerables.ConsoleCommandsRegisterable;
 import me.piggypiglet.docdex.db.registerables.MongoRegisterable;
 import me.piggypiglet.docdex.documentation.index.population.registerables.IndexPopulationRegisterable;
 import me.piggypiglet.docdex.documentation.index.population.registerables.IndexPopulatorRegisterable;
@@ -20,9 +18,6 @@ import java.util.List;
 // ------------------------------
 public final class AppBootstrap extends DocDexBootstrap {
     private static final List<Class<? extends Registerable>> REGISTERABLES = List.of(
-            ConsoleCommandsRegisterable.class,
-            ConsoleCommandListenerRegisterable.class,
-
             MongoRegisterable.class,
 
             IndexStorageRegisterable.class,

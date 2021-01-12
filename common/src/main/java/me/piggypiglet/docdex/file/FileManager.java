@@ -46,10 +46,12 @@ public final class FileManager {
         return type -> instance;
     }
 
-    public void loadFile(@NotNull final Class<?> file, @NotNull final String internalPath,
+    public boolean loadFile(@NotNull final Class<?> file, @NotNull final String internalPath,
                          @NotNull final String externalPath) {
         try {
+            final boolean exists = exists(externalPath);
             gson.fromJson(gson.toJsonTree(adapter.fromString(FileUtils.readFile(createFile(internalPath, externalPath, file)))), file);
+            return exists;
         } catch (final Exception exception) {
             throw new FileLoadException(exception);
         }
@@ -59,5 +61,9 @@ public final class FileManager {
     private File createFile(@NotNull final String internalPath, @NotNull final String externalPath,
                             @NotNull final Class<?> clazz) throws IOException {
         return FileUtils.createFile(internalPath, DATA_DIRECTORY + '/' + externalPath, clazz);
+    }
+
+    private boolean exists(@NotNull final String externalPath) {
+        return new File(DATA_DIRECTORY + '/' + externalPath).exists();
     }
 }

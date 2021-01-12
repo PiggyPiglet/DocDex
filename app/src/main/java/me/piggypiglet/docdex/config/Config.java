@@ -12,7 +12,8 @@ import java.util.Set;
 // ------------------------------
 @File(
         internalPath = "/config.json",
-        externalPath = "config.json"
+        externalPath = "config.json",
+        stopOnFirstCreate = true
 )
 @Singleton
 public final class Config {
