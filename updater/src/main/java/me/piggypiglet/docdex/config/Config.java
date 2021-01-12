@@ -12,5 +12,6 @@ import me.piggypiglet.docdex.file.annotations.File;
         externalPath = "config.json"
 ) @Singleton
 public final class Config {
-
+    private String pterodactylLink;
+    private String apiToken;
 }

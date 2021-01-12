@@ -1,5 +1,7 @@
 package me.piggypiglet.docdex.config;
 
+import me.piggypiglet.docdex.config.strategies.MavenLatestStrategy;
+
 import java.util.Set;
 
 // ------------------------------
@@ -10,7 +12,6 @@ public final class Javadoc {
     private Set<String> names;
     private String link;
     private String actualLink;
-    private String path;
     private UpdateStrategy strategy;
-    private String
+    private MavenLatestStrategy strategyData;
 }

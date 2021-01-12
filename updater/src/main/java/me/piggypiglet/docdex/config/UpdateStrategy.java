@@ -5,5 +5,6 @@ package me.piggypiglet.docdex.config;
 // https://www.piggypiglet.me
 // ------------------------------
 public enum UpdateStrategy {
-
+    NONE,
+    MAVEN_LATEST
 }
