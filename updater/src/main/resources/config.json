@@ -1,3 +1,33 @@
 {
-  ""
+  "pterodactyl_link": "",
+  "api_token": "",
+  "app_config_path": "/opt/docdex/config.json",
+
+  "app_config": {
+    "host": "0.0.0.0",
+    "port": 8800,
+
+    "database": {
+      "host": "localhost",
+      "port": 27017,
+      "database": "docdex",
+      "username": "",
+      "password": ""
+    }
+  },
+
+  "javadocs": [
+    {
+      "names": ["plotsquared"],
+      "link": "http://localhost/docs/plotsquared/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/plotsquared",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/plotsquared",
+        "repository": "https://mvn.intellectualsites.com/content/groups/public",
+        "repository_path": "com/plotsquared/PlotSquared-Core"
+      }
+    }
+  ]
 }
