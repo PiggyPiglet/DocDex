@@ -1,7 +1,8 @@
-package me.piggypiglet.docdex.download;
+package me.piggypiglet.docdex.download.implementations;
 
-import me.piggypiglet.docdex.config.UpdateStrategy;
+import me.piggypiglet.docdex.config.UpdateStrategyType;
 import me.piggypiglet.docdex.config.strategies.maven.MavenLatestStrategy;
+import me.piggypiglet.docdex.download.framework.JavadocDownloader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
@@ -29,11 +30,11 @@ import java.util.Map;
 // ------------------------------
 public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestStrategy> {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private static final Map<UpdateStrategy, String> STRATEGY_TAG_NAMES = new EnumMap<>(UpdateStrategy.class);
+    private static final Map<UpdateStrategyType, String> STRATEGY_TAG_NAMES = new EnumMap<>(UpdateStrategyType.class);
 
     static {
-        STRATEGY_TAG_NAMES.put(UpdateStrategy.MAVEN_LATEST, "latest");
-        STRATEGY_TAG_NAMES.put(UpdateStrategy.MAVEN_LATEST_RELEASE, "release");
+        STRATEGY_TAG_NAMES.put(UpdateStrategyType.MAVEN_LATEST, "latest");
+        STRATEGY_TAG_NAMES.put(UpdateStrategyType.MAVEN_LATEST_RELEASE, "release");
     }
 
     @Nullable

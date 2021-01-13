@@ -13,6 +13,15 @@ public final class Javadoc {
     private String link;
     private String actualLink;
 
+    public Javadoc() {}
+
+    public Javadoc(@NotNull final Set<String> names, @NotNull final String link,
+                   @NotNull final String actualLink) {
+        this.names = names;
+        this.link = link;
+        this.actualLink = actualLink;
+    }
+
     @NotNull
     public Set<String> getNames() {
         return names;

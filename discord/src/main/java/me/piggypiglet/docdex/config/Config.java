@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 // ------------------------------
 @File(
         internalPath = "/config.json",
-        externalPath = "config.json",
+        externalPath = "./config.json",
         stopOnFirstCreate = true
 )
 @Singleton

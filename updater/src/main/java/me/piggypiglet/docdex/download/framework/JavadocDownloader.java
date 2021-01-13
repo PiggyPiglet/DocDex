@@ -1,5 +1,6 @@
-package me.piggypiglet.docdex.download;
+package me.piggypiglet.docdex.download.framework;
 
+import me.piggypiglet.docdex.config.strategies.UpdateStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import java.nio.file.StandardOpenOption;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public abstract class JavadocDownloader<S> {
+public abstract class JavadocDownloader<S extends UpdateStrategy> {
     protected static final Logger LOGGER = LoggerFactory.getLogger("Downloader");
 
     @Nullable

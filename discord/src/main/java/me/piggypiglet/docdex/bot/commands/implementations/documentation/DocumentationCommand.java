@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -155,6 +156,11 @@ public abstract class DocumentationCommand extends BotCommand {
                     channel.sendMessage("There was no direct match for that query, did you mean any of the following?: ```\n" + suggestions + "```")
                             .queue();
                 }).exceptionally(throwable -> {
+                    if (throwable instanceof IOException) {
+                        queueAndDelete(channel.sendMessage("I am currently under maintenance."));
+                        return null;
+                    }
+
                     LOGGER.error("", throwable);
                     return null;
                 });

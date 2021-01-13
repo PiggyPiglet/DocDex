@@ -4,6 +4,13 @@ plugins {
 
 mainClassName = 'me.piggypiglet.docdex.bootstrap.DocDexBootstrap'
 
+repositories {
+    maven {
+        url = "https://repo.piggypiglet.me/repository/maven-public/"
+    }
+}
+
 dependencies {
     implementation project(":common")
+    implementation "me.piggypiglet:TimeAPI:1.9"
 }

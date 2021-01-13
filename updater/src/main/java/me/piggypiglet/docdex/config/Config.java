@@ -1,7 +1,8 @@
 package me.piggypiglet.docdex.config;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.inject.Singleton;
-import me.piggypiglet.docdex.config.app.AppConfig;
+import me.piggypiglet.docdex.config.deserialization.TimeDeserializer;
 import me.piggypiglet.docdex.file.annotations.File;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,14 +14,14 @@ import java.util.Set;
 // ------------------------------
 @File(
         internalPath = "/config.json",
-        externalPath = "config.json",
+        externalPath = "./config.json",
         stopOnFirstCreate = true
 ) @Singleton
 public final class Config {
     private String pterodactylLink;
     private String apiToken;
     private String appConfigPath;
-    private AppConfig appConfig;
+    @JsonAdapter(TimeDeserializer.class) private long updateFrequency;
     private Set<UpdaterJavadoc> javadocs;
 
     @NotNull
@@ -38,9 +39,8 @@ public final class Config {
         return appConfigPath;
     }
 
-    @NotNull
-    public AppConfig getAppConfig() {
-        return appConfig;
+    public long getUpdateFrequency() {
+        return updateFrequency;
     }
 
     @NotNull

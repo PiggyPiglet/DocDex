@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.config.app;
 
+import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.Javadoc;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
+@Singleton
 public final class AppConfig {
     private final String host;
     private final int port;
