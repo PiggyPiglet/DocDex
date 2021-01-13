@@ -1,5 +1,8 @@
 # ![DocDex](https://cdn.piggypiglet.me/docdex/banner.png)
 [<img src="https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.piggypiglet.me%2Fjob%2FDocDex">](https://ci.piggypiglet.me/job/DocDex) [<img src="https://img.shields.io/discord/164280494874165248">](https://helpch.at/discord)
+> **Warning! This software is in beta, it is extremely likely there'll be bugs,
+> and some ugly things. Please report bugs, and make suggestions via the issues
+> tab.**
 
 Documentation Index (DocDex) is a utility API which scans javadocs on the web, caches everything into a calculated mixture of memory, file, and database, then provides a JSON API to easily access the information. Warning, don't run this on remote sites, it probably won't work, and you probably won't be able to access that site afterwards.
 
