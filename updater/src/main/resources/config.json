@@ -25,8 +25,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/html/docs/plotsquared",
-        "repository": "https://mvn.intellectualsites.com/content/groups/public",
-        "repository_path": "com/plotsquared/PlotSquared-Core"
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Core"
       }
     }
   ]

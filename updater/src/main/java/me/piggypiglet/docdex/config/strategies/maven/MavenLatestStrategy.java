@@ -10,8 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public final class MavenLatestStrategy {
     private UpdateStrategy strategy;
     private String path;
-    private String repository;
-    private String repositoryPath;
+    private String artifactLink;
 
     @NotNull
     public UpdateStrategy getStrategy() {
@@ -24,12 +23,7 @@ public final class MavenLatestStrategy {
     }
 
     @NotNull
-    public String getRepository() {
-        return repository;
-    }
-
-    @NotNull
-    public String getRepositoryPath() {
-        return repositoryPath;
+    public String getArtifactLink() {
+        return artifactLink;
     }
 }

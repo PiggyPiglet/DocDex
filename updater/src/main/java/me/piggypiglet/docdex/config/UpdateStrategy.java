@@ -7,5 +7,5 @@ package me.piggypiglet.docdex.config;
 public enum UpdateStrategy {
     NONE,
     MAVEN_LATEST_RELEASE,
-    MAVEN_LATEST_SNAPSHOT
+    MAVEN_LATEST
 }

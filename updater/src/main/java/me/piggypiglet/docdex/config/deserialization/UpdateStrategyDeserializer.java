@@ -33,7 +33,7 @@ public final class UpdateStrategyDeserializer implements JsonDeserializer<Object
 
         switch (strategy) {
             case MAVEN_LATEST_RELEASE:
-            case MAVEN_LATEST_SNAPSHOT:
+            case MAVEN_LATEST:
                 return context.deserialize(json, MavenLatestStrategy.class);
 
             default:
