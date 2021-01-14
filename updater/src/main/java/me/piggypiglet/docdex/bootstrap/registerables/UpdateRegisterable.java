@@ -69,6 +69,7 @@ public final class UpdateRegisterable extends Registerable {
         LOGGER.info("Applied updates to config.json");
         pterodactylManager.deleteJavadocsAndStop(modifiedJavadocs);
         LOGGER.info("Deleting MongoDB collections for all updated javadocs.");
+        System.exit(0);
         // seems pterodactyl starts it up on it's own because it thinks it crashed
 //        SCHEDULER.submit(new RestartTask());
     }
