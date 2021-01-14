@@ -281,5 +281,10 @@ disallowed channel list.
 - `d;command recommendation help This command can only be used in #bot-commands.` - Set
 the recommendation for "help" to "This command can only be used in #bot-commands.".
 
+### Auto Updater
+The auto updater subproject is for internal use only, to keep the public instance
+up to date. You're welcome to try use it, but you'd have to copy my exact setup. I will
+not provide support for attempts to use this.
+
 ## Contact
 Join either [HelpChat](https://helpch.at/discord), or my personal [discord](https://piggypiglet.me/discord).
