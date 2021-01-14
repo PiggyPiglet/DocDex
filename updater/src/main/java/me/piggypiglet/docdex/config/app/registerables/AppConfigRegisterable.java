@@ -1,6 +1,5 @@
 package me.piggypiglet.docdex.config.app.registerables;
 
-import com.google.gson.InstanceCreator;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
@@ -23,24 +22,20 @@ public final class AppConfigRegisterable extends Registerable {
     private final Config config;
 
     @Inject
-    public AppConfigRegisterable(@NotNull @Named("files") final Map<Class<?>, Object> fileObjects, @NotNull final AppConfig appConfig,
-                                 @NotNull final FileManager fileManager, @NotNull final Config config) {
+    public AppConfigRegisterable(@NotNull @Named("files") final Map<Class<?>, Object> fileObjects, @NotNull final FileManager fileManager,
+                                 @NotNull final AppConfig appConfig, @NotNull final Config config) {
+        this.fileObjects = fileObjects;
         this.fileManager = fileManager;
         this.appConfig = appConfig;
-        this.fileObjects = fileObjects;
         this.config = config;
     }
 
     @Override
     public void execute(final @NotNull Injector injector) {
-        fileObjects.put(AppConfig.class, instanceCreator(appConfig));
+        fileObjects.put(AppConfig.class, appConfig);
         fileManager.setGson(fileManager.generateBuilder(fileObjects).create());
 
-        fileManager.loadFile(AppConfig.class, "/appconfig.json", config.getAppConfigPath());
-    }
-
-    @NotNull
-    private static <T> InstanceCreator<T> instanceCreator(@NotNull final T instance) {
-        return (type) -> instance;
+        fileManager.loadFile(AppConfig.class, "/appconfig.json", config.getPterodactyl().getDirectory() + "/config.json");
+//        fileManager.loadFile(AppConfig.class, "/appconfig.json", "/opt/docdex/config.json");
     }
 }

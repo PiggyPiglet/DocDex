@@ -13,4 +13,9 @@ repositories {
 dependencies {
     implementation project(":common")
     implementation "me.piggypiglet:TimeAPI:1.9"
+    implementation "org.apache.maven:maven-repository-metadata:3.6.3"
+}
+
+shadowJar {
+    archiveFileName.set("updater.jar")
 }

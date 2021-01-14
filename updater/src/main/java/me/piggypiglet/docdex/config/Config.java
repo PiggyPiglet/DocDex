@@ -18,29 +18,17 @@ import java.util.Set;
         stopOnFirstCreate = true
 ) @Singleton
 public final class Config {
-    private String pterodactylLink;
-    private String apiToken;
-    private String appConfigPath;
     @JsonAdapter(TimeDeserializer.class) private long updateFrequency;
+    private PterodactylConfig pterodactyl;
     private Set<UpdaterJavadoc> javadocs;
-
-    @NotNull
-    public String getPterodactylLink() {
-        return pterodactylLink;
-    }
-
-    @NotNull
-    public String getApiToken() {
-        return apiToken;
-    }
-
-    @NotNull
-    public String getAppConfigPath() {
-        return appConfigPath;
-    }
 
     public long getUpdateFrequency() {
         return updateFrequency;
+    }
+
+    @NotNull
+    public PterodactylConfig getPterodactyl() {
+        return pterodactyl;
     }
 
     @NotNull

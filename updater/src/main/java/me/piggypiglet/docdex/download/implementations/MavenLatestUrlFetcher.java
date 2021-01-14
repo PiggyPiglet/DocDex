@@ -3,15 +3,13 @@ package me.piggypiglet.docdex.download.implementations;
 import me.piggypiglet.docdex.config.UpdateStrategyType;
 import me.piggypiglet.docdex.config.strategies.maven.MavenLatestStrategy;
 import me.piggypiglet.docdex.download.framework.JavadocDownloader;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -23,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Function;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -30,11 +29,11 @@ import java.util.Map;
 // ------------------------------
 public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestStrategy> {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private static final Map<UpdateStrategyType, String> STRATEGY_TAG_NAMES = new EnumMap<>(UpdateStrategyType.class);
+    private static final Map<UpdateStrategyType, Function<Versioning, String>> STRATEGY_VERSION_GETTERS = new EnumMap<>(UpdateStrategyType.class);
 
     static {
-        STRATEGY_TAG_NAMES.put(UpdateStrategyType.MAVEN_LATEST, "latest");
-        STRATEGY_TAG_NAMES.put(UpdateStrategyType.MAVEN_LATEST_RELEASE, "release");
+        STRATEGY_VERSION_GETTERS.put(UpdateStrategyType.MAVEN_LATEST, Versioning::getLatest);
+        STRATEGY_VERSION_GETTERS.put(UpdateStrategyType.MAVEN_LATEST_RELEASE, Versioning::getRelease);
     }
 
     @Nullable
@@ -60,25 +59,15 @@ public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestSt
         final HttpRequest request = HttpRequest.newBuilder(uri).build();
 
         try (InputStream input = CLIENT.send(request, HttpResponse.BodyHandlers.ofInputStream()).body()) {
-            final Document document = DocumentBuilderFactory.newDefaultInstance()
-                    .newDocumentBuilder()
-                    .parse(input);
+            final Metadata metadata = new MetadataXpp3Reader().read(input);
 
-            final Element metadata = (Element) getFirst(document.getDocumentElement(), "metadata");
-            final Element versioning = (Element) getFirst(metadata, "versioning");
+            final String artifact = metadata.getArtifactId();
+            final String version = STRATEGY_VERSION_GETTERS.get(strategy.getType()).apply(metadata.getVersioning());
 
-            final String artifact = getFirst(metadata, "artifactId").getTextContent();
-            final String version = getFirst(versioning, STRATEGY_TAG_NAMES.get(strategy.getStrategy())).getTextContent();
-
-            return new URL(url + version + '/' + artifact + '-' + version + ".jar");
-        } catch (InterruptedException | IOException | ParserConfigurationException | SAXException exception) {
+            return new URL(url + version + '/' + artifact + '-' + version + "-javadoc" + ".jar");
+        } catch (InterruptedException | IOException | XmlPullParserException exception) {
             LOGGER.error("Something went wrong when connecting to & parsing " + url, exception);
             return null;
         }
-    }
-
-    @NotNull
-    private Node getFirst(@NotNull final Element element, @NotNull final String tag) {
-        return element.getElementsByTagName(tag).item(0);
     }
 }

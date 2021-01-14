@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.bootstrap;
 
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
+import me.piggypiglet.docdex.bootstrap.registerables.UpdateRegisterable;
 import me.piggypiglet.docdex.config.app.registerables.AppConfigRegisterable;
 import me.piggypiglet.docdex.download.registerables.DownloadersRegisterable;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,8 @@ public final class UpdaterBootstrap extends DocDexBootstrap {
     protected List<Class<? extends Registerable>> provideRegisterables() {
         return List.of(
                 AppConfigRegisterable.class,
-                DownloadersRegisterable.class
+                DownloadersRegisterable.class,
+                UpdateRegisterable.class
         );
     }
 }

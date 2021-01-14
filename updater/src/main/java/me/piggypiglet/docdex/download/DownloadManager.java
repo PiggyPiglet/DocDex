@@ -16,27 +16,26 @@ import java.util.Map;
 // ------------------------------
 @Singleton
 public final class DownloadManager {
-    private final Map<Class<?>, JavadocDownloader<?>> downloaders;
+    private final Map<Class<?>, JavadocDownloader<? extends UpdateStrategy>> downloaders;
 
     @Inject
     public DownloadManager(@NotNull @Named("downloaders") final Map<Class<?>, JavadocDownloader<?>> downloaders) {
         this.downloaders = downloaders;
     }
 
-    public void download(@NotNull final UpdaterJavadoc javadoc) {
+    public boolean download(@NotNull final UpdaterJavadoc javadoc) {
         final UpdateStrategy strategy = javadoc.getStrategy();
 
         if (strategy == null) {
-            return;
+            return false;
         }
 
-        final JavadocDownloader<?> downloader = downloaders.get(strategy.getClass());
-        download(downloader, strategy, strategy.getPath());
+        final JavadocDownloader<? extends UpdateStrategy> downloader = downloaders.get(strategy.getClass());
+        return download(downloader, strategy);
     }
 
     @SuppressWarnings("unchecked")
-    private <S extends UpdateStrategy> void download(@NotNull final JavadocDownloader<S> downloader, @NotNull final UpdateStrategy strategy,
-                                                     @NotNull final String path) {
-        downloader.download(path, (S) strategy);
+    private <S extends UpdateStrategy> boolean download(@NotNull final JavadocDownloader<S> downloader, @NotNull final UpdateStrategy strategy) {
+        return downloader.download((S) strategy);
     }
 }

@@ -17,21 +17,19 @@ import java.util.List;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class AppBootstrap extends DocDexBootstrap {
-    private static final List<Class<? extends Registerable>> REGISTERABLES = List.of(
-            MongoRegisterable.class,
-
-            IndexStorageRegisterable.class,
-            IndexPopulatorRegisterable.class,
-            IndexPopulationRegisterable.class,
-
-            RoutesRegisterable.class,
-            ServerRegisterable.class,
-
-            ShutdownHookRegisterable.class
-    );
-
     @Override
     protected @NotNull List<Class<? extends Registerable>> provideRegisterables() {
-        return REGISTERABLES;
+        return List.of(
+                MongoRegisterable.class,
+
+                IndexStorageRegisterable.class,
+                IndexPopulatorRegisterable.class,
+                IndexPopulationRegisterable.class,
+
+                RoutesRegisterable.class,
+                ServerRegisterable.class,
+
+                ShutdownHookRegisterable.class
+        );
     }
 }

@@ -2,6 +2,7 @@ package me.piggypiglet.docdex.config;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 
 // ------------------------------
@@ -35,5 +36,18 @@ public final class Javadoc {
     @NotNull
     public String getActualLink() {
         return actualLink;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Javadoc javadoc = (Javadoc) o;
+        return names.equals(javadoc.names);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(names);
     }
 }

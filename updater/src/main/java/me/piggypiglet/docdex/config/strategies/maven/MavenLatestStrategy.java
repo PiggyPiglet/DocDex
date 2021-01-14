@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class MavenLatestStrategy implements UpdateStrategy {
-    private UpdateStrategyType strategy;
+    private UpdateStrategyType type;
     private String path;
     private String artifactLink;
 
     @NotNull
-    public UpdateStrategyType getStrategy() {
-        return strategy;
+    public UpdateStrategyType getType() {
+        return type;
     }
 
     @NotNull

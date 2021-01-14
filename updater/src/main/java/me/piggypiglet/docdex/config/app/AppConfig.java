@@ -12,18 +12,10 @@ import java.util.Set;
 // ------------------------------
 @Singleton
 public final class AppConfig {
-    private final String host;
-    private final int port;
-    private final AppMongoConfig database;
-    private final Set<Javadoc> javadocs;
-
-    public AppConfig(@NotNull final String host, final int port,
-                     @NotNull final AppMongoConfig database, @NotNull final Set<Javadoc> javadocs) {
-        this.host = host;
-        this.port = port;
-        this.database = database;
-        this.javadocs = javadocs;
-    }
+    private String host;
+    private int port;
+    private AppMongoConfig database;
+    private Set<Javadoc> javadocs;
 
     @NotNull
     public String getHost() {

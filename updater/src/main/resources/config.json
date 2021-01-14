@@ -1,19 +1,340 @@
 {
-  "pterodactyl_link": "",
-  "api_token": "",
-  "app_config_path": "/opt/docdex/config.json",
-  "update_frequency": "1 day",
+  "pterodactyl": {
+    "link": "",
+    "token": "",
+    "server": "",
+    "directory": ""
+  },
 
   "javadocs": [
     {
+      "names": ["jda"],
+      "link": "http://172.18.0.1/docs/jda",
+      "actual_link": "https://docs.docdex.helpch.at/jda",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/jda",
+        "artifact_link": "https://dl.bintray.com/dv8fromtheworld/maven/net/dv8tion/JDA"
+      }
+    },
+    {
+      "names": ["adventure"],
+      "link": "http://172.18.0.1/docs/adventure",
+      "actual_link": "https://docs.docdex.helpch.at/adventure",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/adventure",
+        "artifact_link": "https://repo1.maven.org/maven2/net/kyori/adventure-api"
+      }
+    },
+    {
+      "names": ["bungeecord", "bungee"],
+      "link": "http://172.18.0.1/docs/bungeecord/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/bungeecord",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/html/docs/bungeecord",
+        "artifact_link": "https://oss.sonatype.org/content/repositories/snapshots/net/md-5/bungeecord-api"
+      }
+    },
+    {
+      "names": ["bungeecord-chat", "bungee-chat"],
+      "link": "http://172.18.0.1/docs/bungeecord-chat/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/bungeecord-chat",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/html/docs/bungeecord-chat",
+        "artifact_link": "https://oss.sonatype.org/content/repositories/snapshots/net/md-5/bungeecord-chat"
+      }
+    },
+    {
+      "names": ["waterfall"],
+      "link": "http://172.18.0.1/docs/waterfall/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/waterfall",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/html/docs/waterfall",
+        "artifact_link": "https://papermc.io/repo/repository/maven-public/io/github/waterfallmc/waterfall-api"
+      }
+    },
+    {
+      "names": ["waterfall-chat"],
+      "link": "http://172.18.0.1/docs/waterfall-chat/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/waterfall-chat",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/html/docs/waterfall-chat",
+        "artifact_link": "https://papermc.io/repo/repository/maven-public/io/github/waterfallmc/waterfall-chat"
+      }
+    },
+    {
+      "names": ["gson"],
+      "link": "http://172.18.0.1/docs/gson/com.google.gson/module-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/gson",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/gson",
+        "artifact_link": "https://repo1.maven.org/maven2/com/google/code/gson/gson"
+      }
+    },
+    {
+      "names": ["guice"],
+      "link": "http://172.18.0.1/docs/guice/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/guice",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/guice",
+        "artifact_link": "https://repo1.maven.org/maven2/com/google/inject/guice"
+      }
+    },
+    {
+      "names": ["luckperms", "lp"],
+      "link": "http://172.18.0.1/docs/luckperms/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/luckperms",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/luckperms",
+        "artifact_link": "https://repo1.maven.org/maven2/net/luckperms/api"
+      }
+    },
+    {
+      "names": ["snakeyaml"],
+      "link": "http://172.18.0.1/docs/snakeyaml/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/snakeyaml",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/snakeyaml",
+        "artifact_link": "https://repo1.maven.org/maven2/org/yaml/snakeyaml"
+      }
+    },
+    {
+      "names": ["sponge"],
+      "link": "http://172.18.0.1/docs/sponge/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/sponge",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/sponge",
+        "artifact_link": "https://repo.spongepowered.org/maven/org/spongepowered/spongeapi"
+      }
+    },
+    {
+      "names": ["velocity"],
+      "link": "http://172.18.0.1/docs/velocity",
+      "actual_link": "https://docs.docdex.helpch.at/velocity",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/html/docs/velocity",
+        "artifact_link": "https://repo.velocitypowered.com/snapshots/com/velocitypowered/velocity-api"
+      }
+    },
+    {
+      "names": ["worldedit"],
+      "link": "http://172.18.0.1/docs/worldedit/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/worldedit",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/worldedit",
+        "artifact_link": "http://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-core"
+      }
+    },
+    {
+      "names": ["worldguard"],
+      "link": "http://172.18.0.1/docs/worldguard/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/worldguard",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/worldguard",
+        "artifact_link": "https://maven.enginehub.org/repo/com/sk89q/worldguard/worldguard-core"
+      }
+    },
+    {
+      "names": ["commons-cli"],
+      "link": "http://172.18.0.1/docs/commons-cli/org/apache/commons/cli/package-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-cli",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-cli",
+        "artifact_link": "https://repo1.maven.org/maven2/commons-cli/commons-cli"
+      }
+    },
+    {
+      "names": ["commons-codec"],
+      "link": "http://172.18.0.1/docs/commons-codec/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-codec",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-codec",
+        "artifact_link": "https://repo1.maven.org/maven2/commons-codec/commons-codec"
+      }
+    },
+    {
+      "names": ["commons-collections4"],
+      "link": "http://172.18.0.1/docs/commons-collections4/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-collections4",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-collections4",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-collections4"
+      }
+    },
+    {
+      "names": ["commons-compress"],
+      "link": "http://172.18.0.1/docs/commons-compress/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-compress",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-compress",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-compress"
+      }
+    },
+    {
+      "names": ["commons-configuration2"],
+      "link": "http://172.18.0.1/docs/commons-configuration2/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-configuration2",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-configuration2",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-configuration2"
+      }
+    },
+    {
+      "names": ["commons-crypto"],
+      "link": "http://172.18.0.1/docs/commons-crypto/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-crypto",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-crypto",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-crypto"
+      }
+    },
+    {
+      "names": ["commons-email"],
+      "link": "http://172.18.0.1/docs/commons-email/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-email",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-email",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-email"
+      }
+    },
+    {
+      "names": ["commons-io"],
+      "link": "http://172.18.0.1/docs/commons-io/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-io",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-io",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-io"
+      }
+    },
+    {
+      "names": ["commons-lang3"],
+      "link": "http://172.18.0.1/docs/commons-lang3/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-lang3",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-lang3",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3"
+      }
+    },
+    {
+      "names": ["commons-logging"],
+      "link": "http://172.18.0.1/docs/commons-logging/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-logging",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-logging",
+        "artifact_link": "https://repo1.maven.org/maven2/commons-logging/commons-logging"
+      }
+    },
+    {
+      "names": ["commons-text"],
+      "link": "http://172.18.0.1/docs/commons-text/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/commons-text",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/commons-text",
+        "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-text"
+      }
+    },
+    {
+      "names": ["guava"],
+      "link": "http://172.18.0.1/docs/guava",
+      "actual_link": "https://docs.docdex.helpch.at/guava",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/guava",
+        "artifact_link": "https://repo1.maven.org/maven2/com/google/guava/guava"
+      }
+    },
+    {
+      "names": ["fawe"],
+      "link": "http://172.18.0.1/docs/fawe/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/fawe",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/fawe",
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/intellectualsites/fawe/FAWE-Core"
+      }
+    },
+    {
+      "names": ["fawe-bukkit"],
+      "link": "http://172.18.0.1/docs/fawe-bukkit/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/fawe-bukkit",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/fawe-bukkit",
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/intellectualsites/fawe/FAWE-Bukkit"
+      }
+    },
+    {
       "names": ["plotsquared"],
-      "link": "http://localhost/docs/plotsquared/overview-summary.html",
+      "link": "http://172.18.0.1/docs/plotsquared/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/plotsquared",
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/html/docs/plotsquared",
         "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Core"
+      }
+    },
+    {
+      "names": ["plotsquared-bukkit"],
+      "link": "http://172.18.0.1/docs/plotsquared-bukkit/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/plotsquared-bukkit",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/plotsquared-bukkit",
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Bukkit"
       }
     }
   ]
