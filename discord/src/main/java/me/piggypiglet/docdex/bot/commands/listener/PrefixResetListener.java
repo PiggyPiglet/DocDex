@@ -53,7 +53,7 @@ public final class PrefixResetListener extends ListenerAdapter {
             final Guild guild = event.getGuild();
             final Server server = servers.stream()
                     .filter(element -> element.getId().equals(guild.getId()))
-                    .findAny().orElse(guildJoinHandler.joinGuild(guild).join());
+                    .findAny().orElseGet(() -> guildJoinHandler.joinGuild(guild).join());
             final Member member = Objects.requireNonNull(event.getMember());
 
             if (!member.hasPermission(Permission.ADMINISTRATOR) && member.getRoles().stream()
