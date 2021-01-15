@@ -46,4 +46,15 @@ public final class AppMongoConfig {
     public String getPassword() {
         return password;
     }
+
+    @Override
+    public String toString() {
+        return "AppMongoConfig{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                ", database='" + database + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

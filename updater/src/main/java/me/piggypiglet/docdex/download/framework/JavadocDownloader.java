@@ -3,7 +3,6 @@ package me.piggypiglet.docdex.download.framework;
 import me.piggypiglet.docdex.config.strategies.UpdateStrategy;
 import me.piggypiglet.docdex.download.utils.ZipUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +15,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Set;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -26,13 +26,13 @@ public abstract class JavadocDownloader<S extends UpdateStrategy> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger("Downloader");
 
-    @Nullable
-    protected abstract URL provideLatestUrl(@NotNull final S strategy);
+    @NotNull
+    protected abstract Set<URL> provideLatestUrl(@NotNull final S strategy);
 
     public boolean download(@NotNull final S strategy)  {
-        final URL url = provideLatestUrl(strategy);
+        final Set<URL> urls = provideLatestUrl(strategy);
 
-        if (url == null) {
+        if (urls.isEmpty()) {
             return false;
         }
 
@@ -43,19 +43,23 @@ public abstract class JavadocDownloader<S extends UpdateStrategy> {
         new File(path).delete();
         new File(jar).delete();
 
-        try (InputStream input = url.openStream();
-             ReadableByteChannel readable = Channels.newChannel(input);
-             FileChannel output = FileChannel.open(Paths.get(jar), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
-                     StandardOpenOption.WRITE)
-             ) {
-            output.transferFrom(readable, 0, Long.MAX_VALUE);
-        } catch (IOException exception) {
-            LOGGER.error("Something went wrong when downloading " + url + " to " + jar, exception);
-            return false;
+        for (final URL url : urls) {
+            try (InputStream input = url.openStream();
+                 ReadableByteChannel readable = Channels.newChannel(input);
+                 FileChannel output = FileChannel.open(Paths.get(jar), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+                         StandardOpenOption.WRITE)
+            ) {
+                output.transferFrom(readable, 0, Long.MAX_VALUE);
+                LOGGER.info("Successfully downloaded " + url + " to " + jar);
+                break;
+            } catch (IOException exception) {
+                LOGGER.info("Failed downloading " + url + " to " + jar);
+            }
         }
 
         try {
             ZipUtils.unzip(jar, path);
+            LOGGER.info("Successfully unzipped " + jar + " to " + path);
         } catch (IOException exception) {
             LOGGER.error("Something went wrong when unzipping " + jar + " to " + path, exception);
             return false;

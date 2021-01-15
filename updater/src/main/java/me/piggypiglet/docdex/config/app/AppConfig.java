@@ -35,4 +35,14 @@ public final class AppConfig {
     public Set<Javadoc> getJavadocs() {
         return javadocs;
     }
+
+    @Override
+    public String toString() {
+        return "AppConfig{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                ", database=" + database +
+                ", javadocs=" + javadocs +
+                '}';
+    }
 }

@@ -136,7 +136,7 @@
       "strategy": {
         "type": "MAVEN_LATEST",
         "path": "/var/www/html/docs/velocity",
-        "artifact_link": "https://repo.velocitypowered.com/snapshots/com/velocitypowered/velocity-api"
+        "artifact_link": "https://nexus.velocitypowered.com/repository/maven-public/com/velocitypowered/velocity-api"
       }
     },
     {

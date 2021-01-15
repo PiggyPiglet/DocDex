@@ -50,4 +50,13 @@ public final class Javadoc {
     public int hashCode() {
         return Objects.hash(names);
     }
+
+    @Override
+    public String toString() {
+        return "Javadoc{" +
+                "names=" + names +
+                ", link='" + link + '\'' +
+                ", actualLink='" + actualLink + '\'' +
+                '}';
+    }
 }
