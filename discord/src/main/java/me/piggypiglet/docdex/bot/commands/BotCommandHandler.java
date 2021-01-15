@@ -58,7 +58,7 @@ public final class BotCommandHandler {
 
             server = servers.stream()
                     .filter(element -> element.getId().equals(guild.getId()))
-                    .findAny().orElse(guildJoinHandler.joinGuild(guild).join());
+                    .findAny().orElseGet(() -> guildJoinHandler.joinGuild(guild).join());
         } else {
             server = defaultServer;
         }

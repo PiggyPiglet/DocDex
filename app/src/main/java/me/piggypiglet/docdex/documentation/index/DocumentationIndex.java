@@ -131,7 +131,7 @@ public final class DocumentationIndex {
             return Collections.emptyList();
         }
 
-        return getFromStorage(get(map.get(javadoc), query, limit), javadoc, field);
+        return getFromStorage(get(map.get(javadoc), query), javadoc, field, limit);
     }
 
     @NotNull
@@ -159,57 +159,82 @@ public final class DocumentationIndex {
         final Multimap<Javadoc, String> nameMethods = fqn ? nameFqnMethods : this.nameMethods;
 
         if (full) {
-            return getFromStorage(get(fullMethods.get(javadoc), finalQuery, limit), javadoc, DataUtils.fromParameterType(ParameterTypes.FULL, fqn));
+            return getFromStorage(get(fullMethods.get(javadoc), finalQuery), javadoc, DataUtils.fromParameterType(ParameterTypes.FULL, fqn), limit);
         }
 
-        final List<String> names = get(nameMethods.get(javadoc), finalQuery, limit);
+        final List<String> names = get(nameMethods.get(javadoc), finalQuery);
 
         if (names.size() == 1) {
-            return getFromStorage(names, javadoc, DataUtils.fromParameterType(ParameterTypes.NAME, fqn));
+            return getFromStorage(names, javadoc, DataUtils.fromParameterType(ParameterTypes.NAME, fqn), limit);
         }
 
-        final List<String> types = get(typeMethods.get(javadoc), finalQuery, limit);
+        final List<String> types = get(typeMethods.get(javadoc), finalQuery);
 
         if (types.size() == 1) {
-            return getFromStorage(types, javadoc, DataUtils.fromParameterType(ParameterTypes.TYPE, fqn));
+            return getFromStorage(types, javadoc, DataUtils.fromParameterType(ParameterTypes.TYPE, fqn), limit);
         }
 
-        return Stream.concat(
+        final List<Map.Entry<ParameterTypes, String>> keys = Stream.concat(
                 types.stream().map(array -> Map.entry(ParameterTypes.TYPE, array)),
                 names.stream().map(array -> Map.entry(ParameterTypes.NAME, array))
         )
                 .filter(distinctByKey(Map.Entry::getValue))
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(object -> FuzzySearch.ratio(object.getValue(), finalQuery))))
-                .limit(limit)
-                .map(entry -> storage.get(javadoc, Map.of(DataUtils.fromParameterType(entry.getKey(), fqn).getName(), entry.getValue()))
-                        .map(documentedObject -> new DocumentedObjectResult(entry.getValue(), documentedObject))
-                        .orElse(null))
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+        final List<DocumentedObjectResult> results = new ArrayList<>();
+
+        for (final Map.Entry<ParameterTypes, String> key : keys) {
+            final DocumentedObjectResult result = storage.get(javadoc, Map.of(DataUtils.fromParameterType(key.getKey(), fqn).getName(), key.getValue()))
+                    .map(documentedObject -> new DocumentedObjectResult(key.getValue(), documentedObject))
+                    .orElse(null);
+
+            if (result == null || results.stream().map(DocumentedObjectResult::getObject).anyMatch(result.getObject()::equals)) {
+                continue;
+            }
+
+            results.add(result);
+
+            if (results.size() == limit) {
+                break;
+            }
+        }
+
+        return results;
     }
 
     @NotNull
-    private List<String> get(@NotNull final Collection<String> collection, @NotNull final String query,
-                             final int limit) {
+    private List<String> get(@NotNull final Collection<String> collection, @NotNull final String query) {
         if (collection.contains(query)) {
             return List.of(query);
         }
 
         return collection.stream()
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(name -> FuzzySearch.ratio(name, query))))
-                .limit(limit)
                 .collect(Collectors.toList());
     }
 
     @NotNull
     private List<DocumentedObjectResult> getFromStorage(@NotNull final List<String> names, @NotNull final Javadoc javadoc,
-                                                        @NotNull final MongoDocumentedObjectFields field) {
-        return names.stream()
-                .map(name -> storage.get(javadoc, Map.of(field.getName(), name))
-                        .map(documentedObject -> new DocumentedObjectResult(name, documentedObject))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                                                        @NotNull final MongoDocumentedObjectFields field, final int limit) {
+        final List<DocumentedObjectResult> results = new ArrayList<>();
+
+        for (final String name : names) {
+            final DocumentedObjectResult result = storage.get(javadoc, Map.of(field.getName(), name))
+                    .map(documentedObject -> new DocumentedObjectResult(name, documentedObject))
+                    .orElse(null);
+
+            if (result == null || results.stream().map(DocumentedObjectResult::getObject).anyMatch(result.getObject()::equals)) {
+                continue;
+            }
+
+            results.add(result);
+
+            if (results.size() == limit) {
+                break;
+            }
+        }
+
+        return results;
     }
 
     @NotNull

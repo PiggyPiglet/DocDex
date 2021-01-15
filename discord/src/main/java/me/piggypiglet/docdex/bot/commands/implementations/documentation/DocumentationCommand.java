@@ -25,6 +25,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,11 +48,6 @@ public abstract class DocumentationCommand extends BotCommand {
     private static final Type OBJECT_LIST = Types.listOf(DocumentedObjectResult.class);
 
     private final Config config;
-
-    protected DocumentationCommand(@NotNull final String @NotNull [] matches, @NotNull final String description,
-                                   @NotNull final Config config) {
-        this(Arrays.stream(matches).collect(Collectors.toSet()), description, config);
-    }
 
     protected DocumentationCommand(@NotNull final Set<String> matches, @NotNull final String description,
                                    @NotNull final Config config) {
@@ -134,27 +130,12 @@ public abstract class DocumentationCommand extends BotCommand {
                         return;
                     }
 
-                    final List<DocumentedObjectResult> objects = GSON.fromJson(json, OBJECT_LIST);
+                    //noinspection unchecked
+                    final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects = ((List<DocumentedObjectResult>) GSON.fromJson(json, OBJECT_LIST)).stream()
+                            .map(result -> Map.entry(result, DocumentationObjectSerializer.toEmbed(user, javadoc.get(), result.getObject())))
+                            .collect(Collectors.toList());
 
-                    if ((objects.size() == 1 && limit.get() == 0) || returnClosest.get()) {
-                        final DocumentedObject object = objects.get(0).getObject();
-
-                        final String error = checkAndReturnError(object);
-                        if (!error.isBlank()) {
-                            message.getChannel().sendMessage(error).queue();
-                            return;
-                        }
-
-                        execute(message, DocumentationObjectSerializer.toEmbed(user, javadoc.get(), object), object);
-                        return;
-                    }
-
-                    final String suggestions = objects.stream()
-                            .map(DocumentedObjectResult::getName)
-                            .collect(Collectors.joining("\n"));
-
-                    channel.sendMessage("There was no direct match for that query, did you mean any of the following?: ```\n" + suggestions + "```")
-                            .queue();
+                    execute(message, objects, (objects.size() == 1 && limit.get() == 0) || returnClosest.get());
                 }).exceptionally(throwable -> {
                     if (throwable instanceof IOException) {
                         queueAndDelete(channel.sendMessage("I am currently under maintenance."));
@@ -166,8 +147,8 @@ public abstract class DocumentationCommand extends BotCommand {
                 });
     }
 
-    protected abstract void execute(final @NotNull Message message, @NotNull final EmbedBuilder defaultEmbed,
-                                    final @NotNull DocumentedObject object);
+    protected abstract void execute(final @NotNull Message message, final @NotNull List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
+                                    final boolean returnFirst);
 
     @NotNull
     protected String checkAndReturnError(@NotNull final DocumentedObject object) {
