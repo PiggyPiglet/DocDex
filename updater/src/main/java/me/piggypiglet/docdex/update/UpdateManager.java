@@ -28,7 +28,9 @@ public final class UpdateManager {
     }
 
     public void update(@NotNull final UpdaterJavadoc javadoc) {
-        appConfig.getJavadocs().add(new Javadoc(javadoc.getNames(), javadoc.getLink(), javadoc.getActualLink()));
+        final Javadoc newJavadoc = new Javadoc(javadoc.getNames(), javadoc.getLink(), javadoc.getActualLink());
+        appConfig.getJavadocs().remove(newJavadoc);
+        appConfig.getJavadocs().add(newJavadoc);
     }
 
     public void applyUpdates() {
