@@ -56,14 +56,14 @@ public final class DataUtils {
 
         Stream.of(
                 Map.entry(ParameterTypes.FULL, List.of(-2, -1)),
-                Map.entry(ParameterTypes.TYPE, List.of(-1)),
-                Map.entry(ParameterTypes.NAME, List.of(-2))
+                Map.entry(ParameterTypes.TYPE, List.of(-2)),
+                Map.entry(ParameterTypes.NAME, List.of(-1))
         ).forEach(paramEntry ->
                 result.put(paramEntry.getKey(), parameters.stream()
                         .map(param -> paramEntry.getValue().stream()
                                 .map(offset -> param[param.length + offset])
                                 .collect(Collectors.joining(" ")))
-                        .collect(Collectors.joining(", ")).toLowerCase()
+                        .collect(Collectors.joining(",")).toLowerCase()
                 )
         );
 

@@ -145,6 +145,8 @@ public final class DocumentationIndex {
             }
         }
 
+        query = query.replace(", ", ",");
+
         final String finalQuery = query;
 
         int splitPoint = finalQuery.lastIndexOf('(');
