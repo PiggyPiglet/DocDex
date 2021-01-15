@@ -86,7 +86,7 @@
     },
     {
       "names": ["guice"],
-      "link": "http://172.18.0.1/docs/guice/overview-summary.html",
+      "link": "http://172.18.0.1/docs/guice",
       "actual_link": "https://docs.docdex.helpch.at/guice",
 
       "strategy": {
