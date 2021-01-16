@@ -44,11 +44,11 @@ public final class PaginationManager {
         }
 
         if (message.isFromGuild()) {
-            reaction.removeReaction(user).queue(success -> {}, failure -> {
-                if (failure instanceof PermissionException) {
-                    PermissionUtils.sendPermissionError(message, ((PermissionException) failure).getPermission());
-                }
-            });
+            try {
+                reaction.removeReaction(user).queue();
+            } catch (PermissionException exception) {
+                PermissionUtils.sendPermissionError(message, exception.getPermission());
+            }
         }
 
         final MessageReaction.ReactionEmote reactionEmote = reaction.getReactionEmote();
