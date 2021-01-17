@@ -1,5 +1,9 @@
 package me.piggypiglet.docdex.bot.embed.documentation;
 
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
+import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+import me.piggypiglet.docdex.bot.embed.documentation.flexmark.CodeHtmlNodeConvertor;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.detail.DetailMetadata;
@@ -19,8 +23,15 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class SimpleObjectSerializer {
+    private static final DataHolder OPTIONS = new MutableDataSet()
+            .set(FlexmarkHtmlConverter.NBSP_TEXT, "\n")
+            .toImmutable();
+    private static final FlexmarkHtmlConverter HTML_CONVERTER = FlexmarkHtmlConverter.builder(OPTIONS)
+            .htmlNodeRendererFactory(CodeHtmlNodeConvertor.Factory.create())
+            .build();
+
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
-            "Description:", DocumentedObject::getStrippedDescription,
+            "Description:", object -> HTML_CONVERTER.convert(object.getDescription()),
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 
