@@ -44,7 +44,7 @@ public final class PaginationListener extends ListenerAdapter {
                 }
 
                 paginationManager.process(message, event.getUser(), event.getReaction());
-            });
+            }, failure -> {});
         });
     }
 

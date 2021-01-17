@@ -7,6 +7,7 @@ import fi.iki.elonen.NanoHTTPD;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.http.request.Request;
 import me.piggypiglet.docdex.http.route.Route;
+import me.piggypiglet.docdex.http.route.exceptions.StatusCodeException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -39,7 +40,14 @@ public final class HttpServer extends NanoHTTPD {
 
             if (!sanitisedUri.isEmpty() && !sanitisedUri.equals("/") && !sanitisedUri.startsWith("?")) continue;
 
-            final Response response = newFixedLengthResponse(route.serve(Request.from(session)));
+            Response response;
+
+            try {
+                response = newFixedLengthResponse(route.serve(Request.from(session)));
+            } catch (StatusCodeException exception) {
+                response = newFixedLengthResponse(exception.getStatus(), "text/plain", exception.getMessage());
+            }
+
             route.getHeaders().forEach(response::addHeader);
 
             return response;

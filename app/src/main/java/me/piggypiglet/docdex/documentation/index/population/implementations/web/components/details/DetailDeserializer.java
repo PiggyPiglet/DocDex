@@ -38,8 +38,10 @@ public final class DetailDeserializer {
 
         builder.name(name);
 
-        Optional.ofNullable(details.selectFirst(".block")).ifPresent(description ->
-                builder.description(description.text()));
+        Optional.ofNullable(details.selectFirst(".block")).ifPresent(description -> {
+            builder.description(description.html());
+            builder.strippedDescription(description.text());
+        });
 
         Optional.ofNullable(details.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
             builder.deprecated(true);

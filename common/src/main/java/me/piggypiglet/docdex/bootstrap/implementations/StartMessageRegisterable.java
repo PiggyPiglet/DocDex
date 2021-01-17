@@ -34,6 +34,7 @@ public final class StartMessageRegisterable extends Registerable {
         CompletableFuture.allOf(startupHooks.toArray(new CompletableFuture[]{})).whenComplete((v, t) -> {
             final long seconds = (System.currentTimeMillis() - millis) / 1000;
             LOGGER.info("DocDex initialization process complete in " + seconds + " second(s).");
+            startupHooks.clear();
         });
 
         completableFuture.complete(null);

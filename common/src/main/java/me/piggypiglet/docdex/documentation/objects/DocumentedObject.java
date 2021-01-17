@@ -18,6 +18,7 @@ public final class DocumentedObject {
     @SerializedName("package") private final String packaj;
     private final String name;
     private final String description;
+    private final String strippedDescription;
     private final Set<String> annotations;
     private final boolean deprecated;
     private final String deprecationMessage;
@@ -26,14 +27,16 @@ public final class DocumentedObject {
 
     private DocumentedObject(@NotNull final String link, @NotNull final DocumentedTypes type,
                              @NotNull final String packaj, @NotNull final String name,
-                             @NotNull final String description, @NotNull final Set<String> annotations,
-                             final boolean deprecated, @NotNull final String deprecationMessage,
-                             @NotNull final Set<String> modifiers, @NotNull final Object metadata) {
+                             @NotNull final String description, @NotNull final String strippedDescription,
+                             @NotNull final Set<String> annotations, final boolean deprecated,
+                             @NotNull final String deprecationMessage, @NotNull final Set<String> modifiers,
+                             @NotNull final Object metadata) {
         this.link = link;
         this.type = type;
         this.packaj = packaj;
         this.name = name;
         this.description = description;
+        this.strippedDescription = strippedDescription;
         this.annotations = annotations;
         this.deprecated = deprecated;
         this.deprecationMessage = deprecationMessage;
@@ -67,6 +70,11 @@ public final class DocumentedObject {
     }
 
     @NotNull
+    public String getStrippedDescription() {
+        return description;
+    }
+
+    @NotNull
     public Set<String> getAnnotations() {
         return annotations;
     }
@@ -95,12 +103,12 @@ public final class DocumentedObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DocumentedObject object = (DocumentedObject) o;
-        return deprecated == object.deprecated && link.equals(object.link) && type == object.type && packaj.equals(object.packaj) && name.equals(object.name) && description.equals(object.description) && annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) && metadata.equals(object.metadata);
+        return deprecated == object.deprecated && link.equals(object.link) && type == object.type && packaj.equals(object.packaj) && name.equals(object.name) && description.equals(object.description) && strippedDescription.equals(object.strippedDescription) && annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) && metadata.equals(object.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(link, type, packaj, name, description, annotations, deprecated, deprecationMessage, modifiers, metadata);
+        return Objects.hash(link, type, packaj, name, description, strippedDescription, annotations, deprecated, deprecationMessage, modifiers, metadata);
     }
 
     @Override
@@ -111,6 +119,7 @@ public final class DocumentedObject {
                 ", packaj='" + packaj + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", strippedDescription='" + strippedDescription + '\'' +
                 ", annotations=" + annotations +
                 ", deprecated=" + deprecated +
                 ", deprecationMessage='" + deprecationMessage + '\'' +
@@ -129,6 +138,7 @@ public final class DocumentedObject {
         private String packaj;
         private String name;
         private String description = "";
+        private String strippedDescription = "";
         private final Set<String> annotations = new HashSet<>();
         private boolean deprecated = false;
         private String deprecationMessage = "";
@@ -163,6 +173,12 @@ public final class DocumentedObject {
         @NotNull
         public T description(@NotNull final String value) {
             description = value;
+            return instance;
+        }
+
+        @NotNull
+        public T strippedDescription(@NotNull final String value) {
+            strippedDescription = value;
             return instance;
         }
 
@@ -207,8 +223,10 @@ public final class DocumentedObject {
 
         @NotNull
         protected final DocumentedObject build(@NotNull final Object metadata) {
-            return new DocumentedObject(link, type, packaj, name, description, annotations, deprecated,
-                    deprecationMessage, modifiers, metadata);
+            return new DocumentedObject(
+                    link, type, packaj, name, description, strippedDescription, annotations,
+                    deprecated, deprecationMessage, modifiers, metadata
+            );
         }
 
         @NotNull
@@ -222,7 +240,7 @@ public final class DocumentedObject {
         }
 
         @NotNull
-        public String getPackaj() {
+        public String getPackage() {
             return packaj;
         }
 
@@ -234,6 +252,11 @@ public final class DocumentedObject {
         @NotNull
         public String getDescription() {
             return description;
+        }
+
+        @NotNull
+        public String getStrippedDescription() {
+            return strippedDescription;
         }
 
         @NotNull

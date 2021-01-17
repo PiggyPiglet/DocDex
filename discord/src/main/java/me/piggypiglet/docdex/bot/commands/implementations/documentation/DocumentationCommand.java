@@ -42,6 +42,7 @@ public abstract class DocumentationCommand extends BotCommand {
     private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\-, ()]");
     private static final Pattern ARGUMENT_PATTERN = Pattern.compile("([ ](?![^(]*\\)))");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private static final int SERVICE_UNAVAILABLE = 503;
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
@@ -123,15 +124,21 @@ public abstract class DocumentationCommand extends BotCommand {
         final HttpRequest request = HttpRequest.newBuilder(URI.create(config.getUrl() + urlBuilder.build()))
                 .build();
         CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(json -> {
-                    if (json.equalsIgnoreCase("null")) {
+                .thenAccept(response -> {
+                    final String body = response.body();
+
+                    if (response.statusCode() == SERVICE_UNAVAILABLE) {
+                        channel.sendMessage(body).queue();
+                        return;
+                    }
+
+                    if (body.equalsIgnoreCase("null")) {
                         queueAndDelete(channel.sendMessage("Unknown javadoc: " + javadoc.get() + '.'));
                         return;
                     }
 
                     //noinspection unchecked
-                    final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects = ((List<DocumentedObjectResult>) GSON.fromJson(json, OBJECT_LIST)).stream()
+                    final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects = ((List<DocumentedObjectResult>) GSON.fromJson(body, OBJECT_LIST)).stream()
                             .map(result -> Map.entry(result, DocumentationObjectSerializer.toEmbed(user, javadoc.get(), result.getObject())))
                             .collect(Collectors.toList());
 

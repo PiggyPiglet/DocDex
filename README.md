@@ -187,7 +187,7 @@ The status refers to the online status of your bot, e.g. online, offline, etc. T
 MUST be one of the values listed [here](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/OnlineStatus.html).
 It is case insensitive. The activity once again, is another enum value (also case insensitive),
 and must be one of the values listed [here](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/entities/Activity.ActivityType.html).
-Keep in mind, bots cannot have a custom, or a streaming status. `DEFAULT` refers to the
+Keep in mind, bots cannot have a custom status. `DEFAULT` refers to the
 `playing` status. The message can be any string. This example presence would look like this:<br/>
 ![presence](https://cdn.piggypiglet.me/docdex/presence.png)
 
@@ -288,3 +288,5 @@ not provide support for attempts to use this.
 
 ## Contact
 Join either [HelpChat](https://helpch.at/discord), or my personal [discord](https://piggypiglet.me/discord).
+
+![flex](https://i.imgur.com/G2QsaaN.png)

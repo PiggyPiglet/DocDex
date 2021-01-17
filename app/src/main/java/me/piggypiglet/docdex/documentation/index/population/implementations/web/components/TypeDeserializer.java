@@ -145,8 +145,10 @@ public final class TypeDeserializer {
             builder.annotations(DeserializationUtils.removeExcessWhitespace(fqnAnnotation).trim());
         }
 
-        Optional.ofNullable(description.selectFirst(".block")).ifPresent(descriptionBlock ->
-                builder.description(descriptionBlock.text()));
+        Optional.ofNullable(description.selectFirst(".block")).ifPresent(descriptionBlock -> {
+            builder.description(descriptionBlock.html());
+            builder.strippedDescription(descriptionBlock.text());
+        });
 
         description.select("dl").forEach(meta -> {
             final String header = meta.selectFirst("dt").text().toLowerCase();

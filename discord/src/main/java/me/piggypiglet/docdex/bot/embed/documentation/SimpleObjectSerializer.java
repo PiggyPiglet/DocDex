@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 // ------------------------------
 public final class SimpleObjectSerializer {
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
-            "Description:", DocumentedObject::getDescription,
+            "Description:", DocumentedObject::getStrippedDescription,
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 
