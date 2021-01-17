@@ -84,6 +84,7 @@ public final class TypeDeserializer {
                 case 2:
                     final Consumer<String> setter = i == 1 ? builder::extensions : builder::implementations;
                     parts.subList(1, parts.size()).stream()
+                            .map(name -> name.endsWith(",") ? name.substring(0, name.length() - 1) : name)
                             .map(name -> {
                                 final int index = name.indexOf('<');
 
