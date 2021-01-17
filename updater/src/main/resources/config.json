@@ -336,6 +336,116 @@
         "path": "/var/www/html/docs/plotsquared-bukkit",
         "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Bukkit"
       }
+    },
+    {
+      "names": ["javacord"],
+      "link": "http://172.18.0.1/docs/javacord",
+      "actual_link": "https://docs.docdex.helpch.at/javacord",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/javacord",
+        "artifact_link": "https://repo1.maven.org/maven2/org/javacord/javacord-api"
+      }
+    },
+    {
+      "names": ["antivpn"],
+      "link": "http://172.18.0.1/docs/antivpn",
+      "actual_link": "https://docs.docdex.helpch.at/antivpn",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/antivpn",
+        "artifact_link": "https://nexus.egg82.me/repository/maven-releases/me/egg82/antivpn-api"
+      }
+    },
+    {
+      "names": ["caffeine"],
+      "link": "http://172.18.0.1/docs/caffeine",
+      "actual_link": "https://docs.docdex.helpch.at/caffeine",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/caffeine",
+        "artifact_link": "https://repo1.maven.org/maven2/com/github/ben-manes/caffeine/caffeine"
+      }
+    },
+    {
+      "names": ["helper"],
+      "link": "http://172.18.0.1/docs/helper",
+      "actual_link": "https://docs.docdex.helpch.at/helper",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/helper",
+        "artifact_link": "https://repo1.maven.org/maven2/me/lucko/helper"
+      }
+    },
+    {
+      "names": ["helper-sql"],
+      "link": "http://172.18.0.1/docs/helper-sql",
+      "actual_link": "https://docs.docdex.helpch.at/helper-sql",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/helper-sql",
+        "artifact_link": "https://repo1.maven.org/maven2/me/lucko/helper-sql"
+      }
+    },
+    {
+      "names": ["configurate-core"],
+      "link": "http://172.18.0.1/docs/configurate-core",
+      "actual_link": "https://docs.docdex.helpch.at/configurate-core",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/configurate-core",
+        "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-core"
+      }
+    },
+    {
+      "names": ["configurate-gson"],
+      "link": "http://172.18.0.1/docs/configurate-gson",
+      "actual_link": "https://docs.docdex.helpch.at/configurate-gson",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/configurate-gson",
+        "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-gson"
+      }
+    },
+    {
+      "names": ["configurate-json"],
+      "link": "http://172.18.0.1/docs/configurate-json",
+      "actual_link": "https://docs.docdex.helpch.at/configurate-json",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/configurate-json",
+        "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-json"
+      }
+    },
+    {
+      "names": ["configurate-yaml"],
+      "link": "http://172.18.0.1/docs/configurate-yaml",
+      "actual_link": "https://docs.docdex.helpch.at/configurate-yaml",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/configurate-yaml",
+        "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-yaml"
+      }
+    },
+    {
+      "names": ["configurate-hocon"],
+      "link": "http://172.18.0.1/docs/configurate-hocon",
+      "actual_link": "https://docs.docdex.helpch.at/configurate-hocon",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/configurate-hocon",
+        "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-hocon"
+      }
     }
   ]
 }

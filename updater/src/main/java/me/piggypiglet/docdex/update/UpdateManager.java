@@ -35,6 +35,5 @@ public final class UpdateManager {
 
     public void applyUpdates() {
         fileManager.saveFile(config.getPterodactyl().getDirectory() + "/config.json", appConfig);
-//        fileManager.saveFile("/opt/docdex/config.json", appConfig);
     }
 }

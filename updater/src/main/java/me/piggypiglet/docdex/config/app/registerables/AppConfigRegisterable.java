@@ -36,6 +36,5 @@ public final class AppConfigRegisterable extends Registerable {
         fileManager.setGson(fileManager.generateBuilder(fileObjects).create());
 
         fileManager.loadFile(AppConfig.class, "/appconfig.json", config.getPterodactyl().getDirectory() + "/config.json");
-//        fileManager.loadFile(AppConfig.class, "/appconfig.json", "/opt/docdex/config.json");
     }
 }
