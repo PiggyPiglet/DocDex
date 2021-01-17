@@ -29,7 +29,7 @@ public final class SimpleObjectSerializer {
     private static final FlexmarkHtmlConverter HTML_CONVERTER = FlexmarkHtmlConverter.builder(OPTIONS)
             .htmlNodeRendererFactory(CodeHtmlNodeConvertor.Factory.create())
             .build();
-    private static final int MAX_DESCRIPTION_CHARS = 900;
+    private static final int MAX_DESCRIPTION_CHARS = 950;
     private static final String ADDENDUM = "...\n\n*This description has been shortened as it was too long*.";
 
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
