@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.documentation.index.population.implementations.web.components;
 
 import me.piggypiglet.docdex.documentation.index.population.implementations.web.utils.DeserializationUtils;
+import me.piggypiglet.docdex.documentation.index.utils.StreamUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.type.DocumentedTypeBuilder;
@@ -51,6 +52,7 @@ public final class TypeDeserializer {
                 .map(elements -> elements.select("a"))
                 .stream()
                 .flatMap(Collection::stream)
+                .filter(StreamUtils.distinctByKey(Element::text))
                 .collect(Collectors.toMap(Element::text, DeserializationUtils::generateFqn));
 
         for (int i = 0; i < declaration.size(); ++i) {

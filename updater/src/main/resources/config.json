@@ -339,7 +339,7 @@
     },
     {
       "names": ["javacord"],
-      "link": "http://172.18.0.1/docs/javacord",
+      "link": "http://172.18.0.1/docs/javacord/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/javacord",
 
       "strategy": {
@@ -350,7 +350,7 @@
     },
     {
       "names": ["antivpn"],
-      "link": "http://172.18.0.1/docs/antivpn",
+      "link": "http://172.18.0.1/docs/antivpn/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/antivpn",
 
       "strategy": {
@@ -361,7 +361,7 @@
     },
     {
       "names": ["caffeine"],
-      "link": "http://172.18.0.1/docs/caffeine",
+      "link": "http://172.18.0.1/docs/caffeine/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/caffeine",
 
       "strategy": {
@@ -372,7 +372,7 @@
     },
     {
       "names": ["helper"],
-      "link": "http://172.18.0.1/docs/helper",
+      "link": "http://172.18.0.1/docs/helper/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/helper",
 
       "strategy": {
@@ -383,7 +383,7 @@
     },
     {
       "names": ["helper-sql"],
-      "link": "http://172.18.0.1/docs/helper-sql",
+      "link": "http://172.18.0.1/docs/helper-sql/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/helper-sql",
 
       "strategy": {
@@ -405,7 +405,7 @@
     },
     {
       "names": ["configurate-gson"],
-      "link": "http://172.18.0.1/docs/configurate-gson",
+      "link": "http://172.18.0.1/docs/configurate-gson/org/spongepowered/configurate/gson/package-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/configurate-gson",
 
       "strategy": {
@@ -416,7 +416,7 @@
     },
     {
       "names": ["configurate-json"],
-      "link": "http://172.18.0.1/docs/configurate-json",
+      "link": "http://172.18.0.1/docs/configurate-json/ninja/leaping/configurate/json/package-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/configurate-json",
 
       "strategy": {
@@ -427,7 +427,7 @@
     },
     {
       "names": ["configurate-yaml"],
-      "link": "http://172.18.0.1/docs/configurate-yaml",
+      "link": "http://172.18.0.1/docs/configurate-yaml/org/spongepowered/configurate/yaml/package-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/configurate-yaml",
 
       "strategy": {
@@ -438,7 +438,7 @@
     },
     {
       "names": ["configurate-hocon"],
-      "link": "http://172.18.0.1/docs/configurate-hocon",
+      "link": "http://172.18.0.1/docs/configurate-hocon/org/spongepowered/configurate/hocon/package-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/configurate-hocon",
 
       "strategy": {
