@@ -29,9 +29,30 @@ public final class SimpleObjectSerializer {
     private static final FlexmarkHtmlConverter HTML_CONVERTER = FlexmarkHtmlConverter.builder(OPTIONS)
             .htmlNodeRendererFactory(CodeHtmlNodeConvertor.Factory.create())
             .build();
+    private static final int MAX_DESCRIPTION_CHARS = 900;
+    private static final String ADDENDUM = "...\n\n*This description has been shortened as it was too long*.";
 
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
-            "Description:", object -> HTML_CONVERTER.convert(object.getDescription()),
+            "Description:", object -> {
+                final String markdown = HTML_CONVERTER.convert(object.getDescription());
+
+                if (markdown.length() < MAX_DESCRIPTION_CHARS) {
+                    return markdown;
+                }
+
+                if (markdown.contains("```")) {
+                    return markdown.substring(0, markdown.indexOf("```")).trim() + ADDENDUM;
+                }
+
+                final char[] chars = markdown.toCharArray();
+                for (int i = MAX_DESCRIPTION_CHARS; i > 0; --i) {
+                    if (chars[i] == ' ') {
+                        return markdown.substring(0, i).trim() + ADDENDUM;
+                    }
+                }
+
+                return markdown.substring(0, MAX_DESCRIPTION_CHARS).trim() + ADDENDUM;
+            },
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 

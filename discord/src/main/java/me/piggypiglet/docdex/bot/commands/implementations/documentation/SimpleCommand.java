@@ -41,7 +41,12 @@ public final class SimpleCommand extends DocumentationCommand {
         final List<MessageEmbed> pages = objects.stream()
                 .map(entry -> {
                     final DocumentedObject object = entry.getKey().getObject();
-                    final String error = checkAndReturnError(object);
+                    final EmbedBuilder embed = SimpleObjectSerializer.toEmbed(object);
+                    EmbedUtils.merge(entry.getValue(), embed);
+                    return embed.build();
+                })
+                .map(embed -> {
+                    final String error = checkAndReturnError(embed);
 
                     if (!error.isBlank()) {
                         return new EmbedBuilder()
@@ -51,9 +56,7 @@ public final class SimpleCommand extends DocumentationCommand {
                                 .build();
                     }
 
-                    final EmbedBuilder embed = SimpleObjectSerializer.toEmbed(object);
-                    EmbedUtils.merge(entry.getValue(), embed);
-                    return embed.build();
+                    return embed;
                 }).collect(Collectors.toList());
 
         if (returnFirst) {
@@ -69,12 +72,11 @@ public final class SimpleCommand extends DocumentationCommand {
     }
 
     @NotNull
-    @Override
-    protected String checkAndReturnError(final @NotNull DocumentedObject object) {
-        if (object.getDescription().length() > 1024) {
-            return "This object is too big to be viewed in discord, please refer to it's javadoc page: " + object.getLink();
+    protected String checkAndReturnError(final @NotNull MessageEmbed embed) {
+        if (embed.getDescription().length() > 1024) {
+            return "This object is too big to be viewed in discord, please refer to it's javadoc page: " + embed.getUrl();
         }
 
-        return super.checkAndReturnError(object);
+        return "";
     }
 }
