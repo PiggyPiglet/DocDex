@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -39,10 +38,12 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public abstract class DocumentationCommand extends BotCommand {
+    private static final int SERVICE_UNAVAILABLE = 503;
+    private static final int BAD_GATEWAY = 502;
+
     private static final Pattern DISALLOWED_CHARACTERS = Pattern.compile("[^a-zA-Z0-9.$%_#\\-, ()]");
     private static final Pattern ARGUMENT_PATTERN = Pattern.compile("([ ](?![^(]*\\)))");
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private static final int SERVICE_UNAVAILABLE = 503;
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
@@ -128,7 +129,12 @@ public abstract class DocumentationCommand extends BotCommand {
                     final String body = response.body();
 
                     if (response.statusCode() == SERVICE_UNAVAILABLE) {
-                        channel.sendMessage(body).queue();
+                        queueAndDelete(channel.sendMessage(body));
+                        return;
+                    }
+
+                    if (response.statusCode() == BAD_GATEWAY) {
+                        queueAndDelete(channel.sendMessage("I am currently under maintenance."));
                         return;
                     }
 
@@ -144,11 +150,6 @@ public abstract class DocumentationCommand extends BotCommand {
 
                     execute(message, objects, (objects.size() == 1 && limit.get() == 0) || returnClosest.get());
                 }).exceptionally(throwable -> {
-                    if (throwable instanceof IOException) {
-                        queueAndDelete(channel.sendMessage("I am currently under maintenance."));
-                        return null;
-                    }
-
                     LOGGER.error("", throwable);
                     return null;
                 });
