@@ -89,11 +89,11 @@ public final class TypeDeserializer {
                                 final int index = name.indexOf('<');
 
                                 if (index == -1) {
-                                    return declarationFqns.get(name);
+                                    return declarationFqns.getOrDefault(name, name);
                                 }
 
                                 final String fqn = declarationFqns.get(name.substring(0, index));
-                                return fqn + name.substring(index);
+                                return fqn == null ? name : fqn + name.substring(index);
                             })
                             .forEach(setter);
                     break;
