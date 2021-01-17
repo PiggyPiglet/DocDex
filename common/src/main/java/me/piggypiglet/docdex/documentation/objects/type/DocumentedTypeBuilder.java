@@ -1,7 +1,6 @@
 package me.piggypiglet.docdex.documentation.objects.type;
 
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
-import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -113,6 +112,41 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
                 subInterfaces, subClasses, implementingClasses));
     }
 
+    @NotNull
+    public Set<String> getExtensions() {
+        return extensions;
+    }
+
+    @NotNull
+    public Set<String> getImplementations() {
+        return implementations;
+    }
+
+    @NotNull
+    public Set<String> getAllImplementations() {
+        return allImplementations;
+    }
+
+    @NotNull
+    public Set<String> getSuperInterfaces() {
+        return superInterfaces;
+    }
+
+    @NotNull
+    public Set<String> getSubInterfaces() {
+        return subInterfaces;
+    }
+
+    @NotNull
+    public Set<String> getSubClasses() {
+        return subClasses;
+    }
+
+    @NotNull
+    public Set<String> getImplementingClasses() {
+        return implementingClasses;
+    }
+
     private static void addAll(@NotNull final Set<String> set, @NotNull final String @NotNull [] values) {
         addAll(set, Arrays.stream(values));
     }
@@ -123,7 +157,6 @@ public final class DocumentedTypeBuilder extends DocumentedObject.Builder<Docume
 
     private static void addAll(@NotNull final Set<String> set, @NotNull final Stream<String> values) {
         values
-                .map(DataUtils::removeTypeParams)
                 .forEach(set::add);
     }
 }

@@ -73,7 +73,7 @@ public final class IndexPopulationRegisterable extends Registerable {
                                 return;
                             }
 
-                            storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
+//                            storageMechanisms.forEach(storage -> storage.save(javadoc, objects));
                             index.populate(javadoc, objects);
                             System.gc();
                         }), executor

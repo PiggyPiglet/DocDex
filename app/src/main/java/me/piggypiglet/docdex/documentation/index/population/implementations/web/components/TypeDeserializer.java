@@ -9,9 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Element;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -47,25 +46,18 @@ public final class TypeDeserializer {
                 .filter(line -> !line.startsWith("@") && !line.endsWith(")"))
                 .collect(Collectors.toList());
         final Element span = pre.selectFirst("span");
-        final List<String> declarationAnchors = Optional.ofNullable(span)
+        final Map<String, String> declarationFqns = Optional.ofNullable(span)
                 .map(Element::nextElementSiblings)
                 .map(elements -> elements.select("a"))
                 .stream()
                 .flatMap(Collection::stream)
-                .map(DeserializationUtils::generateFqn)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Element::text, DeserializationUtils::generateFqn));
 
-        DocumentedTypes type = DocumentedTypes.UNKNOWN;
-
-        int j = 0;
-        final AtomicInteger extensionCount = new AtomicInteger(0);
         for (int i = 0; i < declaration.size(); ++i) {
             final List<String> parts = Arrays.asList(SPACE_DELIMITER.split(declaration.get(i)));
 
             switch (i) {
                 case 0:
-                    type = DocumentedTypes.fromCode(parts.get(parts.size() - 2));
-
                     int nameIndex = parts.size() - 2;
                     for (int k = 0; k < parts.size(); ++k) {
                         final String part = parts.get(k);
@@ -82,34 +74,25 @@ public final class TypeDeserializer {
                         }
                     }
 
-                    builder.type(type)
+                    builder.type(DocumentedTypes.fromCode(parts.get(parts.size() - 2)))
                             .modifiers(parts.subList(0, nameIndex));
                     break;
 
                 case 1:
-                    final List<String> extensions = parts.subList(1, parts.size());
-                    final Function<Integer, String> extension = k ->
-                            declarationAnchors.size() > k ? declarationAnchors.get(k) : extensions.get(k);
-
-                    if (type == DocumentedTypes.INTERFACE) {
-                        for (; j < parts.size() - 1; j++) {
-                            builder.extensions(extension.apply(j));
-                            extensionCount.incrementAndGet();
-                        }
-                    } else {
-                        builder.extensions(extension.apply(j++));
-                        extensionCount.incrementAndGet();
-                    }
-                    break;
-
                 case 2:
-                    final List<String> implementations = parts.subList(1, parts.size());
-                    final Function<Integer, String> implementation = k ->
-                            declarationAnchors.size() > k ? declarationAnchors.get(k) : implementations.get(k - extensionCount.get());
+                    final Consumer<String> setter = i == 1 ? builder::extensions : builder::implementations;
+                    parts.subList(1, parts.size()).stream()
+                            .map(name -> {
+                                final int index = name.indexOf('<');
 
-                    for (int k = j; j < (k + parts.size()) - 1; j++) {
-                        builder.implementations(implementation.apply(j));
-                    }
+                                if (index == -1) {
+                                    return declarationFqns.get(name);
+                                }
+
+                                final String fqn = declarationFqns.get(name.substring(0, index));
+                                return fqn + name.substring(index);
+                            })
+                            .forEach(setter);
                     break;
             }
         }
