@@ -199,7 +199,7 @@ java -Xmx1G -jar bot.jar
 ```
 
 #### Info
-On first run, a config will generate, and the application will probably spew a few errors. Populate the config with your token, along with your docdex link, and if you wish to limit certain commands to particular channels, you can do so via the config. The default prefix is `d;`, and you should familiarise yourself with the commands which are accessible via `d;help`.
+On first run, a config will generate, and then the application will immediately shut down. Populate the config with your token, along with your docdex link. The default prefix is `d;`, and you should familiarise yourself with the commands which are accessible via `d;help`.
 
 > - Paginations will cease to function after 15 minutes with no activity. i.e. if someone hasn't reacted to a pagination for 15 minutes, the pagination will no longer work.
 > - If you set your prefix to something stupid and can't use the bot anymore, simply send `@DocDex resetprefix`. Removing the bot from your server will not remove its saved settings.
