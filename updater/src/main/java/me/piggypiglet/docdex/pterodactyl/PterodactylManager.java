@@ -74,10 +74,10 @@ public final class PterodactylManager {
     }
 
     private void run(@NotNull final ThrowingRequest request) {
-        run((ThrowingRequestWithResponse<Void>) (() -> {
+        run(() -> {
             request.apply();
             return null;
-        }));
+        });
     }
 
     @Nullable
