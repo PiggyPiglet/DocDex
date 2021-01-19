@@ -197,6 +197,7 @@ public final class DocumentationIndex {
             }
         }
 
+        Collections.reverse(results);
         return results;
     }
 

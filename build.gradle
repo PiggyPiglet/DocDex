@@ -1,13 +1,13 @@
 plugins {
     id "java-library"
-    id "org.sonarqube" version "3.0"
     id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "org.sonarqube" version "3.0"
 }
 
 subprojects {
     apply plugin: "java-library"
-    apply plugin: "org.sonarqube"
     apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: "org.sonarqube"
 
     group "me.piggypiglet"
     version "1.0.0-beta"
@@ -23,14 +23,18 @@ subprojects {
         compileOnly "org.jetbrains:annotations:20.1.0"
     }
 
-    jar.enabled = false
-    build.dependsOn(shadowJar)
-
     sonarqube {
         properties {
-            property "sonar.projectKey", "PiggyPiglet_DocDex"
-            property "sonar.organization", "piggypiglet-github"
-            property "sonar.host.url", "https://sonarcloud.io"
+            property "sonar.sources", "src"
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "PiggyPiglet_DocDex"
+        property "sonar.organization", "piggypiglet-github"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.sourceEncoding", "UTF-8"
     }
 }
