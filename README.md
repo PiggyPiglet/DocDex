@@ -1,5 +1,6 @@
 # ![DocDex](https://cdn.piggypiglet.me/docdex/banner.png)
-[<img src="https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.piggypiglet.me%2Fjob%2FDocDex">](https://ci.piggypiglet.me/job/DocDex) [<img src="https://img.shields.io/discord/164280494874165248">](https://helpch.at/discord)
+[<img src="https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.piggypiglet.me%2Fjob%2FDocDex">](https://ci.piggypiglet.me/job/DocDex) [<img src="https://img.shields.io/discord/164280494874165248">](https://helpch.at/discord) <br/>
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=PiggyPiglet_DocDex&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=PiggyPiglet_DocDex) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=PiggyPiglet_DocDex&metric=security_rating)](https://sonarcloud.io/dashboard?id=PiggyPiglet_DocDex)
 > **Warning! This software is in beta, it is extremely likely there'll be bugs,
 > and some ugly things. Please report bugs, and make suggestions via the issues
 > tab.**
