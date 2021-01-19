@@ -44,6 +44,14 @@ public final class Pagination {
         return author;
     }
 
+    @Override
+    public String toString() {
+        return "Pagination{" +
+                "pages=" + pages.size() +
+                ", author='" + author + '\'' +
+                '}';
+    }
+
     @Nullable
     public RestAction<Message> send(@NotNull final MessageChannel channel) {
         if (pages.isEmpty()) {

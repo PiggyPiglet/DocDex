@@ -44,7 +44,7 @@ public final class PaginationManager {
             return;
         }
 
-        final boolean isNotAuthor = !message.getAuthor().getId().equals(user.getId());
+        final boolean isNotAuthor = !user.getId().equals(pagination.getAuthor());
 
         if (message.isFromGuild() || isNotAuthor) {
             try {
