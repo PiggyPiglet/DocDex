@@ -26,15 +26,22 @@ import java.util.stream.Stream;
 // ------------------------------
 public final class Pagination {
     private final Map<EmoteWrapper, MessageEmbed> pages;
+    private final String author;
 
-    private Pagination(@NotNull @Unmodifiable final Map<EmoteWrapper, MessageEmbed> pages) {
+    private Pagination(@NotNull @Unmodifiable final Map<EmoteWrapper, MessageEmbed> pages, @NotNull final String author) {
         this.pages = pages;
+        this.author = author;
     }
 
     @NotNull
     @Unmodifiable
     public Map<EmoteWrapper, MessageEmbed> getPages() {
         return pages;
+    }
+
+    @NotNull
+    public String getAuthor() {
+        return author;
     }
 
     @Nullable
@@ -64,6 +71,7 @@ public final class Pagination {
 
         private final Map<EmoteWrapper, MessageEmbed> pages = new LinkedHashMap<>();
         private final AtomicInteger index = new AtomicInteger();
+        private String author = "";
 
         private Builder() {}
 
@@ -108,8 +116,14 @@ public final class Pagination {
         }
 
         @NotNull
+        public Builder author(@NotNull final String value) {
+            author = value;
+            return this;
+        }
+
+        @NotNull
         public Pagination build() {
-            return new Pagination(Collections.unmodifiableMap(pages));
+            return new Pagination(Collections.unmodifiableMap(pages), author);
         }
     }
 }

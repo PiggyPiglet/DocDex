@@ -73,10 +73,11 @@ public final class JavadocsCommand extends BotCommand {
                             .collect(Collectors.toList());
                     final Pagination pagination = Pagination.builder()
                             .pages(pages)
+                            .author(user.getId())
                             .build();
 
                     Optional.ofNullable(pagination.send(message.getChannel())).ifPresent(action ->
-                            action.queue(sentMessage -> paginationManager.addPaginatedMessage(sentMessage.getId(), pagination.getPages())));
+                            action.queue(sentMessage -> paginationManager.addPaginatedMessage(sentMessage.getId(), pagination)));
                 })
                 .exceptionally(throwable -> {
                     LOGGER.error("", throwable);

@@ -77,9 +77,10 @@ public final class HelpCommand extends BotCommand {
                 .collect(Collectors.toList());
         final Pagination pagination = Pagination.builder()
                 .pages(pages)
+                .author(user.getId())
                 .build();
 
         Optional.ofNullable(pagination.send(message.getChannel())).ifPresent(action -> action.queue(sentMessage ->
-            paginationManager.addPaginatedMessage(sentMessage.getId(), pagination.getPages())));
+            paginationManager.addPaginatedMessage(sentMessage.getId(), pagination)));
     }
 }

@@ -76,9 +76,10 @@ public final class TypeComponentCommand extends DocumentationCommand {
 
             final Pagination pagination = Pagination.builder()
                     .pages(pages)
+                    .author(message.getAuthor().getId())
                     .build();
             Optional.ofNullable(pagination.send(channel)).ifPresent(action ->
-                    action.queue(sentMessage -> paginationManager.addPaginatedMessage(sentMessage.getId(), pagination.getPages()), ERROR_LOG));
+                    action.queue(sentMessage -> paginationManager.addPaginatedMessage(sentMessage.getId(), pagination), ERROR_LOG));
             return;
         }
 

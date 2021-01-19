@@ -66,9 +66,10 @@ public final class SimpleCommand extends DocumentationCommand {
 
         final Pagination pagination = Pagination.builder()
                 .pages(pages)
+                .author(message.getAuthor().getId())
                 .build();
         Optional.ofNullable(pagination.send(message.getChannel())).ifPresent(action -> action.queue(success ->
-                paginationManager.addPaginatedMessage(success.getId(), pagination.getPages())));
+                paginationManager.addPaginatedMessage(success.getId(), pagination)));
     }
 
     @NotNull

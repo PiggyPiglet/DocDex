@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.bot.embed.pagination;
 
 import com.google.inject.Singleton;
+import me.piggypiglet.docdex.bot.embed.pagination.objects.Pagination;
 import me.piggypiglet.docdex.bot.emote.EmoteWrapper;
 import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import net.dv8tion.jda.api.entities.Message;
@@ -21,34 +22,40 @@ import java.util.concurrent.TimeUnit;
 // ------------------------------
 @Singleton
 public final class PaginationManager {
-    private final Map<String, Map<EmoteWrapper, MessageEmbed>> paginatedMessages = ExpiringMap.builder()
+    private final Map<String, Pagination> paginatedMessages = ExpiringMap.builder()
             .expiration(15, TimeUnit.MINUTES)
             .expirationPolicy(ExpirationPolicy.ACCESSED)
             .build();
 
     @NotNull
-    public Map<String, Map<EmoteWrapper, MessageEmbed>> getPaginatedMessages() {
+    public Map<String, Pagination> getPaginatedMessages() {
         return paginatedMessages;
     }
 
-    public void addPaginatedMessage(@NotNull final String id, @NotNull final Map<EmoteWrapper, MessageEmbed> pages) {
-        paginatedMessages.put(id, pages);
+    public void addPaginatedMessage(@NotNull final String id, @NotNull final Pagination pagination) {
+        paginatedMessages.put(id, pagination);
     }
 
     public void process(@NotNull final Message message, @NotNull final User user,
                         @NotNull final MessageReaction reaction) {
-        final Map<EmoteWrapper, MessageEmbed> pages = paginatedMessages.get(message.getId());
+        final Pagination pagination = paginatedMessages.get(message.getId());
 
-        if (pages == null) {
+        if (pagination == null) {
             return;
         }
 
-        if (message.isFromGuild()) {
+        final boolean isNotAuthor = !message.getAuthor().getId().equals(user.getId());
+
+        if (message.isFromGuild() || isNotAuthor) {
             try {
                 reaction.removeReaction(user).queue();
             } catch (PermissionException exception) {
                 PermissionUtils.sendPermissionError(message, exception.getPermission());
             }
+        }
+
+        if (isNotAuthor) {
+            return;
         }
 
         final MessageReaction.ReactionEmote reactionEmote = reaction.getReactionEmote();
@@ -60,7 +67,7 @@ public final class PaginationManager {
             emote = EmoteWrapper.from(reactionEmote.getEmoji());
         }
 
-        final MessageEmbed requestedPage = pages.get(emote);
+        final MessageEmbed requestedPage = pagination.getPages().get(emote);
 
         if (requestedPage == null) {
             return;
