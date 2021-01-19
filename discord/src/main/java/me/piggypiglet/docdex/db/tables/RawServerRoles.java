@@ -13,6 +13,7 @@ import java.util.Objects;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
+//todo: migrate prod tables
 @Table("servers_roles")
 public final class RawServerRoles implements RawObject {
     @Length(ID_LENGTH)
