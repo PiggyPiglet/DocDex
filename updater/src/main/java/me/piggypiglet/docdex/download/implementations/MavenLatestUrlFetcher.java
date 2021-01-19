@@ -14,9 +14,8 @@ import org.jsoup.Jsoup;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -40,60 +39,60 @@ public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestSt
 
     @NotNull
     @Override
-    protected Set<URL> provideLatestUrl(final @NotNull MavenLatestStrategy strategy) {
-        String url = strategy.getArtifactLink();
+    protected Set<URI> provideLatestUris(final @NotNull MavenLatestStrategy strategy) {
+        String uri = strategy.getArtifactLink();
 
-        if (!url.endsWith("/")) {
-            url = url + '/';
+        if (!uri.endsWith("/")) {
+            uri = uri + '/';
         }
 
-        final String finalUrl = url;
-        final Set<URL> urls = new HashSet<>();
-        final Metadata metadata = scan(finalUrl + "maven-metadata.xml");
+        final String finalUri = uri;
+        final Set<URI> uris = new HashSet<>();
+        final Metadata metadata = scan(finalUri + "maven-metadata.xml");
 
         if (metadata == null) {
-            return urls;
+            return uris;
         }
 
         final String artifact = metadata.getArtifactId();
         final String version = STRATEGY_VERSION_GETTERS.get(strategy.getType()).apply(metadata.getVersioning());
-        final String javadocUrl = finalUrl + version + '/' + artifact + '-' + version + "-javadoc.jar";
+        final String javadocUri = finalUri + version + '/' + artifact + '-' + version + "-javadoc.jar";
 
         try {
-            urls.add(new URL(javadocUrl));
-        } catch (MalformedURLException exception) {
-            LOGGER.info("Something is wrong with the url: " + javadocUrl, exception);
+            uris.add(new URI(javadocUri));
+        } catch (URISyntaxException exception) {
+            LOGGER.info("Something is wrong with the uri: " + javadocUri, exception);
         }
 
         if (strategy.getType() == UpdateStrategyType.MAVEN_LATEST) {
-            Optional.ofNullable(scan(finalUrl + version + "/maven-metadata.xml"))
+            Optional.ofNullable(scan(finalUri + version + "/maven-metadata.xml"))
                     .map(Metadata::getVersioning)
                     .map(Versioning::getSnapshot)
                     .ifPresent(snapshot -> {
-                        final String start = finalUrl + version + '/';
+                        final String start = finalUri + version + '/';
                         final String snapshotVersion = version.replace("-SNAPSHOT", "") + '-' + snapshot.getTimestamp() + '-' + snapshot.getBuildNumber();
                         final String jar = artifact + '-' + snapshotVersion + "-javadoc.jar";
 
                         try {
-                            urls.add(new URL(start + jar));
-                            urls.add(new URL(start + snapshotVersion + '/' + jar));
-                        } catch (MalformedURLException exception) {
-                            LOGGER.error("Something when wrong with a url", exception);
+                            uris.add(new URI(start + jar));
+                            uris.add(new URI(start + snapshotVersion + '/' + jar));
+                        } catch (URISyntaxException exception) {
+                            LOGGER.error("Something when wrong with a uri", exception);
                         }
                     });
         }
 
-        return urls;
+        return uris;
     }
 
     @Nullable
-    private static Metadata scan(@NotNull final String url) {
+    private static Metadata scan(@NotNull final String uri) {
         final HttpRequest request;
 
         try {
-            request = HttpRequest.newBuilder(new URL(url).toURI()).build();
-        } catch (MalformedURLException | URISyntaxException exception) {
-            LOGGER.error(url + " is invalid.", exception);
+            request = HttpRequest.newBuilder(new URI(uri)).build();
+        } catch (URISyntaxException exception) {
+            LOGGER.error(uri + " is invalid.", exception);
             return null;
         }
 
@@ -108,20 +107,20 @@ public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestSt
             try (StringReader reader = new StringReader(input)) {
                 metadata = xmlReader.read(reader);
             } catch (EOFException exception) {
-                LOGGER.error("Something went really wrong with " + url, exception);
+                LOGGER.error("Something went really wrong with " + uri, exception);
                 return null;
             } catch (XmlPullParserException exception) {
-                try (StringReader stringReader = new StringReader(Jsoup.parse(input, url)
+                try (StringReader stringReader = new StringReader(Jsoup.parse(input, uri)
                         .selectFirst("body > div.pretty-print > .folder")
                         .text())) {
                     metadata = xmlReader.read(stringReader);
                 } catch (XmlPullParserException exception1) {
-                    LOGGER.error("Something went wrong when connecting to & parsing " + url, exception);
+                    LOGGER.error("Something went wrong when connecting to & parsing " + uri, exception);
                     return null;
                 }
             }
         } catch (InterruptedException | IOException exception) {
-            LOGGER.error("Something went wrong when connecting to & parsing " + url, exception);
+            LOGGER.error("Something went wrong when connecting to & parsing " + uri, exception);
             return null;
         }
 

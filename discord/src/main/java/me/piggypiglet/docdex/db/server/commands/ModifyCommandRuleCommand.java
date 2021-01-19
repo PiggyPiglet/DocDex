@@ -79,14 +79,10 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
                 return;
         }
 
-        switch (modificationOption) {
-            case ADD:
-                set.add(value);
-                break;
-
-            case REMOVE:
-                set.remove(value);
-                break;
+        if (modificationOption == ModificationOptions.ADD) {
+            set.add(value);
+        } else {
+            set.remove(value);
         }
 
         messageFunction.accept("Successfully " + modificationOption + ' ' + value + " to " + server.getId() + " - " + command + ' ' + modificationType + " list.");

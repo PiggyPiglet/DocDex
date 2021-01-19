@@ -43,12 +43,12 @@ public final class MongoStorage implements IndexStorage {
     public void save(@NotNull final Javadoc javadoc, @NotNull final Map<DocumentedObjectKey, DocumentedObject> objects) {
         final String javadocName = DataUtils.getName(javadoc);
 
-        LOGGER.info("Attempting to save " + javadocName + " to MongoDB.");
+        LOGGER.info("Attempting to save {} to MongoDB.", javadocName);
 
         try {
             database.createCollection(javadocName);
         } catch (MongoCommandException exception) {
-            LOGGER.info("Not saving " + javadocName + " to MongoDB as it already exists.");
+            LOGGER.info("Not saving {} to MongoDB as it already exists.", javadocName);
             return;
         }
 
@@ -90,7 +90,7 @@ public final class MongoStorage implements IndexStorage {
 
         collection.createIndex(INDEX);
         collection.insertMany(mongoObjects);
-        LOGGER.info("Saved " + javadocName + " to mongo.");
+        LOGGER.info("Saved {} to mongo.", javadocName);
     }
 
     @NotNull

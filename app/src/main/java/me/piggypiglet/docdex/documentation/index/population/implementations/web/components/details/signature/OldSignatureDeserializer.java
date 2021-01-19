@@ -72,9 +72,10 @@ public final class OldSignatureDeserializer {
 
         int lastModifierIndex = 0;
         for (int i = 0; i < preSplit.length; ++i) {
-            final boolean isMethod = preSplit[i].toLowerCase().startsWith(lowerName + '(') ||
-                    preSplit[i].toLowerCase().startsWith(lowerName + "\u200b(");
-            final boolean isField = preSplit[i].toLowerCase().equals(lowerName) &&
+            final String lowerPreSplit = preSplit[i].toLowerCase();
+            final boolean isMethod = lowerPreSplit.startsWith(lowerName + '(') ||
+                    lowerPreSplit.startsWith(lowerName + "\u200b(");
+            final boolean isField = preSplit[i].equalsIgnoreCase(lowerName) &&
                     i == preSplit.length - 1;
 
             if (isMethod || isField) {

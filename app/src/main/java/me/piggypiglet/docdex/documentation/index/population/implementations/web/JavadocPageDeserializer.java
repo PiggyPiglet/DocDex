@@ -92,9 +92,10 @@ public final class JavadocPageDeserializer {
 
             detailElements.get(key).stream()
                     .map(entry -> functions.getDeserializer().deserialize(entry.getValue(), entry.getKey(), packaj, owner, old))
-                    .peek(objects::add)
-                    .map(DataUtils::getFqn)
-                    .forEach(typeMembers::add);
+                    .forEach(object -> {
+                        objects.add(object);
+                        typeMembers.add(DataUtils.getFqn(object));
+                    });
         });
 
         return objects;

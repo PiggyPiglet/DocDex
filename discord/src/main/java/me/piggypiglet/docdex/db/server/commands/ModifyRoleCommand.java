@@ -31,14 +31,10 @@ public final class ModifyRoleCommand extends ServerCommand {
         final Set<String> roles = server.getRoles();
         final String role = args.get(2);
 
-        switch (modificationOption) {
-            case ADD:
-                roles.add(role);
-                break;
-
-            case REMOVE:
-                roles.remove(role);
-                break;
+        if (modificationOption == ModificationOptions.ADD) {
+            roles.add(role);
+        } else {
+            roles.remove(role);
         }
 
         messageFunction.accept("Successfully " + modificationOption + " to " + server.getId() + "'s role list.");

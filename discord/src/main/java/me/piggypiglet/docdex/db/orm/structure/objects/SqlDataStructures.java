@@ -27,10 +27,6 @@ public enum SqlDataStructures {
     private final int length;
     private final Set<Class<?>> types;
 
-    SqlDataStructures(@NotNull final Class<?> @NotNull ... types) {
-        this(-1, types);
-    }
-
     SqlDataStructures(final int length, @NotNull final Class<?> @NotNull ... types) {
         this.length = length;
         this.types = Set.of(types);

@@ -44,6 +44,6 @@ public abstract class ConsoleCommand {
     }
 
     protected static void msg(@NotNull final Object message) {
-        LOGGER.info(message.toString());
+        LOGGER.info("{}", message);
     }
 }

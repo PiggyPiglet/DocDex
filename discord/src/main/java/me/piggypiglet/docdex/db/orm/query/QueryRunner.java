@@ -52,13 +52,13 @@ public final class QueryRunner {
         @Language("SQL") final String query = exists.generate(structure);
         final String error = "Something went wrong when checking if " + structure.getName() + " exists with:\n" + query;
 
-        return tryAndCatch(() -> database.getResults(query).size() > 0, error)
+        return tryAndCatch(() -> !database.getResults(query).isEmpty(), error)
                 .orElse(false);
     }
 
     public void applySchema(@NotNull final TableStructure table) {
         if (exists(table)) {
-            LOGGER.info(table.getName() + " already exists, not applying schematic.");
+            LOGGER.info("{} already exists, not applying schematic.", table.getName());
             return;
         }
 
@@ -66,7 +66,7 @@ public final class QueryRunner {
         final String error = "Something went wrong when applying " + table.getName() + "'s schema:\n" + query;
 
         tryAndCatch(() -> database.executeUpdate(query), error)
-                .ifPresent(i -> LOGGER.info("Successfully applied schematic for " + table.getName()));
+                .ifPresent(i -> LOGGER.info("Successfully applied schematic for {}", table.getName()));
     }
 
     public void insert(@NotNull final TableStructure table, @NotNull final Map<String, Object> data) {

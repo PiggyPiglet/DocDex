@@ -32,6 +32,10 @@ public final class TypeDeserializer {
             "all known implementing classes:", DocumentedTypeBuilder::implementingClasses
     );
 
+    private TypeDeserializer() {
+        throw new AssertionError("This class cannot be instantiated.");
+    }
+
     @SuppressWarnings("DuplicatedCode")
     @NotNull
     public static DocumentedObject deserialize(@NotNull final Element description, @NotNull final String link,

@@ -9,20 +9,14 @@ import org.jetbrains.annotations.NotNull;
 // ------------------------------
 public final class StatusCodeException extends RuntimeException {
     private final NanoHTTPD.Response.Status status;
-    private final String message;
 
     public StatusCodeException(@NotNull final NanoHTTPD.Response.Status status, @NotNull final String message) {
+        super(message);
         this.status = status;
-        this.message = message;
     }
 
     @NotNull
     public NanoHTTPD.Response.Status getStatus() {
         return status;
-    }
-
-    @NotNull
-    public String getMessage() {
-        return message;
     }
 }

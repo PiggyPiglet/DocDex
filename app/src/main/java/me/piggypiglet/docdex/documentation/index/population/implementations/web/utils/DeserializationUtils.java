@@ -35,10 +35,8 @@ public final class DeserializationUtils {
                 ++count;
             }
 
-            if (character == suffix) {
-                if (--count == 0) {
-                    continue;
-                }
+            if (character == suffix && --count == 0) {
+                continue;
             }
 
             if (count != 0) {

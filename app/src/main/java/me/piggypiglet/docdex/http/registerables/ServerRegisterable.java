@@ -35,6 +35,6 @@ public final class ServerRegisterable extends Registerable {
             System.exit(1);
         }
 
-        LOGGER.info("HTTP server started on " + server.getHostname() + ':' + server.getListeningPort());
+        LOGGER.info("HTTP server started on {}:{}", server.getHostname(), server.getListeningPort());
     }
 }

@@ -54,7 +54,7 @@ public final class InfoCommand extends BotCommand {
                     embed.setThumbnail(EmbedUtils.ICON);
                     embed.setColor(EmbedUtils.COLOUR);
                     embed.setDescription(
-                            String.format("[Website](%s) | [Github](%s) | [Invite](%s)\n\n", config.getUrl(), GITHUB, INVITE) +
+                            String.format("[Website](%s) | [Github](%s) | [Invite](%s)%n%n", config.getUrl(), GITHUB, INVITE) +
                             "DocDex (Documentation Index) is a bot developed using JDA and Java 11, which can display information " +
                             "on javadoc objects, from a fuzzy query."
                     );

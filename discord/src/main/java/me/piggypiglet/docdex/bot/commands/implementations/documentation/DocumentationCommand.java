@@ -8,7 +8,6 @@ import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.documentation.DocumentationObjectSerializer;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.documentation.IndexURLBuilder;
-import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -68,7 +67,7 @@ public abstract class DocumentationCommand extends BotCommand {
             return;
         }
 
-        if (args.size() == 0 || args.get(0).isBlank()) {
+        if (args.isEmpty() || args.get(0).isBlank()) {
             queueAndDelete(channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " +
                     message.getContentRaw().substring(0, start) + " [javadoc] [limit/$(first result)] <query>"));
             return;
@@ -157,11 +156,6 @@ public abstract class DocumentationCommand extends BotCommand {
 
     protected abstract void execute(final @NotNull Message message, final @NotNull List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
                                     final boolean returnFirst);
-
-    @NotNull
-    protected String checkAndReturnError(@NotNull final DocumentedObject object) {
-        return "";
-    }
 
     @NotNull
     @Override

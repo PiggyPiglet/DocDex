@@ -35,10 +35,10 @@ public final class FlatFileStorage implements IndexStorage {
         final String fileName = DataUtils.getName(javadoc) + ".json";
         final File file = new File("docs", fileName);
 
-        LOGGER.info("Attempting to save " + fileName);
+        LOGGER.info("Attempting to save {}", fileName);
 
         if (file.exists()) {
-            LOGGER.info(fileName + " already exists, not saving. Delete the file manually and restart the app if you wish to update the index.");
+            LOGGER.info("{} already exists, not saving. Delete the file manually and restart the app if you wish to update the index.", fileName);
             return;
         }
 
@@ -60,6 +60,6 @@ public final class FlatFileStorage implements IndexStorage {
             return;
         }
 
-        LOGGER.info("Saved " + fileName);
+        LOGGER.info("Saved {}", fileName);
     }
 }

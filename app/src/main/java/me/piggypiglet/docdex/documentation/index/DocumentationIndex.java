@@ -207,7 +207,7 @@ public final class DocumentationIndex {
             return List.of(query);
         }
 
-        return collection.stream()
+        return collection.parallelStream()
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(name -> FuzzySearch.ratio(name, query))))
                 .collect(Collectors.toList());
     }

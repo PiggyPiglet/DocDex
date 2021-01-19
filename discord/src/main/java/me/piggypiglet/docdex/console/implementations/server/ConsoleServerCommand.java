@@ -25,7 +25,7 @@ public abstract class ConsoleServerCommand extends ConsoleCommand {
 
     @Override
     protected void execute(final @NotNull List<String> args) {
-        if (args.size() < 1 || args.get(0).isBlank()) {
+        if (args.isEmpty() || args.get(0).isBlank()) {
             command.sendUsage(ConsoleCommand::msg);
             return;
         }

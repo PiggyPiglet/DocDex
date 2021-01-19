@@ -48,7 +48,7 @@ public final class FileUtils {
 
     @SuppressWarnings("UnstableApiUsage")
     @NotNull
-    public static String readEmbeddedFile(@NotNull final String path, @NotNull final Class<?> clazz) throws Exception {
+    public static String readEmbeddedFile(@NotNull final String path, @NotNull final Class<?> clazz) throws IOException {
         return Resources.toString(clazz.getResource(path), StandardCharsets.UTF_8);
     }
 

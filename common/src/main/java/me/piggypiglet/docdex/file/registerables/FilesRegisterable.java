@@ -32,12 +32,10 @@ public final class FilesRegisterable extends Registerable {
         for (final Class<?> clazz : fileClasses) {
             final File data = clazz.getAnnotation(File.class);
 
-            if (!fileManager.loadFile(clazz, data.internalPath(), data.externalPath())) {
-                if (data.stopOnFirstCreate()) {
-                    LOGGER.info("This is the first time you've ran this program. Please populate the generated " + data.externalPath() + " file before starting the app again.");
+            if (!fileManager.loadFile(clazz, data.internalPath(), data.externalPath()) && data.stopOnFirstCreate()) {
+                LOGGER.info("This is the first time you've ran this program. Please populate the generated {} file before starting the app again.", data.externalPath());
 
-                    System.exit(0);
-                }
+                System.exit(0);
             }
         }
     }

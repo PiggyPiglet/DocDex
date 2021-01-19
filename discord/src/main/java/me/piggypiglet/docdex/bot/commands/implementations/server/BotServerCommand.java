@@ -32,7 +32,7 @@ public abstract class BotServerCommand extends BotCommand implements PermissionC
     @Override
     protected void execute(final @NotNull User user, final @NotNull Message message,
                            @NotNull final List<String> args) {
-        if (args.size() < 1 || args.get(0).isBlank()) {
+        if (args.isEmpty() || args.get(0).isBlank()) {
             command.sendUsage(string -> message.getChannel().sendMessage(string).queue());
             return;
         }

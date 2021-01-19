@@ -13,9 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,11 +44,22 @@ public final class PterodactylManager {
     }
 
     public void deleteJavadocsAndStop(@NotNull final Set<UpdaterJavadoc> javadocs) {
-        final String collections = javadocs.stream()
+        final Set<String> collections = javadocs.stream()
                 .map(UpdaterJavadoc::getNames)
                 .map(names -> String.join("-", names))
-                .peek(name -> new File(config.getPterodactyl().getDirectory() + "/docs/" + name + ".json").delete())
-                .collect(Collectors.joining(" "));
+                .filter(name -> {
+                    final String path = config.getPterodactyl().getDirectory() + "/docs/" + name + ".json";
+
+                    try {
+                        Files.delete(Paths.get(path));
+                    } catch (IOException exception) {
+                        LOGGER.error("Something went wrong when deleting " + path, exception);
+                        return false;
+                    }
+
+                    return true;
+                })
+                .collect(Collectors.toSet());
 
         run(() -> commandRequest.send(config.getPterodactyl().getServer(), "delete " + collections));
     }

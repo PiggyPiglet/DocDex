@@ -55,12 +55,12 @@ public final class IndexPopulationRegisterable extends Registerable {
         final double memory = (Runtime.getRuntime().maxMemory() / BYTE_PER_MB);
         final int threads = Math.min(javadocs.size(), (int) Math.ceil(memory / MB_PER_DOC));
         this.executor = Executors.newFixedThreadPool(threads);
-        LOGGER.info("Spinning up thread pool with " + threads + " thread(s) for population.");
+        LOGGER.info("Spinning up thread pool with {} thread(s) for population.", threads);
     }
 
     @Override
     public void execute() {
-        LOGGER.info("Attempting to index " + javadocs.size() + " javadoc(s).");
+        LOGGER.info("Attempting to index {} javadoc(s).", javadocs.size());
 
         final Set<CompletableFuture<Void>> futures = new HashSet<>();
         javadocs.forEach(javadoc ->
@@ -69,7 +69,7 @@ public final class IndexPopulationRegisterable extends Registerable {
                             final Map<DocumentedObjectKey, DocumentedObject> objects = populator.provideObjects(javadoc);
 
                             if (objects.isEmpty()) {
-                                LOGGER.error("No objects were indexed for " + DataUtils.getName(javadoc) + '.');
+                                LOGGER.error("No objects were indexed for {}", DataUtils.getName(javadoc) + '.');
                                 return;
                             }
 

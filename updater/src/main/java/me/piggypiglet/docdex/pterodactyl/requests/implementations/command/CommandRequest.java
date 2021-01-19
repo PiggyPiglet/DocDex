@@ -27,11 +27,15 @@ public final class CommandRequest extends PterodactylRequest {
 
         switch (response.statusCode()) {
             case 502:
-                LOGGER.warn(server + " is not online in pterodactyl.");
+                LOGGER.warn("{} is not online in pterodactyl.", server);
                 break;
 
             case 204:
-                LOGGER.info("Successfully sent " + command + " to " + server + '.');
+                LOGGER.info("Successfully sent {} to {}.", command, server);
+                break;
+
+            default:
+                LOGGER.info("Sent {} to {} and received {}.", command, server, response.statusCode());
                 break;
         }
     }

@@ -71,7 +71,7 @@ public final class DocumentedObject {
 
     @NotNull
     public String getStrippedDescription() {
-        return description;
+        return strippedDescription;
     }
 
     @NotNull
@@ -129,7 +129,7 @@ public final class DocumentedObject {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static abstract class Builder<T extends Builder<T>> {
+    public abstract static class Builder<T extends Builder<T>> {
         @SuppressWarnings("unchecked")
         private final T instance = (T) this;
 

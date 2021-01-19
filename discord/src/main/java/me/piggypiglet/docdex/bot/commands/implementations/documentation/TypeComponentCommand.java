@@ -54,8 +54,10 @@ public final class TypeComponentCommand extends DocumentationCommand {
             final String upperMessage = message.getContentRaw().toUpperCase().replace(upperPrefix, "");
             final TypeComponents component = TypeComponents.valueOf(upperMessage.substring(0, upperMessage.indexOf(' ')));
             final List<MessageEmbed> pages = TypeComponentSerializer.toEmbeds(object, component).stream()
-                    .peek(embed -> EmbedUtils.merge(defaultEmbed, embed))
-                    .map(EmbedBuilder::build)
+                    .map(embed -> {
+                        EmbedUtils.merge(defaultEmbed, embed);
+                        return embed.build();
+                    })
                     .collect(Collectors.toList());
             final MessageChannel channel = message.getChannel();
 
@@ -64,7 +66,7 @@ public final class TypeComponentCommand extends DocumentationCommand {
                 return;
             }
 
-            if (pages.size() == 0) {
+            if (pages.isEmpty()) {
                 channel.sendMessage(object.getName() + " does not have any " + component.getFormattedPlural().toLowerCase() + '.').queue();
                 return;
             }

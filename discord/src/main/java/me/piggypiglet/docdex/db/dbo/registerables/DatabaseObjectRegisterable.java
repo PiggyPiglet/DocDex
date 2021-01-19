@@ -58,7 +58,7 @@ public final class DatabaseObjectRegisterable extends Registerable {
             addBinding((Key<DatabaseObjectAdapter<?>>) Key.get(Types.newParameterizedType(DatabaseObjectAdapter.class, type)), adapter);
 
             final Set<?> set = adapter.loadFromRaw();
-            LOGGER.info("Loaded " + set.size() + ' ' + type.getTypeName() + "'s.");
+            LOGGER.info("Loaded {} {}'s.", set.size(), type.getTypeName());
             adapterMap.put(TypeLiteral.get(type).getRawType(), adapter);
             addBinding((Key<Set<?>>) Key.get(Types.setOf(type)), set);
         });

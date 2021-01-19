@@ -88,7 +88,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                         .replace("../", "").replace("./", "")))
                 .collect(Collectors.toSet());
 
-        LOGGER.info("Indexing " + types.size() + " types for " + javadocName);
+        LOGGER.info("Indexing {} types for {}", types.size(), javadocName);
 
         final AtomicInteger i = new AtomicInteger();
         final AtomicInteger previousPercentage = new AtomicInteger();
@@ -97,7 +97,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 final int percentage = (int) ((100D / types.size()) * i.getAndIncrement());
 
                 if (percentage % 10 == 0 && percentage != previousPercentage.get()) {
-                    LOGGER.info(percentage + "% done on type indexing for " + javadocName);
+                    LOGGER.info("{}% done on type indexing for {}", percentage, javadocName);
                     previousPercentage.set(percentage);
                 }
             }
@@ -121,7 +121,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                 .filter(entry -> entry.getValue().getMetadata() instanceof TypeMetadata)
                 .collect(Collectors.toMap(entry -> entry.getKey().getFqn(), Map.Entry::getValue));
 
-        LOGGER.info("Indexing type children with parent methods for " + javadocName);
+        LOGGER.info("Indexing type children with parent methods for {}", javadocName);
 
         i.set(0);
         previousPercentage.set(0);
@@ -129,7 +129,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
             final int percentage = (int) ((100D / objects.size()) * i.getAndIncrement());
 
             if (percentage % 10 == 0 && percentage != previousPercentage.get()) {
-                LOGGER.info(percentage + "% done on child method indexing for " + javadocName);
+                LOGGER.info("{}% done on child method indexing for {}", percentage, javadocName);
                 previousPercentage.set(percentage);
             }
 
@@ -140,11 +140,6 @@ public final class WebCrawlPopulator implements IndexPopulator {
             getChildren(fqns, type).forEach(heir ->
                     ((TypeMetadata) type.getMetadata()).getMethods().stream()
                             .map(String::toLowerCase)
-/*                            .peek(method -> {
-                                if (map.get(method) == null) {
-                                    System.out.println(type.getName() + " - " + heir + " - " + method);
-                                }
-                            })*/
                             .map(fqns::get)
                             .filter(Objects::nonNull)
                             .forEach(method -> {
@@ -159,7 +154,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
             );
         }
 
-        LOGGER.info("Finished indexing " + javadocName + " in " + (System.currentTimeMillis() - millis) / 1000 + " second(s).");
+        LOGGER.info("Finished indexing {} in {} second(s).", javadocName, (System.currentTimeMillis() - millis) / 1000);
         return map;
     }
 
@@ -168,7 +163,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
         try {
             return Jsoup.connect(url).maxBodySize(0).timeout(10000).get();
         } catch (ConnectException exception) {
-            LOGGER.error("Something went wrong when connecting to " + url + ", is the link valid, and are the javadocs actually there?");
+            LOGGER.error("Something went wrong when connecting to {}, is the link valid, and are the javadocs actually there?", url);
         } catch (IOException exception) {
             LOGGER.error("Something went wrong when connecting to " + url, exception);
         }
@@ -210,7 +205,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
 
     @NotNull
     private static <T> Consumer<T> completesExceptionally(@NotNull final Consumer<T> function) {
-        return (t) -> {
+        return t -> {
             try {
                 function.accept(t);
             } catch (Exception e) {

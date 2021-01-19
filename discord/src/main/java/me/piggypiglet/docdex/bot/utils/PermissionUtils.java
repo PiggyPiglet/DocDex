@@ -22,7 +22,9 @@ public final class PermissionUtils {
         if (permission == Permission.MESSAGE_WRITE) {
             try {
                 message.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(error).queue());
-            } catch (PermissionException exception) {}
+            } catch (PermissionException exception) {
+                // nothing we can really do in this circumstance
+            }
 
             return;
         }
