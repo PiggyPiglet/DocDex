@@ -63,8 +63,18 @@ public final class BotCommandHandler {
             server = defaultServer;
         }
 
-        final String prefix = server.getPrefix().toLowerCase();
         final String rawMessage = message.getContentRaw().toLowerCase();
+        final StringBuilder prefixBuilder = new StringBuilder(server.getPrefix().toLowerCase());
+
+        for (final char character : rawMessage.substring(server.getPrefix().length()).toCharArray()) {
+            if (character != ' ') {
+                break;
+            }
+
+            prefixBuilder.append(' ');
+        }
+
+        final String prefix = prefixBuilder.toString();
 
         if (!rawMessage.startsWith(prefix)) {
             return;
