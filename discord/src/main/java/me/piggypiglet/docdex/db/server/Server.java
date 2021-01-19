@@ -15,13 +15,16 @@ public final class Server {
     private String prefix;
     private final Set<String> roles;
     private final Map<String, CommandRule> rules;
+    private final Set<JavadocCategory> javadocCategories;
 
     public Server(@NotNull final String id, @NotNull final String prefix,
-                  @NotNull final Set<String> roles, @NotNull final Map<String, CommandRule> rules) {
+                  @NotNull final Set<String> roles, @NotNull final Map<String, CommandRule> rules,
+                  @NotNull final Set<JavadocCategory> javadocCategories) {
         this.id = id;
         this.prefix = prefix;
         this.roles = roles;
         this.rules = rules;
+        this.javadocCategories = javadocCategories;
     }
 
     @NotNull
@@ -48,6 +51,11 @@ public final class Server {
         return rules;
     }
 
+    @NotNull
+    public Set<JavadocCategory> getJavadocCategories() {
+        return javadocCategories;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -67,6 +75,7 @@ public final class Server {
                 "id='" + id + '\'' +
                 ", prefix='" + prefix + '\'' +
                 ", rules=" + rules +
+                ", javadocCategories=" + javadocCategories +
                 '}';
     }
 }

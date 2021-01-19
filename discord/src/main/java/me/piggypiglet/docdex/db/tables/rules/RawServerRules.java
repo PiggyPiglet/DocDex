@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.db.tables;
+package me.piggypiglet.docdex.db.tables.rules;
 
 import me.piggypiglet.docdex.db.orm.annotations.Identifier;
 import me.piggypiglet.docdex.db.orm.annotations.Length;

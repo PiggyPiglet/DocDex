@@ -46,9 +46,9 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
 
         final CommandRule rule = Optional.ofNullable(server.getRules().get(command))
                 .orElseGet(() -> {
-                    final CommandRule rule1 = databaseObjects.createInstance(CommandRule.class);
-                    server.getRules().put(command, rule1);
-                    return rule1;
+                    final CommandRule newRule = databaseObjects.createInstance(CommandRule.class);
+                    server.getRules().put(command, newRule);
+                    return newRule;
                 });
 
         if (isRecommendation) {

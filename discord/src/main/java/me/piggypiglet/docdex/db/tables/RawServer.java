@@ -17,7 +17,7 @@ import java.util.Objects;
 public final class RawServer implements RawObject {
     @Identifier @Length(ID_LENGTH)
     private final String id;
-    private String prefix;
+    private final String prefix;
 
     public RawServer(@NotNull final String id, @NotNull final String prefix) {
         this.id = id;
@@ -34,10 +34,12 @@ public final class RawServer implements RawObject {
         return prefix;
     }
 
-    public boolean setPrefix(@NotNull final String value) {
-        final boolean result = !value.equals(prefix);
-        prefix = value;
-        return result;
+    @Override
+    public boolean actualEquals(@Nullable final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final RawServer rawServer = (RawServer) o;
+        return id.equals(rawServer.id) && prefix.equals(rawServer.prefix);
     }
 
     @Override
@@ -46,14 +48,6 @@ public final class RawServer implements RawObject {
         if (o == null || getClass() != o.getClass()) return false;
         final RawServer rawServer = (RawServer) o;
         return id.equals(rawServer.id);
-    }
-
-    @Override
-    public boolean actualEquals(@Nullable final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final RawServer rawServer = (RawServer) o;
-        return id.equals(rawServer.id) && prefix.equals(rawServer.prefix);
     }
 
     @Override

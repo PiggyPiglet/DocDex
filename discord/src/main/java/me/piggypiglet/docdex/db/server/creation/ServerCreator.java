@@ -28,6 +28,6 @@ public final class ServerCreator implements DatabaseObjectCreator<Server> {
 
     @NotNull
     public Server createInstance(@NotNull final String id) {
-        return new Server(id, config.getPrefix(), new HashSet<>(), new HashMap<>());
+        return new Server(id, config.getPrefix(), new HashSet<>(), new HashMap<>(), new HashSet<>());
     }
 }

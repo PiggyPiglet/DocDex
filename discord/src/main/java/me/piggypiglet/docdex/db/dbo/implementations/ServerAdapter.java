@@ -4,11 +4,18 @@ import com.google.inject.Inject;
 import me.piggypiglet.docdex.db.dbo.framework.adapter.DatabaseObjectAdapter;
 import me.piggypiglet.docdex.db.dbo.framework.adapter.ModificationRequest;
 import me.piggypiglet.docdex.db.server.CommandRule;
+import me.piggypiglet.docdex.db.server.JavadocCategory;
 import me.piggypiglet.docdex.db.server.Server;
-import me.piggypiglet.docdex.db.tables.*;
+import me.piggypiglet.docdex.db.tables.RawServer;
+import me.piggypiglet.docdex.db.tables.RawServerRoles;
 import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRule;
 import me.piggypiglet.docdex.db.tables.framework.RawServerRuleId;
+import me.piggypiglet.docdex.db.tables.javadoc.RawServerJavadocCategories;
+import me.piggypiglet.docdex.db.tables.javadoc.RawServerJavadocCategoriesJavadocs;
+import me.piggypiglet.docdex.db.tables.rules.RawServerRules;
+import me.piggypiglet.docdex.db.tables.rules.RawServerRulesAllowed;
+import me.piggypiglet.docdex.db.tables.rules.RawServerRulesDisallowed;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -25,20 +32,31 @@ import java.util.stream.Collectors;
 // ------------------------------
 public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     private final Set<RawServer> servers;
+
     private final Set<RawServerRoles> serverRoles;
+
     private final Set<RawServerRules> serverRules;
     private final Set<RawServerRulesAllowed> serverRulesAlloweds;
     private final Set<RawServerRulesDisallowed> serverRulesDisalloweds;
 
+    private final Set<RawServerJavadocCategories> serverJavadocCategories;
+    private final Set<RawServerJavadocCategoriesJavadocs> serverJavadocCategoriesJavadocs;
+
     @Inject
     public ServerAdapter(@NotNull final Set<RawServer> servers, @NotNull final Set<RawServerRules> serverRules,
                          @NotNull final Set<RawServerRoles> serverRoles, @NotNull final Set<RawServerRulesAllowed> serverRulesAlloweds,
-                         @NotNull final Set<RawServerRulesDisallowed> serverRulesDisalloweds) {
+                         @NotNull final Set<RawServerRulesDisallowed> serverRulesDisalloweds, @NotNull final Set<RawServerJavadocCategories> serverJavadocCategories,
+                         @NotNull final Set<RawServerJavadocCategoriesJavadocs> serverJavadocCategoriesJavadocs) {
         this.servers = servers;
+
         this.serverRoles = serverRoles;
+
         this.serverRules = serverRules;
         this.serverRulesAlloweds = serverRulesAlloweds;
         this.serverRulesDisalloweds = serverRulesDisalloweds;
+
+        this.serverJavadocCategories = serverJavadocCategories;
+        this.serverJavadocCategoriesJavadocs = serverJavadocCategoriesJavadocs;
     }
 
     @NotNull
@@ -50,6 +68,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                             .map(RawServerRoles::getId)
                             .collect(Collectors.toSet());
                     final Map<String, CommandRule> rules = new HashMap<>();
+                    final Set<JavadocCategory> categories = new HashSet<>();
 
                     serverRules.stream()
                             .filter(rule -> rule.getServer().equals(server.getId()))
@@ -59,8 +78,18 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
 
                                 rules.put(rule.getCommand(), new CommandRule(allowed, disallowed, rule.getRecommendation()));
                             });
+                    serverJavadocCategories.stream()
+                            .filter(category -> category.getServer().equals(server.getId()))
+                            .forEach(category -> {
+                                final Set<String> javadocs = serverJavadocCategoriesJavadocs.stream()
+                                        .filter(javadoc -> javadoc.getServer().equals(server.getId()) && javadoc.getCategory().equals(category.getName()))
+                                        .map(RawServerJavadocCategoriesJavadocs::getName)
+                                        .collect(Collectors.toSet());
 
-                    return new Server(server.getId(), server.getPrefix(), roles, rules);
+                                categories.add(new JavadocCategory(category.getName(), category.getDescription(), javadocs));
+                            });
+
+                    return new Server(server.getId(), server.getPrefix(), roles, rules, categories);
                 }).collect(Collectors.toSet());
     }
 
@@ -70,15 +99,23 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
         final String id = server.getId();
         final RawServer rawServer = new RawServer(id, server.getPrefix());
 
-        final Set<Map.Entry<String, CommandRule>> rules = server.getRules().entrySet();
         final Set<RawServerRoles> rawServerRoles = server.getRoles().stream()
                 .map(role -> new RawServerRoles(server.getId(), role))
                 .collect(Collectors.toSet());
-        final Set<RawServerRules> rawServerRules = rules.stream()
+
+        final Set<RawServerRules> rawServerRules = server.getRules().entrySet().stream()
                 .map(entry -> new RawServerRules(id, entry.getKey(), entry.getValue().getRecommendation()))
                 .collect(Collectors.toSet());
         final Set<RawServerRulesAllowed> rawServerRulesAlloweds = getRawRuleIds(server, CommandRule::getAllowed, RawServerRulesAllowed::new);
         final Set<RawServerRulesDisallowed> rawServerRulesDisalloweds = getRawRuleIds(server, CommandRule::getDisallowed, RawServerRulesDisallowed::new);
+
+        final Set<RawServerJavadocCategories> rawServerJavadocCategories = new HashSet<>();
+        final Set<RawServerJavadocCategoriesJavadocs> rawServerJavadocCategoriesJavadocs = new HashSet<>();
+
+        server.getJavadocCategories().forEach(category -> {
+            rawServerJavadocCategories.add(new RawServerJavadocCategories(server.getId(), category.getName(), category.getDescription()));
+            category.getJavadocs().forEach(javadoc -> rawServerJavadocCategoriesJavadocs.add(new RawServerJavadocCategoriesJavadocs(server.getId(), category.getName(), javadoc)));
+        });
 
         final Set<Object> modified = new HashSet<>();
 
@@ -87,6 +124,8 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
         rawServerRules.forEach(object -> addIfAdded(serverRules, modified, object));
         rawServerRulesAlloweds.forEach(object -> addIfAdded(serverRulesAlloweds, modified, object));
         rawServerRulesDisalloweds.forEach(object -> addIfAdded(serverRulesDisalloweds, modified, object));
+        rawServerJavadocCategories.forEach(object -> addIfAdded(serverJavadocCategories, modified, object));
+        rawServerJavadocCategoriesJavadocs.forEach(object -> addIfAdded(serverJavadocCategoriesJavadocs, modified, object));
 
         final Set<Object> deleted = new HashSet<>();
 
@@ -94,6 +133,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
         deleteIfDeleted(serverRules, rule -> rule.getServer().equals(id), rawServerRules, deleted);
         deleteIfDeleted(serverRulesAlloweds, allowed -> allowed.getServer().equals(id), rawServerRulesAlloweds, deleted);
         deleteIfDeleted(serverRulesDisalloweds, disallowed -> disallowed.getServer().equals(id), rawServerRulesDisalloweds, deleted);
+        deleteIfDeleted(serverJavadocCategoriesJavadocs, javadocs -> javadocs.getServer().equals(id), rawServerJavadocCategoriesJavadocs, deleted);
 
         return new ModificationRequest(modified, deleted);
     }

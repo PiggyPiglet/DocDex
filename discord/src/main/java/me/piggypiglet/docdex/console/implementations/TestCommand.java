@@ -9,6 +9,7 @@ import me.piggypiglet.docdex.db.server.Server;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public final class TestCommand extends ConsoleCommand {
     public void execute() {
         final Map<String, CommandRule> rules = new HashMap<>();
         rules.put("help", new CommandRule(Sets.newHashSet("339674158596358145", "411094432402636802"), Sets.newHashSet(), "You can't use that command in this channel, please go to <#339674158596358145>."));
-        final Server server = new Server("164280494874165248", "bd;", Sets.newHashSet("164525396354793472"), rules);
+        final Server server = new Server("164280494874165248", "bd;", Sets.newHashSet("164525396354793472"), rules, new HashSet<>());
         servers.add(server);
         msg(servers);
         adapters.save(server);

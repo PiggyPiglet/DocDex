@@ -64,6 +64,11 @@ public final class BotCommandHandler {
         }
 
         final String rawMessage = message.getContentRaw().toLowerCase();
+
+        if (!rawMessage.startsWith(server.getPrefix())) {
+            return;
+        }
+
         final StringBuilder prefixBuilder = new StringBuilder(server.getPrefix().toLowerCase());
 
         for (final char character : rawMessage.substring(server.getPrefix().length()).toCharArray()) {
@@ -75,10 +80,6 @@ public final class BotCommandHandler {
         }
 
         final String prefix = prefixBuilder.toString();
-
-        if (!rawMessage.startsWith(prefix)) {
-            return;
-        }
 
         final AtomicReference<String> match = new AtomicReference<>("");
 
