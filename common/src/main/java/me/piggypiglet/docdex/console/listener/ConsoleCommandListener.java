@@ -18,7 +18,6 @@ public final class ConsoleCommandListener implements Runnable {
         this.commandHandler = commandHandler;
     }
 
-    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
         final Scanner input = new Scanner(System.in);
@@ -26,6 +25,11 @@ public final class ConsoleCommandListener implements Runnable {
         while (true) {
             final String line = input.nextLine();
             commandHandler.process(line);
+
+            // this is only here so ij doesn't yell at me
+            if (line.equalsIgnoreCase("stop")) {
+                break;
+            }
         }
     }
 }

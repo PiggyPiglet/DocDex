@@ -74,18 +74,21 @@ public final class PterodactylManager {
     }
 
     private void run(@NotNull final ThrowingRequest request) {
-        try {
+        run((ThrowingRequestWithResponse<Void>) (() -> {
             request.apply();
-        } catch (InterruptedException | IOException | URISyntaxException exception) {
-            LOGGER.error("Something went wrong with a request.", exception);
-        }
+            return null;
+        }));
     }
 
     @Nullable
     private <T> T run(@NotNull final ThrowingRequestWithResponse<T> request) {
         try {
             return request.supply();
-        } catch (InterruptedException | IOException | URISyntaxException exception) {
+        } catch (InterruptedException exception) {
+            LOGGER.error("Interrupted.", exception);
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (IOException | URISyntaxException exception) {
             LOGGER.error("Something went wrong with a request.", exception);
         }
 

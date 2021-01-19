@@ -119,7 +119,11 @@ public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestSt
                     return null;
                 }
             }
-        } catch (InterruptedException | IOException exception) {
+        } catch (InterruptedException exception) {
+            LOGGER.error("Interrupted.", exception);
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (IOException exception) {
             LOGGER.error("Something went wrong when connecting to & parsing " + uri, exception);
             return null;
         }

@@ -10,6 +10,7 @@ import me.piggypiglet.docdex.db.dbo.framework.DatabaseObjectCreator;
 import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -48,10 +49,14 @@ public final class DatabaseObjectCreatorRegisterable extends Registerable {
         addBinding((Class<T>) clazz, DEFAULT, (T) object);
     }
 
-    @NotNull
+    @Nullable
     private static Class<?> getType(@NotNull final DatabaseObjectCreator<?> creator) {
-        return TypeLiteral.get(((ParameterizedType) Arrays.stream(creator.getClass().getGenericInterfaces())
+        return Arrays.stream(creator.getClass().getGenericInterfaces())
                 .filter(i -> TypeLiteral.get(i).getRawType() == DatabaseObjectCreator.class)
-                .findAny().get()).getActualTypeArguments()[0]).getRawType();
+                .map(ParameterizedType.class::cast)
+                .findAny()
+                .map(parameterizedType -> TypeLiteral.get(parameterizedType.getActualTypeArguments()[0]).getRawType())
+                .orElse(null);
+
     }
 }

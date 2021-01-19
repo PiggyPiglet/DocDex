@@ -13,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static me.piggypiglet.docdex.documentation.index.population.implementations.flatfile.adaptation.ObjectMapAdapter.DESERIALIZED_TYPE;
@@ -29,24 +31,20 @@ public final class FlatFileStorage implements IndexStorage {
             .registerTypeAdapter(DESERIALIZED_TYPE, new ObjectMapAdapter())
             .create();
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void save(@NotNull final Javadoc javadoc, @NotNull final Map<DocumentedObjectKey, DocumentedObject> objects) {
         final String fileName = DataUtils.getName(javadoc) + ".json";
-        final File file = new File("docs", fileName);
+        final Path file = Paths.get("docs", fileName);
 
         LOGGER.info("Attempting to save {}", fileName);
 
-        if (file.exists()) {
+        if (Files.exists(file)) {
             LOGGER.info("{} already exists, not saving. Delete the file manually and restart the app if you wish to update the index.", fileName);
             return;
-        }
-
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-
+        } else {
             try {
-                file.createNewFile();
+                Files.createDirectories(file.getParent());
+                Files.createFile(file);
             } catch (IOException exception) {
                 LOGGER.error("Something went wrong when creating " + fileName, exception);
                 return;

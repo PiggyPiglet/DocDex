@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 
@@ -47,7 +49,7 @@ public final class FlatFilePopulator implements IndexPopulator {
     @Override
     public Map<DocumentedObjectKey, DocumentedObject> provideObjects(@NotNull final Javadoc javadoc) {
         final String fileName = String.join("-", javadoc.getNames()) + ".json";
-        final File file = new File("docs", fileName);
+        final Path file = Paths.get("docs", fileName);
 
         LOGGER.info("Loading pre-built index from {}", fileName);
 

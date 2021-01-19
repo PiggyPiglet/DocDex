@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,13 +70,13 @@ public final class FileManager {
     }
 
     @NotNull
-    private File createFile(@NotNull final String internalPath, @NotNull final String externalPath,
+    private Path createFile(@NotNull final String internalPath, @NotNull final String externalPath,
                             @NotNull final Class<?> clazz) throws IOException {
         return FileUtils.createFile(internalPath, externalPath, clazz);
     }
 
     private void writeFile(@NotNull final String path, @NotNull final String content) throws IOException {
-        FileUtils.writeFile(new File(path), content);
+        FileUtils.writeFile(Paths.get(path), content);
     }
 
     private boolean exists(@NotNull final String externalPath) {

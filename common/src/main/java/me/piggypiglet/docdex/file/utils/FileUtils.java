@@ -2,14 +2,12 @@ package me.piggypiglet.docdex.file.utils;
 
 import com.google.common.io.Resources;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -19,22 +17,32 @@ import java.util.regex.Pattern;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class FileUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger("FileUtils");
     private static final Pattern LINE_DELIMITER = Pattern.compile("\n");
 
     private FileUtils() {
         throw new AssertionError("This class cannot be instantiated.");
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @NotNull
-    public static File createFile(@NotNull final String internalPath, @NotNull final String externalPath,
+    public static Path createFile(@NotNull final String internalPath, @NotNull final String externalPath,
                                   @NotNull final Class<?> clazz) throws IOException {
-        final File file = new File(externalPath);
+        final Path file = Paths.get(externalPath);
 
-        if (file.exists()) return file;
+        if (Files.exists(file)) return file;
 
-        Optional.ofNullable(file.getParentFile()).ifPresent(File::mkdirs);
-        file.createNewFile();
+        final Optional<Path> parent = Optional.ofNullable(file.getParent());
+
+        try {
+            if (parent.isPresent()) {
+                Files.createDirectories(parent.get());
+            }
+
+            Files.createFile(file);
+        } catch (IOException exception) {
+            LOGGER.error("Something went wrong when creating " + file, exception);
+            System.exit(-1);
+        }
 
         exportResource(internalPath, externalPath, clazz);
         return file;
@@ -53,12 +61,12 @@ public final class FileUtils {
     }
 
     @NotNull
-    public static String readFile(@NotNull final File file) throws IOException {
-        return String.join("\n", Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
+    public static String readFile(@NotNull final Path file) throws IOException {
+        return String.join("\n", Files.readAllLines(file, StandardCharsets.UTF_8));
     }
 
-    public static void writeFile(@NotNull final File file, @NotNull final String content) throws IOException {
-        Files.write(file.toPath(), Arrays.asList(LINE_DELIMITER.split(content)), StandardCharsets.UTF_8,
+    public static void writeFile(@NotNull final Path file, @NotNull final String content) throws IOException {
+        Files.write(file, Arrays.asList(LINE_DELIMITER.split(content)), StandardCharsets.UTF_8,
                 StandardOpenOption.TRUNCATE_EXISTING);
     }
 }
