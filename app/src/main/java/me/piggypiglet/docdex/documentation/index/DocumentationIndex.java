@@ -34,12 +34,12 @@ public final class DocumentationIndex {
     private final Multimap<Javadoc, String> fields = HashMultimap.create();
     private final Multimap<Javadoc, String> fqnFields = HashMultimap.create();
 
-    private final Multimap<Javadoc, String> fullMethods = HashMultimap.create();
-    private final Multimap<Javadoc, String> fullFqnMethods = HashMultimap.create();
-    private final Multimap<Javadoc, String> typeMethods = HashMultimap.create();
-    private final Multimap<Javadoc, String> typeFqnMethods = HashMultimap.create();
-    private final Multimap<Javadoc, String> nameMethods = HashMultimap.create();
-    private final Multimap<Javadoc, String> nameFqnMethods = HashMultimap.create();
+    private final Map<Javadoc, Multimap<String, String>> fullMethods = new HashMap<>();
+    private final Map<Javadoc, Multimap<String, String>> fullFqnMethods = new HashMap<>();
+    private final Map<Javadoc, Multimap<String, String>> typeMethods = new HashMap<>();
+    private final Map<Javadoc, Multimap<String, String>> typeFqnMethods = new HashMap<>();
+    private final Map<Javadoc, Multimap<String, String>> nameMethods = new HashMap<>();
+    private final Map<Javadoc, Multimap<String, String>> nameFqnMethods = new HashMap<>();
 
     private final MongoStorage storage;
 
@@ -49,6 +49,11 @@ public final class DocumentationIndex {
     }
 
     public void populate(@NotNull final Javadoc javadoc, @NotNull final Map<DocumentedObjectKey, DocumentedObject> objects) {
+        Stream.of(
+                fullMethods, fullFqnMethods, typeMethods, typeFqnMethods,
+                nameMethods, nameFqnMethods
+        ).forEach(map -> map.put(javadoc, HashMultimap.create()));
+
         for (final Map.Entry<DocumentedObjectKey, DocumentedObject> entry : objects.entrySet()) {
             final DocumentedObjectKey key = entry.getKey();
             final String name = key.getName();
@@ -69,16 +74,16 @@ public final class DocumentationIndex {
                 case CONSTRUCTOR:
                 case METHOD:
                     final Map<ParameterTypes, String> params = DataUtils.getParams(object);
-                    final String fullParam = '(' + params.get(ParameterTypes.FULL) + ')';
-                    final String typeParam = '(' + params.get(ParameterTypes.TYPE) + ')';
-                    final String nameParam = '(' + params.get(ParameterTypes.NAME) + ')';
+                    final String fullParam = params.get(ParameterTypes.FULL);
+                    final String typeParam = params.get(ParameterTypes.TYPE);
+                    final String nameParam = params.get(ParameterTypes.NAME);
 
-                    fullMethods.get(javadoc).add(name + fullParam);
-                    fullFqnMethods.get(javadoc).add(fqn + fullParam);
-                    typeMethods.get(javadoc).add(name + typeParam);
-                    typeFqnMethods.get(javadoc).add(fqn + typeParam);
-                    nameMethods.get(javadoc).add(name + nameParam);
-                    nameFqnMethods.get(javadoc).add(fqn + nameParam);
+                    fullMethods.get(javadoc).put(name, fullParam);
+                    fullFqnMethods.get(javadoc).put(fqn, fullParam);
+                    typeMethods.get(javadoc).put(name, typeParam);
+                    typeFqnMethods.get(javadoc).put(fqn, typeParam);
+                    nameMethods.get(javadoc).put(name, nameParam);
+                    nameFqnMethods.get(javadoc).put(fqn, nameParam);
                     continue;
 
                 case FIELD:
@@ -129,55 +134,72 @@ public final class DocumentationIndex {
             return Collections.emptyList();
         }
 
-        return getFromStorage(get(map.get(javadoc), query), javadoc, field, limit);
+        return getFromStorage(getNames(map.get(javadoc), query), javadoc, field, limit);
     }
 
     @NotNull
     private List<DocumentedObjectResult> getMethods(@NotNull final Javadoc javadoc, @NotNull String query,
                                                     final boolean fqn, final int limit) {
-        if (!query.endsWith(")")) {
-            if (!query.contains("(")) {
-                query = query + "()";
-            } else {
-                query = query + ')';
-            }
-        }
-
         query = query.replace(", ", ",");
 
-        final String finalQuery = query;
+        final String methodQuery;
+        final String parameterQuery;
 
-        int splitPoint = finalQuery.lastIndexOf('(');
-        final boolean full = Arrays.stream(PARAMETER_DELIMITER.split(finalQuery.substring(splitPoint).replace(')', Character.MIN_VALUE)))
+        if (query.contains("(")) {
+            final int openIndex = query.indexOf('(');
+            methodQuery = query.substring(0, openIndex);
+
+            if (query.endsWith(")")) {
+                final int closingIndex = query.lastIndexOf(')');
+                parameterQuery = query.substring(openIndex, closingIndex);
+            } else {
+                parameterQuery = query.substring(openIndex);
+            }
+        } else {
+            methodQuery = query;
+            parameterQuery = "";
+        }
+
+        final boolean full = Arrays.stream(PARAMETER_DELIMITER.split(parameterQuery))
                 .map(String::trim)
                 .anyMatch(parameter -> parameter.contains(" "));
 
-        final Multimap<Javadoc, String> fullMethods = fqn ? fullFqnMethods : this.fullMethods;
-        final Multimap<Javadoc, String> typeMethods = fqn ? typeFqnMethods : this.typeMethods;
-        final Multimap<Javadoc, String> nameMethods = fqn ? nameFqnMethods : this.nameMethods;
+        final Multimap<String, String> fullMethods = (fqn ? fullFqnMethods : this.fullMethods).get(javadoc);
+        final Multimap<String, String> typeMethods = (fqn ? typeFqnMethods : this.typeMethods).get(javadoc);
+        final Multimap<String, String> nameMethods = (fqn ? nameFqnMethods : this.nameMethods).get(javadoc);
 
         if (full) {
-            return getFromStorage(get(fullMethods.get(javadoc), finalQuery), javadoc, DataUtils.fromParameterType(ParameterTypes.FULL, fqn), limit);
+            return getFromStorage(
+                    toFormattedMethodNames(getMethodNames(fullMethods, methodQuery, parameterQuery)),
+                    javadoc, DataUtils.fromParameterType(ParameterTypes.FULL, fqn), limit
+            );
         }
 
-        final List<String> names = get(nameMethods.get(javadoc), finalQuery);
+        final List<Map.Entry<String, String>> names = getMethodNames(nameMethods, methodQuery, parameterQuery);
 
         if (names.size() == 1) {
-            return getFromStorage(names, javadoc, DataUtils.fromParameterType(ParameterTypes.NAME, fqn), limit);
+            return getFromStorage(toFormattedMethodNames(names), javadoc, DataUtils.fromParameterType(ParameterTypes.NAME, fqn), limit);
         }
 
-        final List<String> types = get(typeMethods.get(javadoc), finalQuery);
+        final List<Map.Entry<String, String>> types = getMethodNames(typeMethods, methodQuery, parameterQuery);
 
         if (types.size() == 1) {
-            return getFromStorage(types, javadoc, DataUtils.fromParameterType(ParameterTypes.TYPE, fqn), limit);
+            return getFromStorage(toFormattedMethodNames(types), javadoc, DataUtils.fromParameterType(ParameterTypes.TYPE, fqn), limit);
         }
 
         final List<Map.Entry<ParameterTypes, String>> keys = Stream.concat(
-                types.stream().map(array -> Map.entry(ParameterTypes.TYPE, array)),
-                names.stream().map(array -> Map.entry(ParameterTypes.NAME, array))
+                types.stream().map(name -> Map.entry(ParameterTypes.TYPE, name)),
+                names.stream().map(name -> Map.entry(ParameterTypes.NAME, name))
         )
-                .filter(StreamUtils.distinctByKey(Map.Entry::getValue))
-                .sorted(Collections.reverseOrder(Comparator.comparingInt(object -> FuzzySearch.ratio(object.getValue(), finalQuery))))
+                .filter(StreamUtils.distinctByKey(entry -> entry.getValue().getKey() + '(' + entry.getValue().getValue() + ')'))
+                .sorted(Collections.reverseOrder(Comparator.comparingInt(object -> {
+                    final Map.Entry<String, String> name = object.getValue();
+                    final int methodRatio = FuzzySearch.ratio(name.getKey(), methodQuery);
+                    final int parameterRatio = parameterQuery.isBlank() ? 0 : FuzzySearch.ratio(name.getValue(), parameterQuery);
+
+                    return methodRatio + parameterRatio;
+                })))
+                .map(entry -> Map.entry(entry.getKey(), entry.getValue().getKey() + '(' + entry.getValue().getValue() + ')'))
                 .collect(Collectors.toList());
         final List<DocumentedObjectResult> results = new ArrayList<>();
 
@@ -197,18 +219,41 @@ public final class DocumentationIndex {
             }
         }
 
-        Collections.reverse(results);
         return results;
     }
 
     @NotNull
-    private List<String> get(@NotNull final Collection<String> collection, @NotNull final String query) {
+    private List<String> getNames(@NotNull final Collection<String> collection, @NotNull final String query) {
         if (collection.contains(query)) {
             return List.of(query);
         }
 
         return collection.parallelStream()
                 .sorted(Collections.reverseOrder(Comparator.comparingInt(name -> FuzzySearch.ratio(name, query))))
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private List<Map.Entry<String, String>> getMethodNames(@NotNull final Multimap<String, String> map, @NotNull final String methodQuery,
+                                                           @NotNull final String parameterQuery) {
+        final List<String> methods = getNames(map.keySet(), methodQuery);
+        final List<Map.Entry<String, String>> results = new ArrayList<>();
+
+        for (final String method : methods) {
+            final List<String> parameterResults = getNames(map.get(method), parameterQuery);
+
+            for (final String parameterResult : parameterResults) {
+                results.add(Map.entry(method, parameterResult));
+            }
+        }
+
+        return results;
+    }
+
+    @NotNull
+    private static List<String> toFormattedMethodNames(@NotNull final List<Map.Entry<String, String>> methods) {
+        return methods.stream()
+                .map(entry -> entry.getKey() + '(' + entry.getValue() + ')')
                 .collect(Collectors.toList());
     }
 

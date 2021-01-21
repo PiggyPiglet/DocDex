@@ -7,6 +7,7 @@ import fi.iki.elonen.NanoHTTPD;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.DocumentationIndex;
+import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
 import me.piggypiglet.docdex.http.request.Request;
 import me.piggypiglet.docdex.http.route.exceptions.StatusCodeException;
 import me.piggypiglet.docdex.http.route.json.JsonRoute;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -63,6 +65,9 @@ public final class IndexRoute extends JsonRoute {
             return null;
         }
 
+        final long millis = System.currentTimeMillis();
+        final List<DocumentedObjectResult> results = index.get(javadoc, query.replace("%20", " "), limit);
+        System.out.println(System.currentTimeMillis() - millis);
         return index.get(javadoc, query.replace("%20", " "), limit);
     }
 }
