@@ -1,6 +1,8 @@
 package me.piggypiglet.docdex.documentation.index.population.implementations.web;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.population.IndexPopulator;
@@ -117,9 +119,8 @@ public final class WebCrawlPopulator implements IndexPopulator {
                         DataUtils.getFqn(object).toLowerCase(),
                         object.getMetadata() instanceof MethodMetadata ? DataUtils.getParams(object) : DEFAULT_PARAMETERS
                 ), object -> object, (object1, object2) -> object1));
-        final Map<String, DocumentedObject> fqns = map.entrySet().stream()
-                .filter(entry -> entry.getValue().getMetadata() instanceof TypeMetadata)
-                .collect(Collectors.toMap(entry -> entry.getKey().getFqn(), Map.Entry::getValue));
+        final Multimap<String, DocumentedObject> fqns = HashMultimap.create();
+        map.forEach((key, value) -> fqns.put(key.getFqn(), value));
 
         LOGGER.info("Indexing type children with parent methods for {}", javadocName);
 
@@ -141,7 +142,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
                     ((TypeMetadata) type.getMetadata()).getMethods().stream()
                             .map(String::toLowerCase)
                             .map(fqns::get)
-                            .filter(Objects::nonNull)
+                            .flatMap(Collection::stream)
                             .forEach(method -> {
                                 final String addendum = '#' + method.getName().toLowerCase();
 
@@ -172,7 +173,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
     }
 
     @NotNull
-    private static Set<DocumentedObject> getChildren(@NotNull final Map<String, DocumentedObject> map, @NotNull final DocumentedObject object) {
+    private static Set<DocumentedObject> getChildren(@NotNull final Multimap<String, DocumentedObject> map, @NotNull final DocumentedObject object) {
         final TypeMetadata typeMetadata = (TypeMetadata) object.getMetadata();
 
         final Set<DocumentedObject> subClasses = convertFromFqn(map, typeMetadata.getSubClasses());
@@ -194,12 +195,12 @@ public final class WebCrawlPopulator implements IndexPopulator {
     }
 
     @NotNull
-    private static Set<DocumentedObject> convertFromFqn(@NotNull final Map<String, DocumentedObject> map,
+    private static Set<DocumentedObject> convertFromFqn(@NotNull final Multimap<String, DocumentedObject> map,
                                                         @NotNull final Set<String> fqns) {
         return fqns.stream()
                 .map(String::toLowerCase)
                 .map(map::get)
-                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
 
