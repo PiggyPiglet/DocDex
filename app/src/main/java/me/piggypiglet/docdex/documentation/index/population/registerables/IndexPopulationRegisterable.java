@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 @Singleton
 public final class IndexPopulationRegisterable extends Registerable {
     private static final double BYTE_PER_MB = 1_000_000;
-    private static final double MB_PER_DOC = 500;
+    private static final double MB_PER_DOC = 800;
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Indexer");
 
