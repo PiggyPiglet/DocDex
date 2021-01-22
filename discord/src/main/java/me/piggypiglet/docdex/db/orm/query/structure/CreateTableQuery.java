@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class SchemaQuery implements StructureQuery {
+public final class CreateTableQuery implements StructureQuery {
     @NotNull
     @Override
     @Language("SQL")

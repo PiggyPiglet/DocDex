@@ -18,10 +18,15 @@ public final class RawServer implements RawObject {
     @Identifier @Length(ID_LENGTH)
     private final String id;
     private final String prefix;
+    private final String algorithm;
+    private final String algorithmType;
 
-    public RawServer(@NotNull final String id, @NotNull final String prefix) {
+    public RawServer(@NotNull final String id, @NotNull final String prefix,
+                     @NotNull final String algorithm, @NotNull final String algorithmType) {
         this.id = id;
         this.prefix = prefix;
+        this.algorithm = algorithm;
+        this.algorithmType = algorithmType;
     }
 
     @NotNull
@@ -34,12 +39,22 @@ public final class RawServer implements RawObject {
         return prefix;
     }
 
+    @NotNull
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    @NotNull
+    public String getAlgorithmType() {
+        return algorithmType;
+    }
+
     @Override
     public boolean actualEquals(@Nullable final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final RawServer rawServer = (RawServer) o;
-        return id.equals(rawServer.id) && prefix.equals(rawServer.prefix);
+        return id.equals(rawServer.id) && prefix.equals(rawServer.prefix) && algorithm.equals(rawServer.algorithm) && algorithmType.equals(rawServer.algorithmType);
     }
 
     @Override
@@ -60,6 +75,8 @@ public final class RawServer implements RawObject {
         return "RawServer{" +
                 "id='" + id + '\'' +
                 ", prefix='" + prefix + '\'' +
+                ", algorithm='" + algorithm + '\'' +
+                ", algorithmType='" + algorithmType + '\'' +
                 '}';
     }
 }

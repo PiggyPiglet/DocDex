@@ -19,13 +19,13 @@ public final class ModifyRoleCommand extends ServerCommand {
     }
 
     @Override
-    protected void execute(final @NotNull Server server, final @NotNull List<String> args,
+    protected boolean execute(final @NotNull Server server, final @NotNull List<String> args,
                            @NotNull final Consumer<String> messageFunction) {
         final ModificationOptions modificationOption = ModificationOptions.MAP.get(args.get(1));
 
         if (modificationOption == null) {
             sendUsage(messageFunction);
-            return;
+            return false;
         }
 
         final Set<String> roles = server.getRoles();
@@ -38,5 +38,6 @@ public final class ModifyRoleCommand extends ServerCommand {
         }
 
         messageFunction.accept("Successfully " + modificationOption + " to " + server.getId() + "'s role list.");
+        return true;
     }
 }

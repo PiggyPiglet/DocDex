@@ -23,7 +23,7 @@ public abstract class ServerCommand {
         this.adapters = adapters;
     }
 
-    protected abstract void execute(@NotNull final Server server, @NotNull final List<String> args,
+    protected abstract boolean execute(@NotNull final Server server, @NotNull final List<String> args,
                                     @NotNull final Consumer<String> messageFunction);
 
     public void run(@NotNull final Server server, final @NotNull List<String> args,
@@ -33,8 +33,9 @@ public abstract class ServerCommand {
             return;
         }
 
-        execute(server, args, messageFunction);
-        adapters.save(server);
+        if (execute(server, args, messageFunction)) {
+            adapters.save(server);
+        }
     }
 
     public void sendUsage(@NotNull final Consumer<String> messageFunction) {

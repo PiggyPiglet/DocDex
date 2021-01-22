@@ -1,6 +1,8 @@
 package me.piggypiglet.docdex.db.orm;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -20,7 +22,9 @@ import java.util.Set;
 // ------------------------------
 @Singleton
 public final class TableManager {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
     private static final Type MAP = Types.mapOf(String.class, Object.class);
 
     private final QueryRunner queryRunner;

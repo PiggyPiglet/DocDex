@@ -7,6 +7,7 @@ import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.documentation.DocumentationObjectSerializer;
 import me.piggypiglet.docdex.config.Config;
+import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.documentation.IndexURLBuilder;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -58,7 +59,7 @@ public abstract class DocumentationCommand extends BotCommand {
 
     @Override
     public void run(final @NotNull User user, final @NotNull Message message,
-                    final int start) {
+                    @NotNull final Server server, final int start) {
         final List<String> args = args(message, start);
         final MessageChannel channel = message.getChannel();
 
@@ -115,7 +116,9 @@ public abstract class DocumentationCommand extends BotCommand {
 
         final IndexURLBuilder urlBuilder = new IndexURLBuilder()
                 .javadoc(javadoc.get().toLowerCase())
-                .query(query.replace(" ", "%20"));
+                .query(query.replace(" ", "%20"))
+                .algorithm(server.getAlgorithm())
+                .algorithmOption(server.getAlgorithmOption());
 
         if (limit.get() != 0) {
             urlBuilder.limit(limit.get());

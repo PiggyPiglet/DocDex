@@ -16,6 +16,8 @@ import me.piggypiglet.docdex.db.tables.javadoc.RawServerJavadocCategoriesJavadoc
 import me.piggypiglet.docdex.db.tables.rules.RawServerRules;
 import me.piggypiglet.docdex.db.tables.rules.RawServerRulesAllowed;
 import me.piggypiglet.docdex.db.tables.rules.RawServerRulesDisallowed;
+import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
+import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -64,6 +66,9 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     public Set<Server> loadFromRaw() {
         return servers.stream()
                 .map(server -> {
+                    final Algorithm algorithm = Algorithm.NAMES.get(server.getAlgorithm());
+                    final AlgorithmOption algorithmOption = AlgorithmOption.NAMES.get(server.getAlgorithmType());
+
                     final Set<String> roles = serverRoles.stream()
                             .map(RawServerRoles::getId)
                             .collect(Collectors.toSet());
@@ -89,7 +94,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                                 categories.add(new JavadocCategory(category.getName(), category.getDescription(), javadocs));
                             });
 
-                    return new Server(server.getId(), server.getPrefix(), roles, rules, categories);
+                    return new Server(server.getId(), server.getPrefix(), algorithm, algorithmOption, roles, rules, categories);
                 }).collect(Collectors.toSet());
     }
 
@@ -97,7 +102,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     @Override
     public ModificationRequest applyToRaw(final @NotNull Server server) {
         final String id = server.getId();
-        final RawServer rawServer = new RawServer(id, server.getPrefix());
+        final RawServer rawServer = new RawServer(id, server.getPrefix(), server.getAlgorithm().name(), server.getAlgorithmOption().name());
 
         final Set<RawServerRoles> rawServerRoles = server.getRoles().stream()
                 .map(role -> new RawServerRoles(server.getId(), role))

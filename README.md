@@ -96,8 +96,28 @@ When requesting from the index with a query, it'll first attempt to find a perfe
 > parameter names, parameter types, or the entire thing. (e.g. `key`, `string`, or `string key`)
 > - Use - instead of % for fields (including enum constants)
 
-There's also an optional limit parameter you can add on, which will limit the amount of results you get for non-exact queries (i.e. searches). The default value is 5.
+In addition to the 2 required parameters (javadoc & query), there are 3 optional
+parameters.
+- algorithm=[ALGORITHM](https://github.com/PiggyPiglet/DocDex/tree/master/common/src/main/java/me/piggypiglet/docdex/documentation/index/algorithm/Algorithm.java)
+- algorithm_option=[ALGORITHM_OPTION](https://github.com/PiggyPiglet/DocDex/tree/master/common/src/main/java/me/piggypiglet/docdex/documentation/index/algorithm/AlgorithmOption.java)
+- limit=int
+
+The algorithm/algorithm option refers to the searching algorithm used to
+order results. The default algorithm is an implementation of the jaro winkler
+algorithm, with algorithm option `similarity`. There are two options, distance
+and similarity. These are currently only used for jaro winkler and 
+normalized_levenshtein. If an algorithm doesn't have a similarity implementation,
+it'll default to distance regardless of what you put in. I recommend sticking to
+the following algorithms:
+- SIMPLE_RATIO_LEVENSHTEIN
+- JARO_WINKLER (similarity or distance)
+- NORMALIZED_LEVENSHTEIN (similarity or distance)
+
+The limit parameter limits the maximum potential results to that number. Adding
+the limit parameter WILL NOT guarantee that a specific quantity is returned, merely
+a quantity within the bounds of the supplied limit.
 ```
+/index?javadoc=1.16.4&query=playah&algorithm=normalized_levenshtein&algorithm_type=distance
 /index?javadoc=1.16.4&query=playah&limit=3
 ```
 
@@ -257,6 +277,16 @@ below.
 **d;prefix**:<br/>
 This command sets the servers prefix, e.g. `d;prefix d>`. From there on out, you'd use `d>` instead
 of `d;`.
+
+**d;algorithm**:<br/>
+This command sets the searching algorithm which will be used when requesting
+from the api instance. It accepts two parameters (case insensitive), the algorithm type, and
+the algorithm option. Usage: `d;algorithm <algorithm> <algorithm option>`.
+Algorithms can be found [here](https://github.com/PiggyPiglet/DocDex/tree/master/common/src/main/java/me/piggypiglet/docdex/documentation/index/algorithm/Algorithm.java),
+and algorithm options [here](https://github.com/PiggyPiglet/DocDex/tree/master/common/src/main/java/me/piggypiglet/docdex/documentation/index/algorithm/AlgorithmOption.java).
+By default, the jaro winkler algorithm is used, with the similarity algorithm
+option. If searches aren't returning the correct result, try using a different
+algorithm/option.
 
 **d;role**:<br/>
 This command allows you to declare whether a particular role can access permission based

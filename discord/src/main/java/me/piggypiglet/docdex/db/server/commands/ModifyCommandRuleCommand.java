@@ -31,14 +31,14 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
     }
 
     @Override
-    protected void execute(final @NotNull Server server, final @NotNull List<String> args,
+    protected boolean execute(final @NotNull Server server, final @NotNull List<String> args,
                            @NotNull final Consumer<String> messageFunction) {
         final ModificationTypes modificationType = MODIFICATION_TYPES.get(args.get(1));
         final boolean isRecommendation = modificationType == ModificationTypes.RECOMMENDATION;
 
         if (modificationType == null) {
             sendUsage(messageFunction);
-            return;
+            return false;
         }
 
         final String command = args.get(isRecommendation ? 2 : 3);
@@ -54,14 +54,14 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
         if (isRecommendation) {
             rule.setRecommendation(value);
             messageFunction.accept("Successfully updated recommendation of " + server.getId() + " - " + command + " to " + value);
-            return;
+            return false;
         }
 
         final ModificationOptions modificationOption = ModificationOptions.MAP.get(args.get(2));
 
         if (modificationOption == null) {
             sendUsage(messageFunction);
-            return;
+            return false;
         }
 
         final Set<String> set;
@@ -76,7 +76,7 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
                 break;
 
             default:
-                return;
+                return false;
         }
 
         if (modificationOption == ModificationOptions.ADD) {
@@ -86,6 +86,7 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
         }
 
         messageFunction.accept("Successfully " + modificationOption + ' ' + value + " to " + server.getId() + " - " + command + ' ' + modificationType + " list.");
+        return true;
     }
 
     private enum ModificationTypes {

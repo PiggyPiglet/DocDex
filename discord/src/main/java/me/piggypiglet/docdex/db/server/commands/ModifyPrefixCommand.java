@@ -17,9 +17,10 @@ public final class ModifyPrefixCommand extends ServerCommand {
     }
 
     @Override
-    protected void execute(@NotNull final Server server, @NotNull final List<String> args,
+    protected boolean execute(@NotNull final Server server, @NotNull final List<String> args,
                            @NotNull final Consumer<String> messageFunction) {
         server.setPrefix(args.get(1));
         messageFunction.accept("Successfully set " + server.getId() + "'s prefix to " + args.get(1));
+        return true;
     }
 }

@@ -1,5 +1,7 @@
 package me.piggypiglet.docdex.documentation;
 
+import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
+import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
 import org.jetbrains.annotations.NotNull;
 
 // ------------------------------
@@ -20,6 +22,18 @@ public final class IndexURLBuilder {
     @NotNull
     public IndexURLBuilder query(@NotNull final String value) {
         builder.append(delimiter()).append("query=").append(formatQuery(value));
+        return this;
+    }
+
+    @NotNull
+    public IndexURLBuilder algorithm(@NotNull final Algorithm algorithm) {
+        builder.append(delimiter()).append("algorithm=").append(algorithm);
+        return this;
+    }
+
+    @NotNull
+    public IndexURLBuilder algorithmOption(@NotNull final AlgorithmOption algorithmOption) {
+        builder.append(delimiter()).append("algorithm_option=").append(algorithmOption);
         return this;
     }
 

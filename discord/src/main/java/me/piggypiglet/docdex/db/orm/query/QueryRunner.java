@@ -5,8 +5,8 @@ import com.google.inject.Inject;
 import me.piggypiglet.docdex.db.orm.query.modification.DeleteQuery;
 import me.piggypiglet.docdex.db.orm.query.modification.InsertQuery;
 import me.piggypiglet.docdex.db.orm.query.retrieve.SelectQuery;
+import me.piggypiglet.docdex.db.orm.query.structure.CreateTableQuery;
 import me.piggypiglet.docdex.db.orm.query.structure.ExistsQuery;
-import me.piggypiglet.docdex.db.orm.query.structure.SchemaQuery;
 import me.piggypiglet.docdex.db.orm.structure.TableStructure;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -30,14 +30,14 @@ public final class QueryRunner {
     private final Database database;
 
     private final ExistsQuery exists;
-    private final SchemaQuery schema;
+    private final CreateTableQuery schema;
     private final InsertQuery insert;
     private final DeleteQuery delete;
     private final SelectQuery select;
 
     @Inject
     public QueryRunner(@NotNull final Database database, @NotNull final ExistsQuery exists,
-                       @NotNull final SchemaQuery schema, @NotNull final InsertQuery insert,
+                       @NotNull final CreateTableQuery schema, @NotNull final InsertQuery insert,
                        @NotNull final DeleteQuery delete, @NotNull final SelectQuery select) {
         this.database = database;
 

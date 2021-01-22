@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.bot.commands.framework;
 
+import me.piggypiglet.docdex.db.server.Server;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ public abstract class BotCommand {
                            @NotNull final List<String> args) {}
 
     public void run(@NotNull final User user, @NotNull final Message message,
-                    final int start) {
+                    @NotNull final Server server, final int start) {
         execute(user, message);
         execute(user, message, args(message, start));
     }

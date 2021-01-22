@@ -127,7 +127,7 @@ public final class BotCommandHandler {
         final int start = (prefix + match.get()).length();
 
         try {
-            command.run(user, message, start);
+            command.run(user, message, server, start);
         } catch (PermissionException exception) {
             PermissionUtils.sendPermissionError(message, exception.getPermission());
         }

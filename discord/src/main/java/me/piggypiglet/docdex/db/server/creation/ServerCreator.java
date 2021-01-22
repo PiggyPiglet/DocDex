@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.db.dbo.framework.DatabaseObjectCreator;
 import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
+import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -28,6 +30,6 @@ public final class ServerCreator implements DatabaseObjectCreator<Server> {
 
     @NotNull
     public Server createInstance(@NotNull final String id) {
-        return new Server(id, config.getPrefix(), new HashSet<>(), new HashMap<>(), new HashSet<>());
+        return new Server(id, config.getPrefix(), Algorithm.JARO_WINKLER, AlgorithmOption.SIMILARITY, new HashSet<>(), new HashMap<>(), new HashSet<>());
     }
 }
