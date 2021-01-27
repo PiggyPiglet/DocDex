@@ -319,5 +319,3 @@ not provide support for attempts to use this.
 
 ## Contact
 Join either [HelpChat](https://helpch.at/discord), or my personal [discord](https://piggypiglet.me/discord).
-
-![flex](https://i.imgur.com/G2QsaaN.png)

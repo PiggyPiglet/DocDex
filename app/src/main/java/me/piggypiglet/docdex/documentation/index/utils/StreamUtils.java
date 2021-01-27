@@ -30,6 +30,6 @@ public final class StreamUtils {
     @NotNull
     public static Stream<String> orderByAlgorithm(@NotNull final Stream<String> strings, @NotNull final String query,
                                                   @NotNull final Algorithm algorithm, @NotNull final AlgorithmOption option) {
-        return strings.sorted(Collections.reverseOrder(Comparator.comparingDouble(string -> algorithm.calculate(query, string, option))));
+        return strings.sorted(Comparator.comparingDouble(string -> algorithm.calculate(query, string, option)));
     }
 }

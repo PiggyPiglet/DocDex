@@ -164,7 +164,7 @@ public final class DocumentationIndex {
             parameterQuery = "";
         }
 
-        final boolean full = Arrays.stream(PARAMETER_DELIMITER.split(parameterQuery))
+        final boolean full = parameterQuery.isBlank() || Arrays.stream(PARAMETER_DELIMITER.split(parameterQuery))
                 .map(String::trim)
                 .anyMatch(parameter -> parameter.contains(" "));
 
@@ -197,13 +197,13 @@ public final class DocumentationIndex {
         )
                 .parallel()
                 .filter(StreamUtils.distinctByKey(entry -> entry.getValue().getKey() + '(' + entry.getValue().getValue() + ')'))
-                .sorted(Collections.reverseOrder(Comparator.comparingDouble(object -> {
+                .sorted(Comparator.comparingDouble(object -> {
                     final Map.Entry<String, String> name = object.getValue();
                     final double methodRatio = algorithm.calculate(name.getKey(), methodQuery, algorithmOption);
                     final double parameterRatio = parameterQuery.isBlank() ? 0 : algorithm.calculate(name.getValue(), parameterQuery, algorithmOption);
 
                     return methodRatio + parameterRatio;
-                })))
+                }))
                 .map(entry -> Map.entry(entry.getKey(), entry.getValue().getKey() + '(' + entry.getValue().getValue() + ')'))
                 .collect(Collectors.toList());
         final List<DocumentedObjectResult> results = new ArrayList<>();

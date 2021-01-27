@@ -162,7 +162,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
     @Nullable
     private static Document connect(@NotNull final String url) {
         try {
-            return Jsoup.connect(url).maxBodySize(0).timeout(10000).get();
+            return Jsoup.connect(url).maxBodySize(0).get();
         } catch (ConnectException exception) {
             LOGGER.error("Something went wrong when connecting to {}, is the link valid, and are the javadocs actually there?", url);
         } catch (IOException exception) {

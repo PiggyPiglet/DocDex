@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public enum Algorithm implements AlgorithmFunction {
-    SIMPLE_RATIO_LEVENSHTEIN((AlgorithmFunctionWithoutOption) FuzzySearch::ratio),
+    SIMPLE_RATIO_LEVENSHTEIN((AlgorithmFunctionWithoutOption) (string1, string2) -> FuzzySearch.ratio(string1, string2) * -1),
 //    PARTIAL_RATIO_LEVENSHTEIN((AlgorithmFunctionWithoutOption) FuzzySearch::partialRatio),
 //    TOKEN_SORT_RATIO_LEVENSHTEIN((AlgorithmFunctionWithoutOption) FuzzySearch::tokenSortRatio),
 //    TOKEN_SET_RATIO_LEVENSHTEIN((AlgorithmFunctionWithoutOption) FuzzySearch::tokenSetRatio),

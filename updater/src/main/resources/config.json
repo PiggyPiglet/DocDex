@@ -446,6 +446,17 @@
         "path": "/var/www/html/docs/configurate-hocon",
         "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-hocon"
       }
+    },
+    {
+      "names": ["processing"],
+      "link": "http://172.18.0.1/docs/processing/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/processing",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/processing",
+        "artifact_link": "https://repo1.maven.org/maven2/org/processing/core"
+      }
     }
   ]
 }

@@ -19,7 +19,7 @@ public final class DebattyAlgorithm implements AlgorithmFunction {
     public double calculate(final @NotNull String string1, final @NotNull String string2,
                             final @NotNull AlgorithmOption algorithmOption) {
         if (algorithmOption == AlgorithmOption.SIMILARITY && object instanceof StringSimilarity) {
-            return ((StringSimilarity) object).similarity(string1, string2);
+            return ((StringSimilarity) object).similarity(string1, string2) * -1;
         }
 
         return object.distance(string1, string2);
