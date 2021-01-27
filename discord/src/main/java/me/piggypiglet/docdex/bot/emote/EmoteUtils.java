@@ -17,14 +17,23 @@ public final class EmoteUtils {
     }
 
     public static void addEmote(@NotNull final Message message, @NotNull final EmoteWrapper emote) {
+        // JDA is inconsistent in permission checking, sometimes it'll be in the queue, sometimes it'll be in the action
         try {
             if (emote.getEmote() == null) {
-                message.addReaction(Objects.requireNonNull(emote.getUnicode())).queue();
+                message.addReaction(Objects.requireNonNull(emote.getUnicode()))
+                        .queue(success -> {}, failure -> handleFailure(message, failure));
             } else {
-                message.addReaction(emote.getEmote()).queue();
+                message.addReaction(emote.getEmote())
+                        .queue(success -> {}, failure -> handleFailure(message, failure));
             }
         } catch (PermissionException exception) {
             PermissionUtils.sendPermissionError(message, exception.getPermission());
+        }
+    }
+
+    private static void handleFailure(@NotNull final Message message, @NotNull final Throwable throwable) {
+        if (throwable instanceof PermissionException) {
+            PermissionUtils.sendPermissionError(message, ((PermissionException) throwable).getPermission());
         }
     }
 }
