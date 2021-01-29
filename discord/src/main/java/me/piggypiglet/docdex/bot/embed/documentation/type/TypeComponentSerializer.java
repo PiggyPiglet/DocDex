@@ -40,7 +40,7 @@ public final class TypeComponentSerializer {
         }
 
         final TypeMetadata metadata = (TypeMetadata) object.getMetadata();
-        final List<List<String>> pages = Lists.partition(new ArrayList<>(COMPONENT_GETTERS.get(component).apply(metadata)), 20);
+        final List<List<String>> pages = Lists.partition(new ArrayList<>(COMPONENT_GETTERS.get(component).apply(metadata)), 15);
 
         return pages.stream()
                 .map(page -> String.join("\n", page))

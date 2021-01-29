@@ -9,7 +9,6 @@ dependencies {
     implementation "org.nanohttpd:nanohttpd:2.3.1"
     implementation "org.jsoup:jsoup:1.13.1"
     implementation "org.mongodb:mongo-java-driver:3.12.7"
-    implementation "io.github.mightguy:symspell-lib:6.6.154"
 }
 
 shadowJar {

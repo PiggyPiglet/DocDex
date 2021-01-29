@@ -9,7 +9,6 @@ import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.DocumentationIndex;
 import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
 import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
-import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
 import me.piggypiglet.docdex.http.request.Request;
 import me.piggypiglet.docdex.http.route.exceptions.StatusCodeException;
 import me.piggypiglet.docdex.http.route.json.JsonRoute;
@@ -17,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -67,7 +65,7 @@ public final class IndexRoute extends JsonRoute {
                 .map(String::toUpperCase)
                 .map(AlgorithmOption.NAMES::get)
                 .orElse(DEFAULT_ALGORITHM_OPTION);
-        final int limit = params.get("limit").stream().findAny().map(Integer::parseInt).orElse(5);
+        final int limit = Math.min(10, params.get("limit").stream().findAny().map(Integer::parseInt).orElse(5));
 
         if (javadocName == null || query == null) {
             return null;
