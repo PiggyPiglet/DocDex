@@ -31,12 +31,12 @@ public final class EmoteWrapper {
     }
 
     @Nullable
-    String getUnicode() {
+    public String getUnicode() {
         return unicode;
     }
 
     @Nullable
-    Emote getEmote() {
+    public Emote getEmote() {
         return emote;
     }
 

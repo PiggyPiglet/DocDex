@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class Pagination {
+    public static final EmoteWrapper TRASH = EmoteWrapper.from("\uD83D\uDDD1️");
+
     private final Map<EmoteWrapper, MessageEmbed> pages;
     private final String author;
 
@@ -63,6 +65,7 @@ public final class Pagination {
         return channel.sendMessage(embed)
                 .map(message -> {
                     pages.keySet().forEach(emote -> EmoteUtils.addEmote(message, emote));
+                    EmoteUtils.addEmote(message, TRASH);
                     return message;
                 });
     }

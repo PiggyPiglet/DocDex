@@ -48,7 +48,7 @@ public final class PaginationManager {
 
         if (message.isFromGuild() || isNotAuthor) {
             try {
-                reaction.removeReaction(user).queue();
+                reaction.removeReaction(user).queue(success -> {}, failure -> {});
             } catch (PermissionException exception) {
                 PermissionUtils.sendPermissionError(message, exception.getPermission());
             }
@@ -64,6 +64,12 @@ public final class PaginationManager {
         if (reactionEmote.isEmote()) {
             emote = EmoteWrapper.from(reactionEmote.getEmote());
         } else {
+            if (reactionEmote.getEmoji().equals(Pagination.TRASH.getUnicode())) {
+                paginatedMessages.remove(message.getId());
+                message.delete().queue();
+                return;
+            }
+
             emote = EmoteWrapper.from(reactionEmote.getEmoji());
         }
 
