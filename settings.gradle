@@ -1,8 +1,6 @@
 rootProject.name = "DocDex"
 
-include(
-        "common",
+include "common",
         "app",
         "discord",
         "updater"
-)
