@@ -117,8 +117,7 @@ public abstract class DocumentationCommand extends BotCommand {
         final IndexURLBuilder urlBuilder = new IndexURLBuilder()
                 .javadoc(javadoc.get().toLowerCase())
                 .query(query.replace(" ", "%20"))
-                .algorithm(server.getAlgorithm())
-                .algorithmOption(server.getAlgorithmOption());
+                .algorithm(server.getAlgorithm());
 
         if (limit.get() != 0) {
             urlBuilder.limit(limit.get());
