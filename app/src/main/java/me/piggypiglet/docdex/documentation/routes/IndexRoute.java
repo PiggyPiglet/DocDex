@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 public final class IndexRoute extends JsonRoute {
     private static final Algorithm DEFAULT_ALGORITHM = Algorithm.JARO_WINKLER;
     private static final AlgorithmOption DEFAULT_ALGORITHM_OPTION = AlgorithmOption.SIMILARITY;
+    private static final int MAX_LIMIT = 10;
     private static final int DEFAULT_LIMIT = 5;
 
     private final DocumentationIndex index;
@@ -65,7 +66,7 @@ public final class IndexRoute extends JsonRoute {
                 .map(String::toUpperCase)
                 .map(AlgorithmOption.NAMES::get)
                 .orElse(DEFAULT_ALGORITHM_OPTION);
-        final int limit = Math.min(10, params.get("limit").stream().findAny().map(Integer::parseInt).orElse(5));
+        final int limit = Math.min(MAX_LIMIT, params.get("limit").stream().findAny().map(Integer::parseInt).orElse(DEFAULT_LIMIT));
 
         if (javadocName == null || query == null) {
             return null;
