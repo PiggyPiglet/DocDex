@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.index.algorithm.implementations;
+package me.piggypiglet.docdex.documentation.index.algorithm.implementations.jaro;
 
 import me.piggypiglet.docdex.documentation.index.algorithm.StringDistance;
 import org.jetbrains.annotations.NotNull;
@@ -9,10 +9,7 @@ import java.util.Arrays;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
-public final class JaroWinklerAlgorithm implements StringDistance {
-    private static final double WEIGHT_THRESHOLD = Double.POSITIVE_INFINITY;
-    private static final int NUM_CHARS = 0;
-
+public final class DebattyJaroWinklerAlgorithm implements StringDistance {
     @Override
     public double calculate(final byte @NotNull [] x, final byte @NotNull [] y) {
         if (Arrays.equals(x, y)) {

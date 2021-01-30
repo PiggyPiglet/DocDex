@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class IndexRoute extends JsonRoute {
-    private static final Algorithm DEFAULT_ALGORITHM = Algorithm.JARO_WINKLER;
+    private static final Algorithm DEFAULT_ALGORITHM = Algorithm.DUKE_JARO_WINKLER;
     private static final int MAX_LIMIT = 10;
     private static final int DEFAULT_LIMIT = 5;
 
@@ -57,6 +57,7 @@ public final class IndexRoute extends JsonRoute {
         final String query = params.get("query").stream().findAny()
                 .map(str -> str.replace("~", "#"))
                 .map(str -> str.replace("-", "%"))
+                .map(str -> str.replace("%20", " "))
                 .orElse(null);
         final Algorithm algorithm = params.get("algorithm").stream().findAny()
                 .map(String::toUpperCase)
@@ -74,6 +75,9 @@ public final class IndexRoute extends JsonRoute {
             return null;
         }
 
-        return index.get(javadoc, query.replace("%20", " "), algorithm, limit);
+        final long millis = System.currentTimeMillis();
+        final List<DocumentedObjectResult> r = index.get(javadoc, query, algorithm, limit);
+        System.out.println(System.currentTimeMillis() - millis);
+        return r;
     }
 }

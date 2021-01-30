@@ -40,7 +40,7 @@ public final class IndexAlgorithmTests {
         final Multimap<String, String> jaroWinklerValues = ArrayListMultimap.create();
         jaroWinklerValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ea", "in", "veniam"));
 
-        VALUES.put(Algorithm.JARO_WINKLER, jaroWinklerValues);
+        VALUES.put(Algorithm.DEBATTY_JARO_WINKLER, jaroWinklerValues);
     }
 
     @Test

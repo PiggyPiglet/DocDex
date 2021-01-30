@@ -1,7 +1,8 @@
 package me.piggypiglet.docdex.documentation.index.algorithm;
 
-import me.piggypiglet.docdex.documentation.index.algorithm.implementations.JaroWinklerAlgorithm;
+import me.piggypiglet.docdex.documentation.index.algorithm.implementations.jaro.DebattyJaroWinklerAlgorithm;
 import me.piggypiglet.docdex.documentation.index.algorithm.implementations.NormalizedLevenshteinAlgorithm;
+import me.piggypiglet.docdex.documentation.index.algorithm.implementations.jaro.DukeJaroWinklerAlgorithm;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -15,7 +16,8 @@ import java.util.stream.Collectors;
 // ------------------------------
 public enum Algorithm implements StringDistance {
     NORMALIZED_LEVENSHTEIN(new NormalizedLevenshteinAlgorithm()),
-    JARO_WINKLER(new JaroWinklerAlgorithm());
+    DEBATTY_JARO_WINKLER(new DebattyJaroWinklerAlgorithm()),
+    DUKE_JARO_WINKLER(new DukeJaroWinklerAlgorithm());
 
     @Unmodifiable
     public static final Map<String, Algorithm> NAMES = Arrays.stream(values())
