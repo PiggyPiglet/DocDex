@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import fi.iki.elonen.NanoHTTPD;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // ------------------------------
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class ShutdownHook extends Thread {
+    private static final Logger SHUTDOWN_SPACER = LoggerFactory.getLogger("Shutdown Spacer");
+
     private final NanoHTTPD server;
     private final MongoClient client;
 
@@ -27,5 +30,9 @@ public final class ShutdownHook extends Thread {
 
         client.close();
         LoggerFactory.getLogger("Mongo").info("Shut down MongoDB connection.");
+
+        for (int i = 0; i < 5; ++i) {
+            SHUTDOWN_SPACER.info("");
+        }
     }
 }
