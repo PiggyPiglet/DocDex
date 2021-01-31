@@ -1,16 +1,18 @@
 package documentation.index;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -32,15 +34,15 @@ public final class IndexAlgorithmTests {
     private static final Map<Algorithm, Multimap<String, String>> VALUES = new EnumMap<>(Algorithm.class);
 
     static {
-        final Multimap<String, String> normalizedLevenshteinValues = ArrayListMultimap.create();
-        normalizedLevenshteinValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ipsum", "dolor", "sit"));
+//        final Multimap<String, String> normalizedLevenshteinValues = ArrayListMultimap.create();
+//        normalizedLevenshteinValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ipsum", "dolor", "sit"));
+//
+//        VALUES.put(Algorithm.NORMALIZED_LEVENSHTEIN, normalizedLevenshteinValues);
 
-        VALUES.put(Algorithm.NORMALIZED_LEVENSHTEIN, normalizedLevenshteinValues);
-
-        final Multimap<String, String> jaroWinklerValues = ArrayListMultimap.create();
-        jaroWinklerValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ea", "in", "veniam"));
-
-        VALUES.put(Algorithm.DEBATTY_JARO_WINKLER, jaroWinklerValues);
+//        final Multimap<String, String> jaroWinklerValues = ArrayListMultimap.create();
+//        jaroWinklerValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ea", "in", "veniam"));
+//
+//        VALUES.put(Algorithm.DEBATTY_JARO_WINKLER, jaroWinklerValues);
     }
 
     @Test

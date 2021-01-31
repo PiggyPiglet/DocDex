@@ -1,3 +1,7 @@
+plugins {
+    id "me.champeau.gradle.jmh" version "0.5.2"
+}
+
 dependencies {
     api "com.google.code.gson:gson:2.8.6"
     api "com.google.inject:guice:4.2.3"

@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.index.algorithm.implementations.jaro;
+package me.piggypiglet.docdex.documentation.index.algorithm.implementations;
 
 import me.piggypiglet.docdex.documentation.index.algorithm.StringDistance;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +9,19 @@ import java.util.Arrays;
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
+
+/**
+ * Highly optimized Jaro-Winkler similarity algorithm implementation
+ * which I stole from
+ * https://github.com/larsga/Duke/blob/master/duke-core/src/main/java/no/priv/garshol/duke/comparators/JaroWinkler.java.
+ * Main difference between this and most other implementations is that
+ * this counts all of the metrics used to calculate the total similarity
+ * measurement, in the same loop.
+ *
+ * Additionally, we use byte arrays directly here instead of strings.
+ * I also removed the common character checking, because it slows the
+ * algorithm down drastically.
+ */
 public final class DukeJaroWinklerAlgorithm implements StringDistance {
     @Override
     public double calculate(final byte @NotNull [] x, final byte @NotNull [] y) {
