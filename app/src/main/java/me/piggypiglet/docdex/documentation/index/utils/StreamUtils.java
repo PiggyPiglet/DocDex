@@ -28,6 +28,28 @@ public final class StreamUtils {
     @NotNull
     public static Stream<byte[]> orderByAlgorithm(@NotNull final Stream<byte[]> elements, final byte @NotNull [] query,
                                                   @NotNull final Algorithm algorithm) {
-        return elements.sorted(Comparator.comparingDouble(element -> algorithm.calculate(query, element)));
+        return elements
+                .map(bytes -> new CachedElement(bytes, algorithm.calculate(query, bytes)))
+                .parallel()
+                .sorted(Comparator.comparingDouble(CachedElement::getScore))
+                .map(CachedElement::getContent);
+    }
+
+    private static final class CachedElement {
+        private final byte[] content;
+        private final double score;
+
+        public CachedElement(final byte @NotNull [] content, final double score) {
+            this.content = content;
+            this.score = score;
+        }
+
+        public byte @NotNull [] getContent() {
+            return content;
+        }
+
+        public double getScore() {
+            return score;
+        }
     }
 }

@@ -1,6 +1,5 @@
 package me.piggypiglet.docdex.documentation.index;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.inject.Inject;
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -249,7 +248,7 @@ public final class DocumentationIndex {
             return List.of(query);
         }
 
-        return StreamUtils.orderByAlgorithm(collection.parallelStream(), query, algorithm)
+        return StreamUtils.orderByAlgorithm(collection.stream(), query, algorithm)
                 .collect(Collectors.toList());
     }
 
