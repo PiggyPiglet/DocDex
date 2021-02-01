@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 public final class ShutdownHook extends Thread {
     private static final Logger JDA = LoggerFactory.getLogger("JDA");
     private static final Logger MYSQL = LoggerFactory.getLogger("MySQL");
+    private static final Logger SHUTDOWN_SPACER = LoggerFactory.getLogger("Shutdown Spacer");
 
     private final JDA jda;
     private final Database database;
@@ -31,5 +32,9 @@ public final class ShutdownHook extends Thread {
 
         database.close();
         MYSQL.info("Shut down MySQL.");
+
+        for (int i = 0; i < 5; ++i) {
+            SHUTDOWN_SPACER.info("");
+        }
     }
 }

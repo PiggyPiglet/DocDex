@@ -33,26 +33,7 @@ public final class SimpleObjectSerializer {
     private static final String ADDENDUM = "...\n\n*This description has been shortened as it was too long*.";
 
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
-            "Description:", object -> {
-                final String markdown = HTML_CONVERTER.convert(object.getDescription());
-
-                if (markdown.length() < MAX_DESCRIPTION_CHARS) {
-                    return markdown;
-                }
-
-                if (markdown.contains("```")) {
-                    return markdown.substring(0, markdown.indexOf("```")).trim() + ADDENDUM;
-                }
-
-                final char[] chars = markdown.toCharArray();
-                for (int i = MAX_DESCRIPTION_CHARS; i > 0; --i) {
-                    if (chars[i] == ' ') {
-                        return markdown.substring(0, i).trim() + ADDENDUM;
-                    }
-                }
-
-                return markdown.substring(0, MAX_DESCRIPTION_CHARS).trim() + ADDENDUM;
-            },
+            "Description:", object -> HTML_CONVERTER.convert(object.getDescription()),
             "Deprecation Message:", DocumentedObject::getDeprecationMessage
     );
 
@@ -93,7 +74,7 @@ public final class SimpleObjectSerializer {
 
         values.forEach((key, value) -> {
             if (!value.isBlank() && !value.equals("null")) {
-                builder.addField(key, value, false);
+                builder.addField(key, shorten(value), false);
             }
         });
 
@@ -201,5 +182,25 @@ public final class SimpleObjectSerializer {
     private static String getAnnotationName(@NotNull final String fqn) {
         final int parenthesis = fqn.indexOf('(');
         return fqn.substring(fqn.substring(0, parenthesis == -1 ? fqn.length() : parenthesis).lastIndexOf('.') + 1);
+    }
+
+    @NotNull
+    private static String shorten(@NotNull final String text) {
+        if (text.length() < MAX_DESCRIPTION_CHARS) {
+            return text;
+        }
+
+        if (text.contains("```")) {
+            return text.substring(0, text.indexOf("```")).trim() + ADDENDUM;
+        }
+
+        final char[] chars = text.toCharArray();
+        for (int i = MAX_DESCRIPTION_CHARS; i > 0; --i) {
+            if (chars[i] == ' ') {
+                return text.substring(0, i).trim() + ADDENDUM;
+            }
+        }
+
+        return text.substring(0, MAX_DESCRIPTION_CHARS).trim() + ADDENDUM;
     }
 }
