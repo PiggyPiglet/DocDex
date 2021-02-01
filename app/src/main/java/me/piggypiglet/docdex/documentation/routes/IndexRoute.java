@@ -8,7 +8,6 @@ import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.DocumentationIndex;
 import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
-import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
 import me.piggypiglet.docdex.http.request.Request;
 import me.piggypiglet.docdex.http.route.exceptions.StatusCodeException;
 import me.piggypiglet.docdex.http.route.json.JsonRoute;
@@ -25,8 +24,7 @@ import java.util.concurrent.CompletableFuture;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class IndexRoute extends JsonRoute {
-    private static final Algorithm DEFAULT_ALGORITHM = Algorithm.JARO_WINKLER;
-    private static final AlgorithmOption DEFAULT_ALGORITHM_OPTION = AlgorithmOption.SIMILARITY;
+    private static final Algorithm DEFAULT_ALGORITHM = Algorithm.DUKE_JARO_WINKLER;
     private static final int MAX_LIMIT = 10;
     private static final int DEFAULT_LIMIT = 5;
 
@@ -57,15 +55,12 @@ public final class IndexRoute extends JsonRoute {
         final String query = params.get("query").stream().findAny()
                 .map(str -> str.replace("~", "#"))
                 .map(str -> str.replace("-", "%"))
+                .map(str -> str.replace("%20", " "))
                 .orElse(null);
         final Algorithm algorithm = params.get("algorithm").stream().findAny()
                 .map(String::toUpperCase)
                 .map(Algorithm.NAMES::get)
                 .orElse(DEFAULT_ALGORITHM);
-        final AlgorithmOption algorithmOption = params.get("algorithm_option").stream().findAny()
-                .map(String::toUpperCase)
-                .map(AlgorithmOption.NAMES::get)
-                .orElse(DEFAULT_ALGORITHM_OPTION);
         final int limit = Math.min(MAX_LIMIT, params.get("limit").stream().findAny().map(Integer::parseInt).orElse(DEFAULT_LIMIT));
 
         if (javadocName == null || query == null) {
@@ -78,6 +73,6 @@ public final class IndexRoute extends JsonRoute {
             return null;
         }
 
-        return index.get(javadoc, query.replace("%20", " "), algorithm, algorithmOption, limit);
+        return index.get(javadoc, query, algorithm, limit);
     }
 }

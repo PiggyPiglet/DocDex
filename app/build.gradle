@@ -9,6 +9,7 @@ dependencies {
     implementation "org.nanohttpd:nanohttpd:2.3.1"
     implementation "org.jsoup:jsoup:1.13.1"
     implementation "org.mongodb:mongo-java-driver:3.12.7"
+    implementation "net.sf.trove4j:trove4j:3.0.3"
 }
 
 shadowJar {

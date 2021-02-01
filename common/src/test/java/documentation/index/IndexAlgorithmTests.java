@@ -1,16 +1,18 @@
 package documentation.index;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
-import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -29,47 +31,32 @@ public final class IndexAlgorithmTests {
             "occaecat", "cupidatat", "non", "proident", "sunt", "culpa", "qui",
             "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
     );
-    private static final Map<Algorithm, Map<AlgorithmOption, Multimap<String, String>>> VALUES = new EnumMap<>(Algorithm.class);
+    private static final Map<Algorithm, Multimap<String, String>> VALUES = new EnumMap<>(Algorithm.class);
 
     static {
-        final Multimap<String, String> simpleRatioLevenshteinValues = ArrayListMultimap.create();
-        simpleRatioLevenshteinValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "aliqua", "veniam", "fugiat"));
+//        final Multimap<String, String> normalizedLevenshteinValues = ArrayListMultimap.create();
+//        normalizedLevenshteinValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ipsum", "dolor", "sit"));
+//
+//        VALUES.put(Algorithm.NORMALIZED_LEVENSHTEIN, normalizedLevenshteinValues);
 
-        VALUES.put(Algorithm.SIMPLE_RATIO_LEVENSHTEIN, Map.of(
-                AlgorithmOption.SIMILARITY, simpleRatioLevenshteinValues,
-                AlgorithmOption.DISTANCE, simpleRatioLevenshteinValues
-        ));
-
-        final Multimap<String, String> normalizedLevenshteinValues = ArrayListMultimap.create();
-        normalizedLevenshteinValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ipsum", "dolor", "sit"));
-
-        VALUES.put(Algorithm.NORMALIZED_LEVENSHTEIN, Map.of(
-                AlgorithmOption.SIMILARITY, normalizedLevenshteinValues,
-                AlgorithmOption.DISTANCE, normalizedLevenshteinValues
-        ));
-
-        final Multimap<String, String> jaroWinklerValues = ArrayListMultimap.create();
-        jaroWinklerValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ea", "in", "veniam"));
-
-        VALUES.put(Algorithm.JARO_WINKLER, Map.of(
-                AlgorithmOption.SIMILARITY, jaroWinklerValues,
-                AlgorithmOption.DISTANCE, jaroWinklerValues
-        ));
+//        final Multimap<String, String> jaroWinklerValues = ArrayListMultimap.create();
+//        jaroWinklerValues.putAll(SAMPLE_QUERY, List.of("ad", "id", "ea", "in", "veniam"));
+//
+//        VALUES.put(Algorithm.DEBATTY_JARO_WINKLER, jaroWinklerValues);
     }
 
     @Test
     public void debug() {
-        VALUES.forEach((algorithm, map) -> map.forEach((option, expectedValues) -> expectedValues.asMap().forEach((key, collection) ->
+        VALUES.forEach((algorithm, map) -> map.asMap().forEach((query, expectedValues) ->
                 assertIterableEquals(SAMPLE_SET.stream()
-                        .sorted(orderByAlgorithm(key, algorithm, option))
+                        .sorted(orderByAlgorithm(query, algorithm))
                         .limit(5)
-                        .collect(Collectors.toList()), collection)
-        )));
+                        .collect(Collectors.toList()), expectedValues)
+        ));
     }
 
     @NotNull
-    private static Comparator<String> orderByAlgorithm(@NotNull final String query, @NotNull final Algorithm algorithm,
-                                                       @NotNull final AlgorithmOption algorithmOption) {
-        return Comparator.comparingDouble(string -> algorithm.calculate(query, string, algorithmOption));
+    private static Comparator<String> orderByAlgorithm(@NotNull final String query, @NotNull final Algorithm algorithm) {
+        return Comparator.comparingDouble(string -> algorithm.calculate(query.getBytes(StandardCharsets.US_ASCII), string.getBytes(StandardCharsets.US_ASCII)));
     }
 }

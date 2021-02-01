@@ -1,10 +1,8 @@
 package me.piggypiglet.docdex.documentation.index.utils;
 
 import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
-import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,8 +26,8 @@ public final class StreamUtils {
     }
 
     @NotNull
-    public static Stream<String> orderByAlgorithm(@NotNull final Stream<String> strings, @NotNull final String query,
-                                                  @NotNull final Algorithm algorithm, @NotNull final AlgorithmOption option) {
-        return strings.sorted(Comparator.comparingDouble(string -> algorithm.calculate(query, string, option)));
+    public static Stream<byte[]> orderByAlgorithm(@NotNull final Stream<byte[]> elements, final byte @NotNull [] query,
+                                                  @NotNull final Algorithm algorithm) {
+        return elements.sorted(Comparator.comparingDouble(element -> algorithm.calculate(query, element)));
     }
 }

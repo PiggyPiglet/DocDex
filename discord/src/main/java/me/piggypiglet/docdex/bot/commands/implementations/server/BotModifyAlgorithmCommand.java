@@ -13,11 +13,11 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class BotModifyAlgorithmCommand extends BotServerCommand {
-    private static final String USAGE = "<algorithm> <algorithm option>";
+    private static final String USAGE = "<algorithm>";
 
     @Inject
     public BotModifyAlgorithmCommand(final @NotNull Set<Server> servers, @NotNull final DatabaseObjects adapters) {
-        super(Set.of("algorithm"), USAGE, "Set the server's algorithm and algorithm option.", servers,
+        super(Set.of("algorithm"), USAGE, "Set the server's algorithm.", servers,
                 new ModifyAlgorithmCommand(USAGE, adapters));
     }
 }

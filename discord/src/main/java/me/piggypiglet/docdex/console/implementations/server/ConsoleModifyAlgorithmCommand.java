@@ -15,7 +15,7 @@ import java.util.Set;
 public final class ConsoleModifyAlgorithmCommand extends ConsoleServerCommand {
     @Inject
     public ConsoleModifyAlgorithmCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjects adapters) {
-        super("algorithm", "Set a server's algorithm and algorithm option.", servers,
-                new ModifyAlgorithmCommand("<server> <algorithm> <algorithm option>", adapters));
+        super("algorithm", "Set a server's algorithm.", servers,
+                new ModifyAlgorithmCommand("<server> <algorithm>", adapters));
     }
 }

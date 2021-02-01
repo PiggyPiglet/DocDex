@@ -2,11 +2,14 @@ package me.piggypiglet.docdex.documentation.index;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import gnu.trove.map.hash.TCustomHashMap;
+import gnu.trove.set.hash.TCustomHashSet;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.documentation.index.algorithm.Algorithm;
-import me.piggypiglet.docdex.documentation.index.algorithm.AlgorithmOption;
+import me.piggypiglet.docdex.documentation.index.array.ArrayHashingStrategy;
 import me.piggypiglet.docdex.documentation.index.objects.DocumentedObjectKey;
 import me.piggypiglet.docdex.documentation.index.storage.implementations.MongoStorage;
 import me.piggypiglet.docdex.documentation.index.utils.StreamUtils;
@@ -17,8 +20,9 @@ import me.piggypiglet.docdex.documentation.utils.DataUtils;
 import me.piggypiglet.docdex.documentation.utils.ParameterTypes;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,17 +35,27 @@ import java.util.stream.Stream;
 public final class DocumentationIndex {
     private static final Pattern PARAMETER_DELIMITER = Pattern.compile(",");
 
-    private final Multimap<Javadoc, String> types = HashMultimap.create();
-    private final Multimap<Javadoc, String> fqnTypes = HashMultimap.create();
-    private final Multimap<Javadoc, String> fields = HashMultimap.create();
-    private final Multimap<Javadoc, String> fqnFields = HashMultimap.create();
+    private final Multimap<Javadoc, byte[]> types = createArrayValueMultimap();
+    private final Multimap<Javadoc, byte[]> fqnTypes = createArrayValueMultimap();
+    private final Multimap<Javadoc, byte[]> fields = createArrayValueMultimap();
+    private final Multimap<Javadoc, byte[]> fqnFields = createArrayValueMultimap();
 
-    private final Map<Javadoc, Multimap<String, String>> fullMethods = new ConcurrentHashMap<>();
-    private final Map<Javadoc, Multimap<String, String>> fullFqnMethods = new ConcurrentHashMap<>();
-    private final Map<Javadoc, Multimap<String, String>> typeMethods = new ConcurrentHashMap<>();
-    private final Map<Javadoc, Multimap<String, String>> typeFqnMethods = new ConcurrentHashMap<>();
-    private final Map<Javadoc, Multimap<String, String>> nameMethods = new ConcurrentHashMap<>();
-    private final Map<Javadoc, Multimap<String, String>> nameFqnMethods = new ConcurrentHashMap<>();
+    private final Map<Javadoc, Multimap<byte[], byte[]>> fullMethods = new ConcurrentHashMap<>();
+    private final Map<Javadoc, Multimap<byte[], byte[]>> fullFqnMethods = new ConcurrentHashMap<>();
+    private final Map<Javadoc, Multimap<byte[], byte[]>> typeMethods = new ConcurrentHashMap<>();
+    private final Map<Javadoc, Multimap<byte[], byte[]>> typeFqnMethods = new ConcurrentHashMap<>();
+    private final Map<Javadoc, Multimap<byte[], byte[]>> nameMethods = new ConcurrentHashMap<>();
+    private final Map<Javadoc, Multimap<byte[], byte[]>> nameFqnMethods = new ConcurrentHashMap<>();
+
+    @NotNull
+    private static <K, V> Multimap<K, V> createArrayValueMultimap() {
+        return Multimaps.newSetMultimap(new HashMap<>(), () -> new TCustomHashSet<>(ArrayHashingStrategy.get()));
+    }
+
+    @NotNull
+    private static <K, V> Multimap<K, V> createArrayKeyValueMultimap() {
+        return Multimaps.newSetMultimap(new TCustomHashMap<>(ArrayHashingStrategy.get()), () -> new TCustomHashSet<>(ArrayHashingStrategy.get()));
+    }
 
     private final MongoStorage storage;
 
@@ -54,15 +68,15 @@ public final class DocumentationIndex {
         Stream.of(
                 fullMethods, fullFqnMethods, typeMethods, typeFqnMethods,
                 nameMethods, nameFqnMethods
-        ).forEach(map -> map.put(javadoc, HashMultimap.create()));
+        ).forEach(map -> map.put(javadoc, createArrayKeyValueMultimap()));
 
         for (final Map.Entry<DocumentedObjectKey, DocumentedObject> entry : objects.entrySet()) {
             final DocumentedObjectKey key = entry.getKey();
-            final String name = key.getName();
-            final String fqn = key.getFqn();
+            final byte[] name = toAscii(key.getName());
+            final byte[] fqn = toAscii(key.getFqn());
             final DocumentedObject object = entry.getValue();
-            final Multimap<Javadoc, String> names;
-            final Multimap<Javadoc, String> fqns;
+            final Multimap<Javadoc, byte[]> names;
+            final Multimap<Javadoc, byte[]> fqns;
 
             switch (object.getType()) {
                 case CLASS:
@@ -76,9 +90,9 @@ public final class DocumentationIndex {
                 case CONSTRUCTOR:
                 case METHOD:
                     final Map<ParameterTypes, String> params = DataUtils.getParams(object);
-                    final String fullParam = params.get(ParameterTypes.FULL);
-                    final String typeParam = params.get(ParameterTypes.TYPE);
-                    final String nameParam = params.get(ParameterTypes.NAME);
+                    final byte[] fullParam = toAscii(params.get(ParameterTypes.FULL));
+                    final byte[] typeParam = toAscii(params.get(ParameterTypes.TYPE));
+                    final byte[] nameParam = toAscii(params.get(ParameterTypes.NAME));
 
                     fullMethods.get(javadoc).put(name, fullParam);
                     fullFqnMethods.get(javadoc).put(fqn, fullParam);
@@ -104,21 +118,20 @@ public final class DocumentationIndex {
 
     @NotNull
     public List<DocumentedObjectResult> get(@NotNull final Javadoc javadoc, @NotNull String query,
-                                            @NotNull final Algorithm algorithm, @NotNull final AlgorithmOption algorithmOption,
-                                            final int limit) {
+                                            @NotNull final Algorithm algorithm, final int limit) {
         query = query.toLowerCase();
-        final Multimap<Javadoc, String> map;
+        final Multimap<Javadoc, byte[]> map;
 
         if (query.contains(".")) {
             if (query.contains("#")) {
-                return getMethods(javadoc, query, true, algorithm, algorithmOption, limit);
+                return getMethods(javadoc, query, true, algorithm, limit);
             } else if (query.contains("%")) {
                 map = fqnFields;
             } else {
                 map = fqnTypes;
             }
         } else if (query.contains("#")) {
-            return getMethods(javadoc, query, false, algorithm, algorithmOption, limit);
+            return getMethods(javadoc, query, false, algorithm, limit);
         } else if (query.contains("%")) {
             map = fields;
         } else {
@@ -137,55 +150,57 @@ public final class DocumentationIndex {
             return Collections.emptyList();
         }
 
-        return getFromStorage(getNames(map.get(javadoc), query, algorithm, algorithmOption), javadoc, field, limit);
+        return getFromStorage(getNames(map.get(javadoc), toAscii(query), algorithm), javadoc, field, limit);
     }
 
     @NotNull
     private List<DocumentedObjectResult> getMethods(@NotNull final Javadoc javadoc, @NotNull String query,
                                                     final boolean fqn, @NotNull final Algorithm algorithm,
-                                                    @NotNull final AlgorithmOption algorithmOption, final int limit) {
+                                                    final int limit) {
         query = query.replace(", ", ",");
 
-        final String methodQuery;
-        final String parameterQuery;
+        final String methodQueryString;
+        final String parameterQueryString;
 
         if (query.contains("(")) {
             final int openIndex = query.indexOf('(');
-            methodQuery = query.substring(0, openIndex);
+            methodQueryString = query.substring(0, openIndex);
 
             if (query.endsWith(")")) {
                 final int closingIndex = query.lastIndexOf(')');
-                parameterQuery = query.substring(openIndex, closingIndex);
+                parameterQueryString = query.substring(openIndex, closingIndex);
             } else {
-                parameterQuery = query.substring(openIndex);
+                parameterQueryString = query.substring(openIndex);
             }
         } else {
-            methodQuery = query;
-            parameterQuery = "";
+            methodQueryString = query;
+            parameterQueryString = "";
         }
 
-        final boolean full = parameterQuery.isBlank() || Arrays.stream(PARAMETER_DELIMITER.split(parameterQuery))
+        final boolean full = parameterQueryString.isBlank() || Arrays.stream(PARAMETER_DELIMITER.split(parameterQueryString))
                 .map(String::trim)
                 .anyMatch(parameter -> parameter.contains(" "));
+        final byte[] methodQuery = toAscii(methodQueryString);
+        final byte[] parameterQuery = toAscii(parameterQueryString);
 
-        final Multimap<String, String> fullMethods = (fqn ? fullFqnMethods : this.fullMethods).get(javadoc);
-        final Multimap<String, String> typeMethods = (fqn ? typeFqnMethods : this.typeMethods).get(javadoc);
-        final Multimap<String, String> nameMethods = (fqn ? nameFqnMethods : this.nameMethods).get(javadoc);
+        final Multimap<byte[], byte[]> fullMethods = (fqn ? fullFqnMethods : this.fullMethods).get(javadoc);
+        final Multimap<byte[], byte[]> typeMethods = (fqn ? typeFqnMethods : this.typeMethods).get(javadoc);
+        final Multimap<byte[], byte[]> nameMethods = (fqn ? nameFqnMethods : this.nameMethods).get(javadoc);
 
         if (full) {
             return getFromStorage(
-                    toFormattedMethodNames(getMethodNames(fullMethods, methodQuery, parameterQuery, algorithm, algorithmOption)),
+                    toFormattedMethodNames(getMethodNames(fullMethods, methodQuery, parameterQuery, algorithm)),
                     javadoc, DataUtils.fromParameterType(ParameterTypes.FULL, fqn), limit
             );
         }
 
-        final List<Map.Entry<String, String>> names = getMethodNames(nameMethods, methodQuery, parameterQuery, algorithm, algorithmOption);
+        final List<Map.Entry<byte[], byte[]>> names = getMethodNames(nameMethods, methodQuery, parameterQuery, algorithm);
 
         if (names.size() == 1) {
             return getFromStorage(toFormattedMethodNames(names), javadoc, DataUtils.fromParameterType(ParameterTypes.NAME, fqn), limit);
         }
 
-        final List<Map.Entry<String, String>> types = getMethodNames(typeMethods, methodQuery, parameterQuery, algorithm, algorithmOption);
+        final List<Map.Entry<byte[], byte[]>> types = getMethodNames(typeMethods, methodQuery, parameterQuery, algorithm);
 
         if (types.size() == 1) {
             return getFromStorage(toFormattedMethodNames(types), javadoc, DataUtils.fromParameterType(ParameterTypes.TYPE, fqn), limit);
@@ -196,15 +211,15 @@ public final class DocumentationIndex {
                 names.stream().map(name -> Map.entry(ParameterTypes.NAME, name))
         )
                 .parallel()
-                .filter(StreamUtils.distinctByKey(entry -> entry.getValue().getKey() + '(' + entry.getValue().getValue() + ')'))
+                .filter(StreamUtils.distinctByKey(entry -> new String(entry.getValue().getKey()) + '(' + new String(entry.getValue().getValue()) + ')'))
                 .sorted(Comparator.comparingDouble(object -> {
-                    final Map.Entry<String, String> name = object.getValue();
-                    final double methodRatio = algorithm.calculate(name.getKey(), methodQuery, algorithmOption);
-                    final double parameterRatio = parameterQuery.isBlank() ? 0 : algorithm.calculate(name.getValue(), parameterQuery, algorithmOption);
+                    final Map.Entry<byte[], byte[]> name = object.getValue();
+                    final double methodRatio = algorithm.calculate(name.getKey(), methodQuery);
+                    final double parameterRatio = algorithm.calculate(name.getValue(), parameterQuery);
 
                     return methodRatio + parameterRatio;
                 }))
-                .map(entry -> Map.entry(entry.getKey(), entry.getValue().getKey() + '(' + entry.getValue().getValue() + ')'))
+                .map(entry -> Map.entry(entry.getKey(), new String(entry.getValue().getKey()) + '(' + new String(entry.getValue().getValue()) + ')'))
                 .collect(Collectors.toList());
         final List<DocumentedObjectResult> results = new ArrayList<>();
 
@@ -228,27 +243,26 @@ public final class DocumentationIndex {
     }
 
     @NotNull
-    private List<String> getNames(@NotNull final Collection<String> collection, @NotNull final String query,
-                                  @NotNull final Algorithm algorithm, @NotNull final AlgorithmOption algorithmOption) {
+    private List<byte[]> getNames(@NotNull final Collection<byte[]> collection, final byte @NotNull [] query,
+                                  @NotNull final Algorithm algorithm) {
         if (collection.contains(query)) {
             return List.of(query);
         }
 
-        return StreamUtils.orderByAlgorithm(collection.parallelStream(), query, algorithm, algorithmOption)
+        return StreamUtils.orderByAlgorithm(collection.parallelStream(), query, algorithm)
                 .collect(Collectors.toList());
     }
 
     @NotNull
-    private List<Map.Entry<String, String>> getMethodNames(@NotNull final Multimap<String, String> map, @NotNull final String methodQuery,
-                                                           @NotNull final String parameterQuery, @NotNull final Algorithm algorithm,
-                                                           @NotNull final AlgorithmOption algorithmOption) {
-        final List<String> methods = getNames(map.keySet(), methodQuery, algorithm, algorithmOption);
-        final List<Map.Entry<String, String>> results = new ArrayList<>();
+    private List<Map.Entry<byte[], byte[]>> getMethodNames(@NotNull final Multimap<byte[], byte[]> map, final byte @NotNull [] methodQuery,
+                                                           final byte @NotNull [] parameterQuery, @NotNull final Algorithm algorithm) {
+        final List<byte[]> methods = getNames(map.keySet(), methodQuery, algorithm);
+        final List<Map.Entry<byte[], byte[]>> results = new ArrayList<>();
 
-        for (final String method : methods) {
-            final List<String> parameterResults = getNames(map.get(method), parameterQuery, algorithm, algorithmOption);
+        for (final byte[] method : methods) {
+            final List<byte[]> parameterResults = getNames(map.get(method), parameterQuery, algorithm);
 
-            for (final String parameterResult : parameterResults) {
+            for (final byte[] parameterResult : parameterResults) {
                 results.add(Map.entry(method, parameterResult));
             }
         }
@@ -257,18 +271,35 @@ public final class DocumentationIndex {
     }
 
     @NotNull
-    private static List<String> toFormattedMethodNames(@NotNull final List<Map.Entry<String, String>> methods) {
+    private static List<byte[]> toFormattedMethodNames(@NotNull final List<Map.Entry<byte[], byte[]>> methods) {
         return methods.stream()
-                .map(entry -> entry.getKey() + '(' + entry.getValue() + ')')
+                .map(entry -> formatName(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
+    private static byte @NotNull [] formatName(final byte @NotNull [] method, final byte @NotNull [] parameters) {
+        final int methodLength = method.length;
+        final int parametersLength = parameters.length;
+        final int resultLength = methodLength + parametersLength + 2;
+
+        final byte[] result = new byte[resultLength];
+        System.arraycopy(method, 0, result, 0, methodLength);
+        result[methodLength] = '(';
+        System.arraycopy(parameters, 0, result, methodLength + 1, parametersLength);
+        result[resultLength - 1] = ')';
+
+        return result;
+    }
+
     @NotNull
-    private List<DocumentedObjectResult> getFromStorage(@NotNull final List<String> names, @NotNull final Javadoc javadoc,
+    private List<DocumentedObjectResult> getFromStorage(@NotNull final List<byte[]> names, @NotNull final Javadoc javadoc,
                                                         @NotNull final MongoDocumentedObjectFields field, final int limit) {
+        final List<String> stringNames = names.stream()
+                .map(String::new)
+                .collect(Collectors.toList());
         final List<DocumentedObjectResult> results = new ArrayList<>();
 
-        for (final String name : names) {
+        for (final String name : stringNames) {
             final DocumentedObjectResult result = storage.get(javadoc, Map.of(field.getName(), name))
                     .map(documentedObject -> new DocumentedObjectResult(name, documentedObject))
                     .orElse(null);
@@ -285,5 +316,9 @@ public final class DocumentationIndex {
         }
 
         return results;
+    }
+
+    private static byte @NotNull [] toAscii(@NotNull final String string) {
+        return string.getBytes(StandardCharsets.US_ASCII);
     }
 }
