@@ -92,7 +92,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                                 categories.add(new JavadocCategory(category.getName(), category.getDescription(), javadocs));
                             });
 
-                    return new Server(server.getId(), server.getPrefix(), algorithm, roles, rules, categories);
+                    return new Server(server.getId(), server.getPrefix(), algorithm, server.getDefaultJavadoc(), roles, rules, categories);
                 }).collect(Collectors.toSet());
     }
 
@@ -100,7 +100,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     @Override
     public ModificationRequest applyToRaw(final @NotNull Server server) {
         final String id = server.getId();
-        final RawServer rawServer = new RawServer(id, server.getPrefix(), server.getAlgorithm().name());
+        final RawServer rawServer = new RawServer(id, server.getPrefix(), server.getAlgorithm().name(), server.getDefaultJavadoc());
 
         final Set<RawServerRoles> rawServerRoles = server.getRoles().stream()
                 .map(role -> new RawServerRoles(server.getId(), role))
