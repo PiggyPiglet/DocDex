@@ -2,9 +2,12 @@ package me.piggypiglet.docdex.bot.commands.implementations;
 
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
+import me.piggypiglet.docdex.bot.listeners.GuildJoinHandler;
 import me.piggypiglet.docdex.config.Config;
+import me.piggypiglet.docdex.db.server.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,15 +36,34 @@ public final class InfoCommand extends BotCommand {
     private static final NumberFormat FORMATTER = NumberFormat.getInstance();
 
     private final Config config;
+    private final Set<Server> servers;
+    private final GuildJoinHandler guildJoinHandler;
+    private final Server defaultServer;
 
     @Inject
-    public InfoCommand(@NotNull final Config config) {
+    public InfoCommand(@NotNull final Config config, @NotNull final Set<Server> servers,
+                       @NotNull final GuildJoinHandler guildJoinHandler, @NotNull @Named("default") final Server defaultServer) {
         super(Set.of("info"), "", "Display info about the bot.");
+
         this.config = config;
+        this.servers = servers;
+        this.guildJoinHandler = guildJoinHandler;
+        this.defaultServer = defaultServer;
     }
 
     @Override
     protected void execute(final @NotNull User user, final @NotNull Message message) {
+        final Server server;
+        if (message.isFromGuild()) {
+            final Guild guild = message.getGuild();
+
+            server = servers.stream()
+                    .filter(element -> element.getId().equals(guild.getId()))
+                    .findAny().orElseGet(() -> guildJoinHandler.joinGuild(guild).join());
+        } else {
+            server = defaultServer;
+        }
+
         final HttpRequest request = HttpRequest.newBuilder(URI.create(config.getUrl() + "/javadocs"))
                 .build();
         CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -60,7 +82,7 @@ public final class InfoCommand extends BotCommand {
                     );
                     embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
                     embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);
-                    embed.addField("Javadocs", formatNumber(JsonParser.parseString(json).getAsJsonArray().size()) + " (Default: " + config.getDefaultJavadoc() + ')', true);
+                    embed.addField("Javadocs", formatNumber(JsonParser.parseString(json).getAsJsonArray().size()) + " (Default: " + server.getDefaultJavadoc() + ')', true);
                     embed.setFooter("DocDex v" + getClass().getPackage().getImplementationVersion());
 
                     message.getChannel().sendMessage(embed.build()).queue();

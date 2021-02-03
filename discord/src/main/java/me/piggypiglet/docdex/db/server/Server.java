@@ -15,16 +15,18 @@ public final class Server {
     private final String id;
     private String prefix;
     private Algorithm algorithm;
+    private String defaultJavadoc;
     private final Set<String> roles;
     private final Map<String, CommandRule> rules;
     private final Set<JavadocCategory> javadocCategories;
 
     public Server(@NotNull final String id, @NotNull final String prefix,
-                  @NotNull final Algorithm algorithm, @NotNull final Set<String> roles,
+                  @NotNull final Algorithm algorithm, @NotNull final String defaultJavadoc, @NotNull final Set<String> roles,
                   @NotNull final Map<String, CommandRule> rules, @NotNull final Set<JavadocCategory> javadocCategories) {
         this.id = id;
         this.prefix = prefix;
         this.algorithm = algorithm;
+        this.defaultJavadoc = defaultJavadoc;
         this.roles = roles;
         this.rules = rules;
         this.javadocCategories = javadocCategories;
@@ -52,6 +54,11 @@ public final class Server {
     public void setAlgorithm(@NotNull final Algorithm algorithm) {
         this.algorithm = algorithm;
     }
+
+    @NotNull
+    public String getDefaultJavadoc() { return defaultJavadoc; }
+
+    public void setDefaultJavadoc(@NotNull final String defaultJavadoc) { this.defaultJavadoc = defaultJavadoc; }
 
     @NotNull
     public Set<String> getRoles() {
@@ -86,6 +93,7 @@ public final class Server {
         return "Server{" +
                 "id='" + id + '\'' +
                 ", prefix='" + prefix + '\'' +
+                ", defaultJavadoc='" + defaultJavadoc + '\'' +
                 ", rules=" + rules +
                 ", javadocCategories=" + javadocCategories +
                 '}';

@@ -19,12 +19,14 @@ public final class RawServer implements RawObject {
     private final String id;
     private final String prefix;
     private final String algorithm;
+    private final String defaultJavadoc;
 
     public RawServer(@NotNull final String id, @NotNull final String prefix,
-                     @NotNull final String algorithm) {
+                     @NotNull final String algorithm, @NotNull final String defaultJavadoc) {
         this.id = id;
         this.prefix = prefix;
         this.algorithm = algorithm;
+        this.defaultJavadoc = defaultJavadoc;
     }
 
     @NotNull
@@ -42,12 +44,15 @@ public final class RawServer implements RawObject {
         return algorithm;
     }
 
+    @NotNull
+    public String getDefaultJavadoc() { return defaultJavadoc; }
+
     @Override
     public boolean actualEquals(@Nullable final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final RawServer rawServer = (RawServer) o;
-        return id.equals(rawServer.id) && prefix.equals(rawServer.prefix) && algorithm.equals(rawServer.algorithm);
+        return id.equals(rawServer.id) && prefix.equals(rawServer.prefix) && algorithm.equals(rawServer.algorithm) && defaultJavadoc.equals(rawServer.defaultJavadoc);
     }
 
     @Override
@@ -69,6 +74,7 @@ public final class RawServer implements RawObject {
                 "id='" + id + '\'' +
                 ", prefix='" + prefix + '\'' +
                 ", algorithm='" + algorithm + '\'' +
+                ", defaultJavadoc='" + defaultJavadoc + '\'' +
                 '}';
     }
 }
