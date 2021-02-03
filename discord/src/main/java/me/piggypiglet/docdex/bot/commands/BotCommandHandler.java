@@ -7,16 +7,23 @@ import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.commands.framework.PermissionCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.documentation.SimpleCommand;
+import me.piggypiglet.docdex.bot.emote.EmoteUtils;
+import me.piggypiglet.docdex.bot.emote.EmoteWrapper;
 import me.piggypiglet.docdex.bot.listeners.GuildJoinHandler;
 import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,12 +34,19 @@ import java.util.concurrent.atomic.AtomicReference;
 // ------------------------------
 @Singleton
 public final class BotCommandHandler {
+    private static final EmoteWrapper TRASH = EmoteWrapper.from("\uD83D\uDDD1️");
+
     private final Set<Server> servers;
     private final Set<BotCommand> commands;
     private final BotCommand unknownCommand;
     private final GuildJoinHandler guildJoinHandler;
     private final Server defaultServer;
     private final CommandRule defaultCommandRule;
+
+    private final Map<String, Map.Entry<String, String>> currentCommands = ExpiringMap.builder()
+            .expirationPolicy(ExpirationPolicy.ACCESSED)
+            .expiration(15, TimeUnit.MINUTES)
+            .build();
 
     @Inject
     public BotCommandHandler(@NotNull final Set<Server> servers, @NotNull @Named("jda commands") final Set<BotCommand> commands,
@@ -50,7 +64,7 @@ public final class BotCommandHandler {
         commands.add(helpCommand);
     }
 
-    public void process(@NotNull final User user, @NotNull final Message message) {
+    public void processCommand(@NotNull final User user, @NotNull final Message message) {
         final Server server;
 
         if (message.isFromGuild()) {
@@ -127,11 +141,50 @@ public final class BotCommandHandler {
         final int start = (prefix + match.get()).length();
 
         try {
-            command.run(user, message, server, start);
+            Optional.ofNullable(command.run(user, message, server, start)).ifPresentOrElse(action -> action.queue(success -> {
+                if (message.isFromGuild()) {
+                    currentCommands.put(success.getId(), Map.entry(message.getId(), user.getId()));
+                    EmoteUtils.addEmote(success, TRASH);
+                }
+            }, failure -> {
+                if (failure instanceof PermissionException) {
+                    PermissionUtils.sendPermissionError(message, ((PermissionException) failure).getPermission());
+                }
+            }), () -> message.delete().queue());
         } catch (PermissionException exception) {
             PermissionUtils.sendPermissionError(message, exception.getPermission());
         }
     }
+
+    public void processCommandDeletion(@NotNull final GuildMessageReactionAddEvent event) {
+        final TextChannel channel = event.getChannel();
+        final String id = event.getMessageId();
+
+        channel.retrieveMessageById(id).queue(message -> {
+            final MessageReaction.ReactionEmote reaction = event.getReactionEmote();
+            final Map.Entry<String, String> entry = currentCommands.get(id);
+
+            if (entry == null) {
+                return;
+            }
+
+            final String commandRequestId = entry.getKey();
+            final String authorId = entry.getValue();
+
+            if (authorId.equals(event.getUserId()) && reaction.isEmoji() && reaction.getEmoji().equals(TRASH.getUnicode())) {
+                message.delete().queue();
+                channel.retrieveMessageById(commandRequestId).queue(commandRequest -> {
+                    try {
+                        commandRequest.delete().queue();
+                    } catch (PermissionException exception) {
+                        PermissionUtils.sendPermissionError(message, exception.getPermission());
+                    }
+                });
+                currentCommands.remove(id);
+            }
+        });
+    }
+
 
     @NotNull
     public Set<BotCommand> getCommands() {

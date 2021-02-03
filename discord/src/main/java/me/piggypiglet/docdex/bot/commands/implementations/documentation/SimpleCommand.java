@@ -12,7 +12,9 @@ import me.piggypiglet.docdex.scanning.annotations.Hidden;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
@@ -35,9 +37,10 @@ public final class SimpleCommand extends DocumentationCommand {
         this.paginationManager = paginationManager;
     }
 
+    @Nullable
     @Override
-    protected void execute(final @NotNull Message message, @NotNull final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
-                           final boolean returnFirst) {
+    protected RestAction<Message> execute(final @NotNull Message message, @NotNull final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
+                                          final boolean returnFirst) {
         final List<MessageEmbed> pages = objects.stream()
                 .map(entry -> {
                     final DocumentedObject object = entry.getKey().getObject();
@@ -60,16 +63,19 @@ public final class SimpleCommand extends DocumentationCommand {
                 }).collect(Collectors.toList());
 
         if (returnFirst) {
-            message.getChannel().sendMessage(pages.get(0)).queue();
-            return;
+            return message.getChannel().sendMessage(pages.get(0));
         }
 
         final Pagination pagination = Pagination.builder()
                 .pages(pages)
                 .author(message.getAuthor().getId())
                 .build();
-        Optional.ofNullable(pagination.send(message.getChannel())).ifPresent(action -> action.queue(success ->
-                paginationManager.addPaginatedMessage(success.getId(), pagination)));
+
+        return Optional.ofNullable(pagination.send(message)).map(messageRestAction -> messageRestAction.map(success -> {
+            paginationManager.addPaginatedMessage(success.getId(), pagination);
+            return success;
+        })).orElse(null);
+
     }
 
     @NotNull

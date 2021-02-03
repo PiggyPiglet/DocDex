@@ -71,7 +71,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                             .map(RawServerRoles::getId)
                             .collect(Collectors.toSet());
                     final Map<String, CommandRule> rules = new HashMap<>();
-                    final Set<JavadocCategory> categories = new HashSet<>();
+                    final Map<String, JavadocCategory> categories = new HashMap<>();
 
                     serverRules.stream()
                             .filter(rule -> rule.getServer().equals(server.getId()))
@@ -89,7 +89,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                                         .map(RawServerJavadocCategoriesJavadocs::getName)
                                         .collect(Collectors.toSet());
 
-                                categories.add(new JavadocCategory(category.getName(), category.getDescription(), javadocs));
+                                categories.put(category.getName(), new JavadocCategory(category.getDescription(), javadocs));
                             });
 
                     return new Server(server.getId(), server.getPrefix(), algorithm, server.getDefaultJavadoc(), roles, rules, categories);
@@ -115,9 +115,9 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
         final Set<RawServerJavadocCategories> rawServerJavadocCategories = new HashSet<>();
         final Set<RawServerJavadocCategoriesJavadocs> rawServerJavadocCategoriesJavadocs = new HashSet<>();
 
-        server.getJavadocCategories().forEach(category -> {
-            rawServerJavadocCategories.add(new RawServerJavadocCategories(server.getId(), category.getName(), category.getDescription()));
-            category.getJavadocs().forEach(javadoc -> rawServerJavadocCategoriesJavadocs.add(new RawServerJavadocCategoriesJavadocs(server.getId(), category.getName(), javadoc)));
+        server.getJavadocCategories().forEach((name, category) -> {
+            rawServerJavadocCategories.add(new RawServerJavadocCategories(server.getId(), name, category.getDescription()));
+            category.getJavadocs().forEach(javadoc -> rawServerJavadocCategoriesJavadocs.add(new RawServerJavadocCategoriesJavadocs(server.getId(), name, javadoc)));
         });
 
         final Set<Object> modified = new HashSet<>();

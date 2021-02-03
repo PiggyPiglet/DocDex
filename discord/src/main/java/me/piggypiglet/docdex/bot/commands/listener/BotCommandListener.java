@@ -3,6 +3,7 @@ package me.piggypiglet.docdex.bot.commands.listener;
 import com.google.inject.Inject;
 import me.piggypiglet.docdex.bot.commands.BotCommandHandler;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -31,11 +32,16 @@ public final class BotCommandListener extends ListenerAdapter {
         EXECUTOR.submit(() -> {
             if (!event.getAuthor().isBot()) {
                 try {
-                    commandHandler.process(event.getAuthor(), event.getMessage());
+                    commandHandler.processCommand(event.getAuthor(), event.getMessage());
                 } catch (Exception exception) {
                     LOGGER.error("Something went wrong when running a command", exception);
                 }
             }
         });
+    }
+
+    @Override
+    public void onGuildMessageReactionAdd(@NotNull final GuildMessageReactionAddEvent event) {
+        EXECUTOR.submit(() -> commandHandler.processCommandDeletion(event));
     }
 }

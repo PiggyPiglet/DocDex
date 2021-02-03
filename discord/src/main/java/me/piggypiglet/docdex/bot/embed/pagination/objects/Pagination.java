@@ -3,10 +3,11 @@ package me.piggypiglet.docdex.bot.embed.pagination.objects;
 import com.google.common.collect.Iterables;
 import me.piggypiglet.docdex.bot.emote.EmoteUtils;
 import me.piggypiglet.docdex.bot.emote.EmoteWrapper;
+import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +26,6 @@ import java.util.stream.Stream;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class Pagination {
-    public static final EmoteWrapper TRASH = EmoteWrapper.from("\uD83D\uDDD1️");
-
     private final Map<EmoteWrapper, MessageEmbed> pages;
     private final String author;
 
@@ -55,19 +54,23 @@ public final class Pagination {
     }
 
     @Nullable
-    public RestAction<Message> send(@NotNull final MessageChannel channel) {
+    public RestAction<Message> send(@NotNull final Message message) {
         if (pages.isEmpty()) {
             return null;
         }
 
         final MessageEmbed embed = Iterables.get(pages.values(), 0);
 
-        return channel.sendMessage(embed)
-                .map(message -> {
-                    pages.keySet().forEach(emote -> EmoteUtils.addEmote(message, emote));
-                    EmoteUtils.addEmote(message, TRASH);
-                    return message;
-                });
+        try {
+            return message.getChannel().sendMessage(embed)
+                    .map(potentialMessage -> {
+                        pages.keySet().forEach(emote -> EmoteUtils.addEmote(potentialMessage, emote));
+                        return potentialMessage;
+                    });
+        } catch (InsufficientPermissionException exception) {
+            PermissionUtils.sendPermissionError(message, exception.getPermission());
+            return null;
+        }
     }
 
     public static Builder builder() {
@@ -76,8 +79,8 @@ public final class Pagination {
 
     public static final class Builder {
         private static final List<EmoteWrapper> DEFAULT_EMOTES = Stream.of(
-                "one", "two", "three", "four", "five",
-                "six", "seven", "eight", "nine"
+                "zero", "one", "two", "three", "four", "five",
+                "six", "seven", "eight", "nine", "keycap_ten"
         ).map(emote -> ':' + emote + ':').map(EmoteWrapper::from).collect(Collectors.toList());
 
         private final Map<EmoteWrapper, MessageEmbed> pages = new LinkedHashMap<>();
@@ -95,7 +98,7 @@ public final class Pagination {
             }
 
             final EmbedBuilder builder = new EmbedBuilder(page);
-            final String pageNum = "Page " + (i + 1);
+            final String pageNum = "Page " + i;
 
             final MessageEmbed.Footer footer = page.getFooter();
 

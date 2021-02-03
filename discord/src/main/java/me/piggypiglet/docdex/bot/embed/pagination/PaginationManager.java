@@ -64,12 +64,6 @@ public final class PaginationManager {
         if (reactionEmote.isEmote()) {
             emote = EmoteWrapper.from(reactionEmote.getEmote());
         } else {
-            if (reactionEmote.getEmoji().equals(Pagination.TRASH.getUnicode())) {
-                paginatedMessages.remove(message.getId());
-                message.delete().queue();
-                return;
-            }
-
             emote = EmoteWrapper.from(reactionEmote.getEmoji());
         }
 

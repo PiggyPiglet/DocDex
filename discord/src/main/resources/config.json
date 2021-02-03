@@ -4,6 +4,54 @@
   "url": "https://docdex.helpch.at",
   "default_javadoc": "jdk",
 
+  "default_categories": {
+    "Java": {
+      "description": "Official javadocs for different JDK versions.",
+      "javadocs": [
+        "jdk11",
+        "jdk8"
+      ]
+    },
+    "Spigot": {
+      "description": "Spigot javadocs, 1.7.2 -> latest.",
+      "javadocs": [
+        "1.16.5", "1.16.4", "1.16.3", "1.16.2", "1.16.1", "1.15.2", "1.15.1", "1.15", "1.14.4", "1.14.3",
+        "1.14.2", "1.14.1", "1.14", "1.13.2", "1.13.1", "1.13", "1.12.2", "1.12.1", "1.12", "1.11.2", "1.11.1",
+        "1.11", "1.10.2", "1.10", "1.9.4", "1.9.2", "1.9", "1.8.8", "1.8.7", "1.8.6", "1.8.5", "1.8.4", "1.8.3",
+        "1.8", "1.7.10", "1.7.9", "1.7.8", "1.7.5", "1.7.2"
+      ]
+    },
+    "Paper": {
+      "description": "Paper javadocs, 1.9 -> latest",
+      "javadocs": [
+        "paper-1.16", "paper-1.15", "paper-1.14", "paper-1.13", "paper-1.12", "paper-1.11", "paper-1.10",
+        "paper-1.9"
+      ]
+    },
+    "Other Minecraft": {
+      "description": "Other minecraft stuff that don't quite fit into the other categories.",
+      "javadocs": [
+        "velocity", "adventure", "sponge", "bungeecord", "bungeecord-chat", "waterfall", "waterfall-chat"
+      ]
+    },
+    "Minecraft Plugins": {
+      "description": "Plugins for the various minecraft server platforms.",
+      "javadocs": [
+        "bkcommonlib", "traincarts", "signlink", "worldedit", "luckperms", "fawe", "worldguard", "plotsquared",
+        "plotsquared-bukkit", "fawe-bukkit", "antivpn"
+      ]
+    },
+    "Miscellaneous": {
+      "description": "Javadocs that don't fit into other categories.",
+      "javadocs": [
+        "caffeine", "helper-sql", "configure-gson", "gson", "commons-codec", "commons-cli", "configurate-json",
+        "commons-compress", "commons-crypto", "helper", "configurate-core", "commons-collections4", "configurate-hocon",
+        "commons-configuration2", "processing", "javacord", "snakeyaml", "commons-lang3", "commons-text",
+        "commons-logging", "commons-io", "guava", "commons-email", "guice", "jda"
+      ]
+    }
+  },
+
   "mysql": {
     "host": "127.0.0.1",
     "port": 3306,

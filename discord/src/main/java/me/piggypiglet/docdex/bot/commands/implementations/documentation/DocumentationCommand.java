@@ -14,9 +14,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -57,24 +60,25 @@ public abstract class DocumentationCommand extends BotCommand {
         this.config = config;
     }
 
+    @Nullable
     @Override
-    public void run(final @NotNull User user, final @NotNull Message message,
-                    @NotNull final Server server, final int start) {
+    public RestAction<Message> run(final @NotNull User user, final @NotNull Message message,
+                                   @NotNull final Server server, final int start) {
         final List<String> args = args(message, start);
         final MessageChannel channel = message.getChannel();
 
         if (DISALLOWED_CHARACTERS.matcher(String.join(" ", args)).find()) {
             queueAndDelete(channel.sendMessage("You have disallowed characters in your query. Allowed characters: `a-zA-Z0-9.$%_#-, ()`"));
-            return;
+            return null;
         }
 
         if (args.isEmpty() || args.get(0).isBlank()) {
             queueAndDelete(channel.sendMessage("**Incorrect usage:**\nCorrect usage is: " +
                     message.getContentRaw().substring(0, start) + "[javadoc] [limit/$(first result)] <query>"));
-            return;
+            return null;
         }
 
-        final AtomicReference<String> javadoc = new AtomicReference<>(config.getDefaultJavadoc());
+        final AtomicReference<String> javadoc = new AtomicReference<>(server.getDefaultJavadoc());
         final AtomicInteger limit = new AtomicInteger();
         final AtomicBoolean returnClosest = new AtomicBoolean(false);
         final String query;
@@ -107,7 +111,7 @@ public abstract class DocumentationCommand extends BotCommand {
                     returnClosest.set(true);
                 } else {
                     queueAndDelete(message.getChannel().sendMessage("Invalid limit."));
-                    return;
+                    return null;
                 }
             }
 
@@ -123,41 +127,50 @@ public abstract class DocumentationCommand extends BotCommand {
             urlBuilder.limit(limit.get());
         }
 
-        final HttpRequest request = HttpRequest.newBuilder(URI.create(config.getUrl() + urlBuilder.build()))
+        final String uri = config.getUrl() + urlBuilder.build();
+        final HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
                 .build();
-        CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    final String body = response.body();
+        final HttpResponse<String> response;
 
-                    if (response.statusCode() == SERVICE_UNAVAILABLE) {
-                        queueAndDelete(channel.sendMessage(body));
-                        return;
-                    }
+        try {
+            response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException exception) {
+            LOGGER.error("Interrupted.", exception);
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (IOException exception) {
+            LOGGER.error("Something went wrong when requesting from " + uri, exception);
+            return null;
+        }
 
-                    if (response.statusCode() == BAD_GATEWAY) {
-                        queueAndDelete(channel.sendMessage("I am currently under maintenance."));
-                        return;
-                    }
+        final String body = response.body();
 
-                    if (body.equalsIgnoreCase("null")) {
-                        queueAndDelete(channel.sendMessage("Unknown javadoc: " + javadoc.get() + '.'));
-                        return;
-                    }
+        if (response.statusCode() == SERVICE_UNAVAILABLE) {
+            queueAndDelete(channel.sendMessage(body));
+            return null;
+        }
 
-                    //noinspection unchecked
-                    final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects = ((List<DocumentedObjectResult>) GSON.fromJson(body, OBJECT_LIST)).stream()
-                            .map(result -> Map.entry(result, DocumentationObjectSerializer.toEmbed(user, javadoc.get(), result.getObject())))
-                            .collect(Collectors.toList());
+        if (response.statusCode() == BAD_GATEWAY) {
+            queueAndDelete(channel.sendMessage("I am currently under maintenance."));
+            return null;
+        }
 
-                    execute(message, objects, (objects.size() == 1 && limit.get() == 0) || returnClosest.get());
-                }).exceptionally(throwable -> {
-                    LOGGER.error("", throwable);
-                    return null;
-                });
+        if (body.equalsIgnoreCase("null")) {
+            queueAndDelete(channel.sendMessage("Unknown javadoc: " + javadoc.get() + '.'));
+            return null;
+        }
+
+        //noinspection unchecked
+        final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects = ((List<DocumentedObjectResult>) GSON.fromJson(body, OBJECT_LIST)).stream()
+                .map(result -> Map.entry(result, DocumentationObjectSerializer.toEmbed(user, javadoc.get(), result.getObject())))
+                .collect(Collectors.toList());
+
+        return execute(message, objects, (objects.size() == 1 && limit.get() == 0) || returnClosest.get());
     }
 
-    protected abstract void execute(final @NotNull Message message, final @NotNull List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
-                                    final boolean returnFirst);
+    @Nullable
+    protected abstract RestAction<Message> execute(final @NotNull Message message, final @NotNull List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
+                                                   final boolean returnFirst);
 
     @NotNull
     @Override

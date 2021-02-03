@@ -29,6 +29,6 @@ public final class ServerCreator implements DatabaseObjectCreator<Server> {
 
     @NotNull
     public Server createInstance(@NotNull final String id) {
-        return new Server(id, config.getPrefix(), Algorithm.DUKE_JARO_WINKLER, config.getDefaultJavadoc(), new HashSet<>(), new HashMap<>(), new HashSet<>());
+        return new Server(id, config.getPrefix(), Algorithm.DUKE_JARO_WINKLER, config.getDefaultJavadoc(), new HashSet<>(), new HashMap<>(), new HashMap<>(config.getDefaultCategories()));
     }
 }

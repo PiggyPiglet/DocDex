@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.ServerCommand;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -30,11 +31,11 @@ public abstract class BotServerCommand extends BotCommand implements PermissionC
     }
 
     @Override
-    protected void execute(final @NotNull User user, final @NotNull Message message,
-                           @NotNull final List<String> args) {
+    protected RestAction<Message> execute(final @NotNull User user, final @NotNull Message message,
+                                          @NotNull final List<String> args) {
         if (args.isEmpty() || args.get(0).isBlank()) {
             command.sendUsage(string -> message.getChannel().sendMessage(string).queue());
-            return;
+            return null;
         }
 
         final Server server;
@@ -49,12 +50,13 @@ public abstract class BotServerCommand extends BotCommand implements PermissionC
 
         if (server == null) {
             message.getChannel().sendMessage("You are not in a server.").queue();
-            return;
+            return null;
         }
 
         final List<String> newArgs = Lists.newArrayList(message.getGuild().getId());
         newArgs.addAll(args);
 
         command.run(server, newArgs, string -> message.getChannel().sendMessage(string).queue());
+        return null;
     }
 }

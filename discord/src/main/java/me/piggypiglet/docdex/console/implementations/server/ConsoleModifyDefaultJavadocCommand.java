@@ -11,7 +11,7 @@ import java.util.Set;
 public final class ConsoleModifyDefaultJavadocCommand extends ConsoleServerCommand {
     @Inject
     public ConsoleModifyDefaultJavadocCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjects adapters) {
-        super("javadoc", "Set a server's default javadoc.", servers,
+        super("default_javadoc", "Set a server's default javadoc.", servers,
                 new ModifyDefaultJavadocCommand("<server> <javadoc>", adapters));
     }
 }

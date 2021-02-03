@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.TimeUnit;
-
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
@@ -29,7 +27,6 @@ public final class PermissionUtils {
             return;
         }
 
-        message.getChannel().sendMessage(error)
-                .queue(sentMessage -> sentMessage.delete().queueAfter(15, TimeUnit.SECONDS));
+        message.getChannel().sendMessage(error).queue();
     }
 }

@@ -13,7 +13,7 @@ public final class BotModifyDefaultJavadocCommand extends BotServerCommand {
 
     @Inject
     public BotModifyDefaultJavadocCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjects adapters) {
-        super(Set.of("javadoc"), USAGE, "Set the server's default javadoc.", servers,
+        super(Set.of("default_javadoc"), USAGE, "Set the server's default javadoc.", servers,
                 new ModifyDefaultJavadocCommand(USAGE, adapters));
     }
 }

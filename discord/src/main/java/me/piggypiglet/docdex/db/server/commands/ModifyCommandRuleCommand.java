@@ -54,7 +54,7 @@ public final class ModifyCommandRuleCommand extends ServerCommand {
         if (isRecommendation) {
             rule.setRecommendation(value);
             messageFunction.accept("Successfully updated recommendation of " + server.getId() + " - " + command + " to " + value);
-            return false;
+            return true;
         }
 
         final ModificationOptions modificationOption = ModificationOptions.MAP.get(args.get(2));

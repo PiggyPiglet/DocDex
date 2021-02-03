@@ -9,25 +9,21 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class JavadocCategory {
-    private final String name;
-    private final String description;
+    private String description;
     private final Set<String> javadocs;
 
-    public JavadocCategory(@NotNull final String name, @NotNull final String description,
-                           @NotNull final Set<String> javadocs) {
-        this.name = name;
+    public JavadocCategory(@NotNull final String description, @NotNull final Set<String> javadocs) {
         this.description = description;
         this.javadocs = javadocs;
     }
 
     @NotNull
-    public String getName() {
-        return name;
-    }
-
-    @NotNull
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(@NotNull final String description) {
+        this.description = description;
     }
 
     @NotNull

@@ -12,9 +12,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -52,8 +54,9 @@ public final class InfoCommand extends BotCommand {
     }
 
     @Override
-    protected void execute(final @NotNull User user, final @NotNull Message message) {
+    protected RestAction<Message> execute(final @NotNull User user, final @NotNull Message message) {
         final Server server;
+
         if (message.isFromGuild()) {
             final Guild guild = message.getGuild();
 
@@ -64,29 +67,39 @@ public final class InfoCommand extends BotCommand {
             server = defaultServer;
         }
 
-        final HttpRequest request = HttpRequest.newBuilder(URI.create(config.getUrl() + "/javadocs"))
+        final String uri = config.getUrl() + "/javadocs";
+        final HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
                 .build();
-        CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(json -> {
-                    final EmbedBuilder embed = new EmbedBuilder();
-                    final SnowflakeCacheView<Guild> guilds = user.getJDA().getGuildCache();
+        final String json;
 
-                    embed.setAuthor("DocDex | Info");
-                    embed.setThumbnail(EmbedUtils.ICON);
-                    embed.setColor(EmbedUtils.COLOUR);
-                    embed.setDescription(
-                            String.format("[Website](%s) | [Github](%s) | [Invite](%s)%n%n", config.getUrl(), GITHUB, INVITE) +
-                            "DocDex (Documentation Index) is a bot developed using JDA and Java 11, which can display information " +
-                            "on javadoc objects, from a fuzzy query."
-                    );
-                    embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
-                    embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);
-                    embed.addField("Javadocs", formatNumber(JsonParser.parseString(json).getAsJsonArray().size()) + " (Default: " + server.getDefaultJavadoc() + ')', true);
-                    embed.setFooter("DocDex v" + getClass().getPackage().getImplementationVersion());
+        try {
+            json = CLIENT.send(request, HttpResponse.BodyHandlers.ofString()).body();
+        } catch (InterruptedException exception) {
+            LOGGER.error("Interrupted.", exception);
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (IOException exception) {
+            LOGGER.error("Something went wrong when connecting to " + uri, exception);
+            return null;
+        }
 
-                    message.getChannel().sendMessage(embed.build()).queue();
-                });
+        final EmbedBuilder embed = new EmbedBuilder();
+        final SnowflakeCacheView<Guild> guilds = user.getJDA().getGuildCache();
+
+        embed.setAuthor("DocDex | Info");
+        embed.setThumbnail(EmbedUtils.ICON);
+        embed.setColor(EmbedUtils.COLOUR);
+        embed.setDescription(
+                String.format("[Website](%s) | [Github](%s) | [Invite](%s)%n%n", config.getUrl(), GITHUB, INVITE) +
+                        "DocDex (Documentation Index) is a bot developed using JDA and Java 11, which can display information " +
+                        "on javadoc objects, from a fuzzy query."
+        );
+        embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
+        embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);
+        embed.addField("Javadocs", formatNumber(JsonParser.parseString(json).getAsJsonArray().size()) + " (Default: " + server.getDefaultJavadoc() + ')', true);
+        embed.setFooter("DocDex v" + getClass().getPackage().getImplementationVersion());
+
+        return message.getChannel().sendMessage(embed.build());
     }
 
     private static String formatNumber(final long number) {

@@ -13,7 +13,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,9 +45,10 @@ public final class TypeComponentCommand extends DocumentationCommand {
         this.paginationManager = paginationManager;
     }
 
+    @Nullable
     @Override
-    protected void execute(final @NotNull Message message, @NotNull final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
-                           final boolean returnFirst) {
+    protected RestAction<Message> execute(final @NotNull Message message, @NotNull final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
+                                          final boolean returnFirst) {
         if (returnFirst) {
             final Map.Entry<DocumentedObjectResult, EmbedBuilder> entry = objects.get(0);
             final DocumentedObject object = entry.getKey().getObject();
@@ -63,26 +66,28 @@ public final class TypeComponentCommand extends DocumentationCommand {
 
             if (pages.size() > 9) {
                 channel.sendMessage("There are too many " + component.getFormattedPlural().toLowerCase() + " to display in a paginated message. Please refer to the web page: <" + object.getLink() + '>').queue();
-                return;
+                return null;
             }
 
             if (pages.isEmpty()) {
                 channel.sendMessage(object.getName() + " does not have any " + component.getFormattedPlural().toLowerCase() + '.').queue();
-                return;
+                return null;
             }
 
             if (pages.size() == 1) {
                 channel.sendMessage(pages.get(0)).queue();
-                return;
+                return null;
             }
 
             final Pagination pagination = Pagination.builder()
                     .pages(pages)
                     .author(message.getAuthor().getId())
                     .build();
-            Optional.ofNullable(pagination.send(channel)).ifPresent(action ->
-                    action.queue(sentMessage -> paginationManager.addPaginatedMessage(sentMessage.getId(), pagination), ERROR_LOG));
-            return;
+
+            return Optional.ofNullable(pagination.send(message)).map(messageRestAction -> messageRestAction.map(success -> {
+                paginationManager.addPaginatedMessage(success.getId(), pagination);
+                return success;
+            })).orElse(null);
         }
 
         final String suggestions = objects.stream()
@@ -90,7 +95,6 @@ public final class TypeComponentCommand extends DocumentationCommand {
                 .map(DocumentedObjectResult::getName)
                 .collect(Collectors.joining("\n"));
 
-        message.getChannel().sendMessage("There was no direct match for that query, did you mean any of the following?: ```\n" + suggestions + "```")
-                .queue();
+        return message.getChannel().sendMessage("There was no direct match for that query, did you mean any of the following?: ```\n" + suggestions + "```");
     }
 }

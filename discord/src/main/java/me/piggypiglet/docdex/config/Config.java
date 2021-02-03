@@ -1,11 +1,13 @@
 package me.piggypiglet.docdex.config;
 
 import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
 import com.google.inject.Singleton;
 import me.piggypiglet.docdex.config.deserialization.UrlDeserializer;
+import me.piggypiglet.docdex.db.server.JavadocCategory;
 import me.piggypiglet.docdex.file.annotations.File;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -22,8 +24,8 @@ public final class Config {
     private String prefix;
     @JsonAdapter(UrlDeserializer.class) private String url;
     private String defaultJavadoc;
+    private Map<String, JavadocCategory> defaultCategories;
     private Presence presence;
-    @SerializedName("public") private boolean isPublic;
     private MysqlConfig mysql;
 
     @NotNull
@@ -47,12 +49,13 @@ public final class Config {
     }
 
     @NotNull
-    public Presence getPresence() {
-        return presence;
+    public Map<String, JavadocCategory> getDefaultCategories() {
+        return defaultCategories;
     }
 
-    public boolean isPublic() {
-        return isPublic;
+    @NotNull
+    public Presence getPresence() {
+        return presence;
     }
 
     @NotNull

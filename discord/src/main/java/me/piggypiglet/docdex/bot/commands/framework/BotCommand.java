@@ -3,7 +3,9 @@ package me.piggypiglet.docdex.bot.commands.framework;
 import me.piggypiglet.docdex.db.server.Server;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,15 +41,27 @@ public abstract class BotCommand {
         this.description = description;
     }
 
-    protected void execute(@NotNull final User user, @NotNull final Message message) {}
+    @Nullable
+    protected RestAction<Message> execute(@NotNull final User user, @NotNull final Message message) {
+        return null;
+    }
 
-    protected void execute(@NotNull final User user, @NotNull final Message message,
-                           @NotNull final List<String> args) {}
+    @Nullable
+    protected RestAction<Message> execute(@NotNull final User user, @NotNull final Message message,
+                           @NotNull final List<String> args) {
+        return null;
+    }
 
-    public void run(@NotNull final User user, @NotNull final Message message,
+    @Nullable
+    public RestAction<Message> run(@NotNull final User user, @NotNull final Message message,
                     @NotNull final Server server, final int start) {
-        execute(user, message);
-        execute(user, message, args(message, start));
+        final RestAction<Message> attemptOne = execute(user, message);
+
+        if (attemptOne != null) {
+            return attemptOne;
+        }
+
+        return execute(user, message, args(message, start));
     }
 
     @NotNull

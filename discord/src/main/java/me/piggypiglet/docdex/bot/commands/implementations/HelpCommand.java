@@ -13,7 +13,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,8 +46,9 @@ public final class HelpCommand extends BotCommand {
         this.paginationManager = paginationManager;
     }
 
+    @Nullable
     @Override
-    public void execute(final @NotNull User user, final @NotNull Message message) {
+    public RestAction<Message> execute(final @NotNull User user, final @NotNull Message message) {
         final String prefix;
 
         if (message.isFromGuild()) {
@@ -80,7 +83,9 @@ public final class HelpCommand extends BotCommand {
                 .author(user.getId())
                 .build();
 
-        Optional.ofNullable(pagination.send(message.getChannel())).ifPresent(action -> action.queue(sentMessage ->
-            paginationManager.addPaginatedMessage(sentMessage.getId(), pagination)));
+        return Optional.ofNullable(pagination.send(message)).map(messageRestAction -> messageRestAction.map(success -> {
+            paginationManager.addPaginatedMessage(success.getId(), pagination);
+            return success;
+        })).orElse(null);
     }
 }

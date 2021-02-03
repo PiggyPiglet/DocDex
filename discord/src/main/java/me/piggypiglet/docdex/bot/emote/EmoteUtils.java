@@ -1,7 +1,9 @@
 package me.piggypiglet.docdex.bot.emote;
 
 import me.piggypiglet.docdex.bot.utils.PermissionUtils;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,6 +36,11 @@ public final class EmoteUtils {
     private static void handleFailure(@NotNull final Message message, @NotNull final Throwable throwable) {
         if (throwable instanceof PermissionException) {
             PermissionUtils.sendPermissionError(message, ((PermissionException) throwable).getPermission());
+        }
+
+        if (throwable instanceof ErrorResponseException) {
+            // we have to take a guess here
+            PermissionUtils.sendPermissionError(message, Permission.MESSAGE_ADD_REACTION);
         }
     }
 }
