@@ -157,7 +157,7 @@ public final class BotCommandHandler {
                 );
                 currentCommands.remove(id);
             }
-        });
+        }, failure -> currentCommands.remove(id));
     }
 
 
