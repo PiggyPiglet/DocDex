@@ -3,8 +3,6 @@ package me.piggypiglet.docdex.bot.registerables;
 import com.google.inject.Inject;
 import me.piggypiglet.docdex.bootstrap.framework.Registerable;
 import me.piggypiglet.docdex.config.Config;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -49,6 +47,7 @@ public final class JDARegisterable extends Registerable {
                     .setChunkingFilter(ChunkingFilter.NONE) // disable eager Guild loading
                     .disableCache(EnumSet.allOf(CacheFlag.class)) // disable unnecessary cache flags
                     .build();
+//            shardManager = DefaultShardManagerBuilder.createDefault(config.getToken()).build();
         } catch (LoginException e) {
             LOGGER.error("Something went wrong when logging into JDA, perhaps you haven't populated the config.", e);
             System.exit(0);

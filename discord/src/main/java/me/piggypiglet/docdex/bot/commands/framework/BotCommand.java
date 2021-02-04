@@ -12,13 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -73,12 +72,22 @@ public abstract class BotCommand {
                                    @NotNull final Server server, final int start) {
         final List<String> args = args(message, start);
 
-        return Stream.of(
-                execute(user, message),
-                execute(user, message, server),
-                execute(user, message, args),
-                execute(user, message, args, server)
-        ).filter(Objects::nonNull).findFirst().orElse(null);
+        final Set<Supplier<RestAction<Message>>> set = Set.of(
+                () -> create(() -> execute(user, message), message),
+                () -> create(() -> execute(user, message, server), message),
+                () -> create(() -> execute(user, message, args), message),
+                () -> create(() -> execute(user, message, args, server), message)
+        );
+
+        for (final Supplier<RestAction<Message>> restActionSupplier : set) {
+            final RestAction<Message> action = restActionSupplier.get();
+
+            if (action != null) {
+                return action;
+            }
+        }
+
+        return null;
     }
 
     @NotNull
