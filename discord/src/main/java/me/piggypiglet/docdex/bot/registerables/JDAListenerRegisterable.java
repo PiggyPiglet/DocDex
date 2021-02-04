@@ -7,6 +7,7 @@ import me.piggypiglet.docdex.scanning.framework.Scanner;
 import me.piggypiglet.docdex.scanning.rules.Rules;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 
 // ------------------------------
@@ -15,18 +16,18 @@ import org.jetbrains.annotations.NotNull;
 // ------------------------------
 public final class JDAListenerRegisterable extends Registerable {
     private final Scanner scanner;
-    private final JDA jda;
+    private final ShardManager shardManager;
 
     @Inject
-    public JDAListenerRegisterable(@NotNull final Scanner scanner, @NotNull final JDA jda) {
+    public JDAListenerRegisterable(@NotNull final Scanner scanner, @NotNull final ShardManager shardManager) {
         this.scanner = scanner;
-        this.jda = jda;
+        this.shardManager = shardManager;
     }
 
     @Override
     public void execute(@NotNull final Injector injector) {
         scanner.getClasses(Rules.builder().typeExtends(ListenerAdapter.class).disallowMutableClasses().build())
                 .map(injector::getInstance)
-                .forEach(jda::addEventListener);
+                .forEach(shardManager::addEventListener);
     }
 }
