@@ -42,6 +42,8 @@ public final class BotCommandListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionAdd(@NotNull final GuildMessageReactionAddEvent event) {
-        EXECUTOR.submit(() -> commandHandler.processCommandDeletion(event));
+        if (!event.getUser().isBot()) {
+            EXECUTOR.submit(() -> commandHandler.processCommandDeletion(event));
+        }
     }
 }

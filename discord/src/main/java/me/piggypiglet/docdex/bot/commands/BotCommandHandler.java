@@ -138,10 +138,10 @@ public final class BotCommandHandler {
         final String id = event.getMessageId();
 
         channel.retrieveMessageById(id).queue(message -> {
+            queue(create(() -> event.getReaction().removeReaction(), message), message);
+
             final MessageReaction.ReactionEmote reaction = event.getReactionEmote();
             final Map.Entry<String, String> entry = currentCommands.get(id);
-
-            queue(create(() -> event.getReaction().removeReaction(), message), message);
 
             if (entry == null) {
                 return;
