@@ -191,7 +191,7 @@ public final class SimpleObjectSerializer {
         }
 
         if (text.contains("```")) {
-            return text.substring(0, text.indexOf("```")).trim() + ADDENDUM;
+            return shorten(text.substring(0, text.indexOf("```")).trim());
         }
 
         final char[] chars = text.toCharArray();
