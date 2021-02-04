@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.jetbrains.annotations.NotNull;
@@ -47,11 +46,7 @@ public final class PaginationManager {
         final boolean isNotAuthor = !user.getId().equals(pagination.getAuthor());
 
         if (message.isFromGuild() || isNotAuthor) {
-            try {
-                reaction.removeReaction(user).queue(success -> {}, failure -> {});
-            } catch (PermissionException exception) {
-                PermissionUtils.sendPermissionError(message, exception.getPermission());
-            }
+            PermissionUtils.queue(PermissionUtils.create(() -> reaction.removeReaction(user), message), message);
         }
 
         if (isNotAuthor) {

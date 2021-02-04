@@ -6,7 +6,8 @@ import me.piggypiglet.docdex.bot.embed.documentation.type.TypeComponents;
 import me.piggypiglet.docdex.bot.embed.pagination.PaginationManager;
 import me.piggypiglet.docdex.bot.embed.pagination.objects.Pagination;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
-import me.piggypiglet.docdex.config.Config;
+import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.documentation.DocDexHttp;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObjectResult;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -20,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 // ------------------------------
@@ -28,33 +28,32 @@ import java.util.stream.Collectors;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class TypeComponentCommand extends DocumentationCommand {
-    private final String upperPrefix;
     private final PaginationManager paginationManager;
 
     @Inject
-    public TypeComponentCommand(@NotNull final Config config, @NotNull final PaginationManager paginationManager) {
+    public TypeComponentCommand(@NotNull final DocDexHttp docDexHttp, @NotNull final PaginationManager paginationManager) {
         super(
                 Arrays.stream(TypeComponents.values())
                         .map(TypeComponents::toString)
                         .map(String::toLowerCase)
                         .collect(Collectors.toSet()),
                 "Get information on a specific component of a type.",
-                config
+                docDexHttp
         );
-        this.upperPrefix = config.getPrefix().toUpperCase();
+
         this.paginationManager = paginationManager;
     }
 
     @Nullable
     @Override
     protected RestAction<Message> execute(final @NotNull Message message, @NotNull final List<Map.Entry<DocumentedObjectResult, EmbedBuilder>> objects,
-                                          final boolean returnFirst) {
+                                          final boolean returnFirst, @NotNull final Server server) {
         if (returnFirst) {
             final Map.Entry<DocumentedObjectResult, EmbedBuilder> entry = objects.get(0);
             final DocumentedObject object = entry.getKey().getObject();
             final EmbedBuilder defaultEmbed = entry.getValue();
 
-            final String upperMessage = message.getContentRaw().toUpperCase().replace(upperPrefix, "");
+            final String upperMessage = message.getContentRaw().toUpperCase().replace(server.getPrefix().toUpperCase(), "");
             final TypeComponents component = TypeComponents.valueOf(upperMessage.substring(0, upperMessage.indexOf(' ')));
             final List<MessageEmbed> pages = TypeComponentSerializer.toEmbeds(object, component).stream()
                     .map(embed -> {
@@ -65,18 +64,15 @@ public final class TypeComponentCommand extends DocumentationCommand {
             final MessageChannel channel = message.getChannel();
 
             if (pages.size() > 9) {
-                channel.sendMessage("There are too many " + component.getFormattedPlural().toLowerCase() + " to display in a paginated message. Please refer to the web page: <" + object.getLink() + '>').queue();
-                return null;
+                return channel.sendMessage("There are too many " + component.getFormattedPlural().toLowerCase() + " to display in a paginated message. Please refer to the web page: <" + object.getLink() + '>');
             }
 
             if (pages.isEmpty()) {
-                channel.sendMessage(object.getName() + " does not have any " + component.getFormattedPlural().toLowerCase() + '.').queue();
-                return null;
+                return channel.sendMessage(object.getName() + " does not have any " + component.getFormattedPlural().toLowerCase() + '.');
             }
 
             if (pages.size() == 1) {
-                channel.sendMessage(pages.get(0)).queue();
-                return null;
+                return channel.sendMessage(pages.get(0));
             }
 
             final Pagination pagination = Pagination.builder()
@@ -84,10 +80,7 @@ public final class TypeComponentCommand extends DocumentationCommand {
                     .author(message.getAuthor().getId())
                     .build();
 
-            return Optional.ofNullable(pagination.send(message)).map(messageRestAction -> messageRestAction.map(success -> {
-                paginationManager.addPaginatedMessage(success.getId(), pagination);
-                return success;
-            })).orElse(null);
+            return pagination.send(message, paginationManager);
         }
 
         final String suggestions = objects.stream()

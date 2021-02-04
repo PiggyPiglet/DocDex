@@ -17,7 +17,10 @@ import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 // ------------------------------
@@ -32,35 +35,20 @@ public final class HelpCommand extends BotCommand {
             .build();
 
     private final Set<BotCommand> commands;
-    private final Set<Server> servers;
-    private final String defaultPrefix;
     private final PaginationManager paginationManager;
 
     @Inject
-    public HelpCommand(@NotNull @Named("jda commands") final Set<BotCommand> commands, @NotNull final Set<Server> servers,
-                       @NotNull @Named("default") final Server defaultServer, @NotNull final PaginationManager paginationManager) {
+    public HelpCommand(@NotNull @Named("jda commands") final Set<BotCommand> commands, @NotNull final PaginationManager paginationManager) {
         super(Set.of("help"), "", "This page.");
         this.commands = commands;
-        this.servers = servers;
-        this.defaultPrefix = defaultServer.getPrefix();
         this.paginationManager = paginationManager;
     }
 
     @Nullable
     @Override
-    public RestAction<Message> execute(final @NotNull User user, final @NotNull Message message) {
-        final String prefix;
-
-        if (message.isFromGuild()) {
-            prefix = servers.stream()
-                    .filter(server -> server.getId().equals(message.getGuild().getId()))
-                    .findAny()
-                    .map(Server::getPrefix)
-                    .orElse(defaultPrefix);
-        } else {
-            prefix = defaultPrefix;
-        }
-
+    public RestAction<Message> execute(final @NotNull User user, final @NotNull Message message,
+                                       @NotNull final Server server) {
+        final String prefix = server.getPrefix();
         final List<String> helpMessages = new ArrayList<>();
 
         commands.stream().filter(command -> command != this).forEach(command -> {
@@ -83,9 +71,6 @@ public final class HelpCommand extends BotCommand {
                 .author(user.getId())
                 .build();
 
-        return Optional.ofNullable(pagination.send(message)).map(messageRestAction -> messageRestAction.map(success -> {
-            paginationManager.addPaginatedMessage(success.getId(), pagination);
-            return success;
-        })).orElse(null);
+        return pagination.send(message,paginationManager);
     }
 }

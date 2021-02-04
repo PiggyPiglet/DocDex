@@ -1,13 +1,13 @@
 package me.piggypiglet.docdex.bot.embed.pagination.objects;
 
 import com.google.common.collect.Iterables;
+import me.piggypiglet.docdex.bot.embed.pagination.PaginationManager;
 import me.piggypiglet.docdex.bot.emote.EmoteUtils;
 import me.piggypiglet.docdex.bot.emote.EmoteWrapper;
 import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,23 +54,19 @@ public final class Pagination {
     }
 
     @Nullable
-    public RestAction<Message> send(@NotNull final Message message) {
+    public RestAction<Message> send(@NotNull final Message message, @NotNull final PaginationManager paginationManager) {
         if (pages.isEmpty()) {
             return null;
         }
 
         final MessageEmbed embed = Iterables.get(pages.values(), 0);
 
-        try {
-            return message.getChannel().sendMessage(embed)
-                    .map(potentialMessage -> {
-                        pages.keySet().forEach(emote -> EmoteUtils.addEmote(potentialMessage, emote));
-                        return potentialMessage;
-                    });
-        } catch (InsufficientPermissionException exception) {
-            PermissionUtils.sendPermissionError(message, exception.getPermission());
-            return null;
-        }
+        return PermissionUtils.create(() -> message.getChannel().sendMessage(embed)
+                .map(potentialMessage -> {
+                    pages.keySet().forEach(emote -> EmoteUtils.addEmote(potentialMessage, emote));
+                    paginationManager.addPaginatedMessage(potentialMessage.getId(), this);
+                    return potentialMessage;
+                }), message);
     }
 
     public static Builder builder() {

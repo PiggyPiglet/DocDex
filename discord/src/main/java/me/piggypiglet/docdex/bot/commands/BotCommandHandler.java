@@ -9,14 +9,12 @@ import me.piggypiglet.docdex.bot.commands.implementations.HelpCommand;
 import me.piggypiglet.docdex.bot.commands.implementations.documentation.SimpleCommand;
 import me.piggypiglet.docdex.bot.emote.EmoteUtils;
 import me.piggypiglet.docdex.bot.emote.EmoteWrapper;
-import me.piggypiglet.docdex.bot.listeners.GuildJoinHandler;
-import me.piggypiglet.docdex.bot.utils.PermissionUtils;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.db.server.ServerHelper;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -28,6 +26,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static me.piggypiglet.docdex.bot.utils.PermissionUtils.create;
+import static me.piggypiglet.docdex.bot.utils.PermissionUtils.queue;
+
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
@@ -36,11 +37,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class BotCommandHandler {
     private static final EmoteWrapper TRASH = EmoteWrapper.from("\uD83D\uDDD1️");
 
-    private final Set<Server> servers;
+    private final ServerHelper serverHelper;
     private final Set<BotCommand> commands;
     private final BotCommand unknownCommand;
-    private final GuildJoinHandler guildJoinHandler;
-    private final Server defaultServer;
     private final CommandRule defaultCommandRule;
 
     private final Map<String, Map.Entry<String, String>> currentCommands = ExpiringMap.builder()
@@ -49,15 +48,12 @@ public final class BotCommandHandler {
             .build();
 
     @Inject
-    public BotCommandHandler(@NotNull final Set<Server> servers, @NotNull @Named("jda commands") final Set<BotCommand> commands,
+    public BotCommandHandler(@NotNull final ServerHelper serverHelper, @NotNull @Named("jda commands") final Set<BotCommand> commands,
                              @NotNull final SimpleCommand defaultCommand, @NotNull final HelpCommand helpCommand,
-                             @NotNull final GuildJoinHandler guildJoinHandler, @NotNull @Named("default") final Server defaultServer,
                              @NotNull @Named("default") final CommandRule defaultCommandRule) {
-        this.servers = servers;
+        this.serverHelper = serverHelper;
         this.commands = commands;
         this.unknownCommand = defaultCommand;
-        this.guildJoinHandler = guildJoinHandler;
-        this.defaultServer = defaultServer;
         this.defaultCommandRule = defaultCommandRule;
 
         commands.add(defaultCommand);
@@ -65,18 +61,7 @@ public final class BotCommandHandler {
     }
 
     public void processCommand(@NotNull final User user, @NotNull final Message message) {
-        final Server server;
-
-        if (message.isFromGuild()) {
-            final Guild guild = message.getGuild();
-
-            server = servers.stream()
-                    .filter(element -> element.getId().equals(guild.getId()))
-                    .findAny().orElseGet(() -> guildJoinHandler.joinGuild(guild).join());
-        } else {
-            server = defaultServer;
-        }
-
+        final Server server = serverHelper.getServer(message);
         final String rawMessage = message.getContentRaw().toLowerCase();
 
         if (!rawMessage.startsWith(server.getPrefix())) {
@@ -140,20 +125,12 @@ public final class BotCommandHandler {
 
         final int start = (prefix + match.get()).length();
 
-        try {
-            Optional.ofNullable(command.run(user, message, server, start)).ifPresentOrElse(action -> action.queue(success -> {
-                if (message.isFromGuild()) {
-                    currentCommands.put(success.getId(), Map.entry(message.getId(), user.getId()));
-                    EmoteUtils.addEmote(success, TRASH);
-                }
-            }, failure -> {
-                if (failure instanceof PermissionException) {
-                    PermissionUtils.sendPermissionError(message, ((PermissionException) failure).getPermission());
-                }
-            }), () -> message.delete().queue());
-        } catch (PermissionException exception) {
-            PermissionUtils.sendPermissionError(message, exception.getPermission());
-        }
+        Optional.ofNullable(command.run(user, message, server, start)).ifPresentOrElse(action -> queue(action, success -> {
+            if (message.isFromGuild()) {
+                currentCommands.put(success.getId(), Map.entry(message.getId(), user.getId()));
+                EmoteUtils.addEmote(success, TRASH);
+            }
+        }, message), () -> queue(create(message::delete, message), message));
     }
 
     public void processCommandDeletion(@NotNull final GuildMessageReactionAddEvent event) {
@@ -172,14 +149,12 @@ public final class BotCommandHandler {
             final String authorId = entry.getValue();
 
             if (authorId.equals(event.getUserId()) && reaction.isEmoji() && reaction.getEmoji().equals(TRASH.getUnicode())) {
-                message.delete().queue();
-                channel.retrieveMessageById(commandRequestId).queue(commandRequest -> {
-                    try {
-                        commandRequest.delete().queue();
-                    } catch (PermissionException exception) {
-                        PermissionUtils.sendPermissionError(message, exception.getPermission());
-                    }
-                });
+                queue(create(message::delete, message), message);
+                queue(
+                        create(() -> channel.retrieveMessageById(commandRequestId), message), // get message
+                        success -> queue(create(success::delete, message), message), // delete message
+                        message
+                );
                 currentCommands.remove(id);
             }
         });

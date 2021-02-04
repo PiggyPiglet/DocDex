@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class IndexURLBuilder {
-    boolean start = true;
+    private boolean start = true;
+
     private final StringBuilder builder = new StringBuilder()
             .append("/index");
 

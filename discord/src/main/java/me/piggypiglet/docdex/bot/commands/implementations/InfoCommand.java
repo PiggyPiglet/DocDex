@@ -1,13 +1,11 @@
 package me.piggypiglet.docdex.bot.commands.implementations;
 
-import com.google.gson.JsonParser;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
-import me.piggypiglet.docdex.bot.listeners.GuildJoinHandler;
 import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.documentation.DocDexHttp;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -16,11 +14,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.text.NumberFormat;
 import java.util.Set;
 
@@ -37,52 +31,21 @@ public final class InfoCommand extends BotCommand {
 
     private static final NumberFormat FORMATTER = NumberFormat.getInstance();
 
+    private final DocDexHttp docDexHttp;
     private final Config config;
-    private final Set<Server> servers;
-    private final GuildJoinHandler guildJoinHandler;
-    private final Server defaultServer;
 
     @Inject
-    public InfoCommand(@NotNull final Config config, @NotNull final Set<Server> servers,
-                       @NotNull final GuildJoinHandler guildJoinHandler, @NotNull @Named("default") final Server defaultServer) {
+    public InfoCommand(@NotNull final DocDexHttp docDexHttp, @NotNull final Config config) {
         super(Set.of("info"), "", "Display info about the bot.");
 
+        this.docDexHttp = docDexHttp;
         this.config = config;
-        this.servers = servers;
-        this.guildJoinHandler = guildJoinHandler;
-        this.defaultServer = defaultServer;
     }
 
     @Override
-    protected RestAction<Message> execute(final @NotNull User user, final @NotNull Message message) {
-        final Server server;
-
-        if (message.isFromGuild()) {
-            final Guild guild = message.getGuild();
-
-            server = servers.stream()
-                    .filter(element -> element.getId().equals(guild.getId()))
-                    .findAny().orElseGet(() -> guildJoinHandler.joinGuild(guild).join());
-        } else {
-            server = defaultServer;
-        }
-
-        final String uri = config.getUrl() + "/javadocs";
-        final HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
-                .build();
-        final String json;
-
-        try {
-            json = CLIENT.send(request, HttpResponse.BodyHandlers.ofString()).body();
-        } catch (InterruptedException exception) {
-            LOGGER.error("Interrupted.", exception);
-            Thread.currentThread().interrupt();
-            return null;
-        } catch (IOException exception) {
-            LOGGER.error("Something went wrong when connecting to " + uri, exception);
-            return null;
-        }
-
+    protected RestAction<Message> execute(final @NotNull User user, final @NotNull Message message,
+                                          @NotNull final Server server) {
+        final int javadocs = docDexHttp.getJavadocs().size();
         final EmbedBuilder embed = new EmbedBuilder();
         final SnowflakeCacheView<Guild> guilds = user.getJDA().getGuildCache();
 
@@ -96,7 +59,7 @@ public final class InfoCommand extends BotCommand {
         );
         embed.addField("Creator", "[PiggyPiglet#5609](" + PIG_URL + ')', true);
         embed.addField("Servers", formatNumber(guilds.size()) + " (" + formatNumber(guilds.stream().mapToLong(Guild::getMemberCount).sum()) + " Users)", true);
-        embed.addField("Javadocs", formatNumber(JsonParser.parseString(json).getAsJsonArray().size()) + " (Default: " + server.getDefaultJavadoc() + ')', true);
+        embed.addField("Javadocs", formatNumber(javadocs) + " (Default: " + server.getDefaultJavadoc() + ')', true);
         embed.setFooter("DocDex v" + getClass().getPackage().getImplementationVersion());
 
         return message.getChannel().sendMessage(embed.build());

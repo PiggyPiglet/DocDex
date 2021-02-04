@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.bot.commands.implementations.server;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.ModifyJavadocCategoryCommand;
@@ -18,8 +19,8 @@ public final class BotModifyJavadocCategoryCommand extends BotServerCommand {
     private static final String USAGE = "<javadocs/description> [add/remove] <category name> <value>";
 
     @Inject
-    public BotModifyJavadocCategoryCommand(@NotNull final Set<Server> servers, @NotNull final DatabaseObjects adapters) {
-        super(Set.of("command"), USAGE, "Edit javadoc categories.", servers,
+    public BotModifyJavadocCategoryCommand(@NotNull @Named("default") final Server defaultServer, @NotNull final DatabaseObjects adapters) {
+        super(Set.of("command"), USAGE, "Edit javadoc categories.", defaultServer,
                 new ModifyJavadocCategoryCommand(USAGE, adapters));
     }
 }

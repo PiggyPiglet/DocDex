@@ -1,19 +1,14 @@
 package me.piggypiglet.docdex.bot.commands.implementations;
 
 import com.google.common.collect.Lists;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.google.inject.util.Types;
 import me.piggypiglet.docdex.bot.commands.framework.BotCommand;
 import me.piggypiglet.docdex.bot.embed.pagination.PaginationManager;
 import me.piggypiglet.docdex.bot.embed.pagination.objects.Pagination;
 import me.piggypiglet.docdex.bot.embed.utils.EmbedUtils;
-import me.piggypiglet.docdex.config.Config;
 import me.piggypiglet.docdex.config.Javadoc;
 import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.documentation.DocDexHttp;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -21,12 +16,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -36,60 +25,26 @@ import java.util.stream.IntStream;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class JavadocsCommand extends BotCommand {
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private static final Gson GSON = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
-    private static final Type JAVADOC_SET = Types.setOf(Javadoc.class);
     private static final MessageEmbed EMBED = new EmbedBuilder()
             .setColor(EmbedUtils.COLOUR)
             .build();
 
-    private final Set<Server> servers;
-    private final Server defaultServer;
-    private final Config config;
+    private final DocDexHttp docDexHttp;
     private final PaginationManager paginationManager;
 
     @Inject
-    public JavadocsCommand(@NotNull final Set<Server> servers, @NotNull @Named("default") final Server defaultServer,
-                           @NotNull final Config config, @NotNull final PaginationManager paginationManager) {
+    public JavadocsCommand(@NotNull final DocDexHttp docDexHttp, @NotNull final PaginationManager paginationManager) {
         super(Set.of("javadocs", "docs"), "", "Get a list of javadocs.");
-        this.servers = servers;
-        this.defaultServer = defaultServer;
-        this.config = config;
+
+        this.docDexHttp = docDexHttp;
         this.paginationManager = paginationManager;
     }
 
 
     @Override
-    protected RestAction<Message> execute(final @NotNull User user, final @NotNull Message message) {
-        final Server server;
-
-        if (message.isFromGuild()) {
-            server = servers.stream()
-                    .filter(element -> element.getId().equals(message.getGuild().getId()))
-                    .findAny().orElse(defaultServer);
-        } else {
-            server = defaultServer;
-        }
-
-        final String uri = config.getUrl() + "/javadocs";
-        final HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
-                .build();
-        final String json;
-
-        try {
-            json = CLIENT.send(request, HttpResponse.BodyHandlers.ofString()).body();
-        } catch (InterruptedException exception) {
-            LOGGER.error("Interrupted.", exception);
-            Thread.currentThread().interrupt();
-            return null;
-        } catch (IOException exception) {
-            LOGGER.error("Something went wrong when connecting to " + uri, exception);
-            return null;
-        }
-
-        final Set<Javadoc> javadocs = GSON.fromJson(json, JAVADOC_SET);
+    protected RestAction<Message> execute(final @NotNull User user, final @NotNull Message message,
+                                          @NotNull final Server server) {
+        final Set<Javadoc> javadocs = docDexHttp.getJavadocs();
 
         final Map<Map.Entry<String, String>, Set<Javadoc>> categories = server.getJavadocCategories().entrySet().stream()
                 .collect(Collectors.toMap(
@@ -126,10 +81,7 @@ public final class JavadocsCommand extends BotCommand {
                 .author(user.getId())
                 .build();
 
-        return Optional.ofNullable(pagination.send(message)).map(messageRestAction -> messageRestAction.map(success -> {
-            paginationManager.addPaginatedMessage(success.getId(), pagination);
-            return success;
-        })).orElse(null);
+        return pagination.send(message, paginationManager);
 }
 
     @NotNull

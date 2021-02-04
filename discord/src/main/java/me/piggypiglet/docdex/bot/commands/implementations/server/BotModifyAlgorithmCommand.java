@@ -1,6 +1,7 @@
 package me.piggypiglet.docdex.bot.commands.implementations.server;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import me.piggypiglet.docdex.db.dbo.DatabaseObjects;
 import me.piggypiglet.docdex.db.server.Server;
 import me.piggypiglet.docdex.db.server.commands.ModifyAlgorithmCommand;
@@ -16,8 +17,8 @@ public final class BotModifyAlgorithmCommand extends BotServerCommand {
     private static final String USAGE = "<algorithm>";
 
     @Inject
-    public BotModifyAlgorithmCommand(final @NotNull Set<Server> servers, @NotNull final DatabaseObjects adapters) {
-        super(Set.of("algorithm"), USAGE, "Set the server's algorithm.", servers,
+    public BotModifyAlgorithmCommand(@NotNull @Named("default") final Server defaultServer, @NotNull final DatabaseObjects adapters) {
+        super(Set.of("algorithm"), USAGE, "Set the server's algorithm.", defaultServer,
                 new ModifyAlgorithmCommand(USAGE, adapters));
     }
 }

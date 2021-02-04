@@ -12,7 +12,6 @@ import me.piggypiglet.docdex.http.request.Request;
 import me.piggypiglet.docdex.http.route.exceptions.StatusCodeException;
 import me.piggypiglet.docdex.http.route.json.JsonRoute;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,7 @@ public final class IndexRoute extends JsonRoute {
         config.getJavadocs().forEach(javadoc -> javadoc.getNames().forEach(name -> javadocs.put(name, javadoc)));
     }
 
-    @Nullable
+    @NotNull
     @Override
     protected Object respond(@NotNull final Request request) {
         if (!startupHooks.isEmpty()) {
@@ -64,13 +63,13 @@ public final class IndexRoute extends JsonRoute {
         final int limit = Math.min(MAX_LIMIT, params.get("limit").stream().findAny().map(Integer::parseInt).orElse(DEFAULT_LIMIT));
 
         if (javadocName == null || query == null) {
-            return null;
+            throw new StatusCodeException(NanoHTTPD.Response.Status.BAD_REQUEST, "Javadoc and/or query not provided.");
         }
 
         final Javadoc javadoc = javadocs.get(javadocName);
 
         if (javadoc == null) {
-            return null;
+            throw new StatusCodeException(NanoHTTPD.Response.Status.BAD_REQUEST, "Unknown javadoc: " + javadocName);
         }
 
         return index.get(javadoc, query, algorithm, limit);
