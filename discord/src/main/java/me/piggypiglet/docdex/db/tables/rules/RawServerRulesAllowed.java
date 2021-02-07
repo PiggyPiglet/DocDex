@@ -17,6 +17,7 @@ import java.util.Objects;
 public final class RawServerRulesAllowed implements RawServerRuleId, RawObject {
     @Length(ID_LENGTH)
     private final String server;
+    @Identifier
     private final String command;
     @Identifier @Length(ID_LENGTH)
     private final String id;

@@ -18,6 +18,7 @@ import java.util.Objects;
 public final class RawServerRulesDisallowed implements RawServerRuleId, RawObject {
     @Length(ID_LENGTH)
     private final String server;
+    @Identifier
     private final String command;
     @Identifier @Length(ID_LENGTH)
     private final String id;

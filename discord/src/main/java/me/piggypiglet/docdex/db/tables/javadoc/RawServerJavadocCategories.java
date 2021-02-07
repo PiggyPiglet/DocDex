@@ -7,6 +7,8 @@ import me.piggypiglet.docdex.db.tables.framework.RawObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
@@ -43,6 +45,22 @@ public final class RawServerJavadocCategories implements RawObject {
 
     @Override
     public boolean actualEquals(final @Nullable Object o) {
-        return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final RawServerJavadocCategories that = (RawServerJavadocCategories) o;
+        return server.equals(that.server) && name.equals(that.name) && description.equals(that.description);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final RawServerJavadocCategories that = (RawServerJavadocCategories) o;
+        return server.equals(that.server) && name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(server, name);
     }
 }

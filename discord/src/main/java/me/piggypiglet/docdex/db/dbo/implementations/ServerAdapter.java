@@ -6,6 +6,7 @@ import me.piggypiglet.docdex.db.dbo.framework.adapter.ModificationRequest;
 import me.piggypiglet.docdex.db.server.CommandRule;
 import me.piggypiglet.docdex.db.server.JavadocCategory;
 import me.piggypiglet.docdex.db.server.Server;
+import me.piggypiglet.docdex.db.server.creation.ServerCreator;
 import me.piggypiglet.docdex.db.tables.RawServer;
 import me.piggypiglet.docdex.db.tables.RawServerRoles;
 import me.piggypiglet.docdex.db.tables.framework.RawObject;
@@ -43,11 +44,13 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
     private final Set<RawServerJavadocCategories> serverJavadocCategories;
     private final Set<RawServerJavadocCategoriesJavadocs> serverJavadocCategoriesJavadocs;
 
+    private final ServerCreator creator;
+
     @Inject
     public ServerAdapter(@NotNull final Set<RawServer> servers, @NotNull final Set<RawServerRules> serverRules,
                          @NotNull final Set<RawServerRoles> serverRoles, @NotNull final Set<RawServerRulesAllowed> serverRulesAlloweds,
                          @NotNull final Set<RawServerRulesDisallowed> serverRulesDisalloweds, @NotNull final Set<RawServerJavadocCategories> serverJavadocCategories,
-                         @NotNull final Set<RawServerJavadocCategoriesJavadocs> serverJavadocCategoriesJavadocs) {
+                         @NotNull final Set<RawServerJavadocCategoriesJavadocs> serverJavadocCategoriesJavadocs, @NotNull final ServerCreator creator) {
         this.servers = servers;
 
         this.serverRoles = serverRoles;
@@ -58,14 +61,16 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
 
         this.serverJavadocCategories = serverJavadocCategories;
         this.serverJavadocCategoriesJavadocs = serverJavadocCategoriesJavadocs;
+
+        this.creator = creator;
     }
 
     @NotNull
     @Override
     public Set<Server> loadFromRaw() {
         return servers.stream()
-                .map(server -> {
-                    final Algorithm algorithm = Algorithm.NAMES.get(server.getAlgorithm());
+                .map(rawServer -> {
+                    final Algorithm algorithm = Algorithm.NAMES.get(rawServer.getAlgorithm());
 
                     final Set<String> roles = serverRoles.stream()
                             .map(RawServerRoles::getId)
@@ -74,7 +79,7 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                     final Map<String, JavadocCategory> categories = new HashMap<>();
 
                     serverRules.stream()
-                            .filter(rule -> rule.getServer().equals(server.getId()))
+                            .filter(rule -> rule.getServer().equals(rawServer.getId()))
                             .forEach(rule -> {
                                 final Set<String> allowed = getRuleIds(serverRulesAlloweds, rule);
                                 final Set<String> disallowed = getRuleIds(serverRulesDisalloweds, rule);
@@ -82,17 +87,40 @@ public final class ServerAdapter implements DatabaseObjectAdapter<Server> {
                                 rules.put(rule.getCommand(), new CommandRule(allowed, disallowed, rule.getRecommendation()));
                             });
                     serverJavadocCategories.stream()
-                            .filter(category -> category.getServer().equals(server.getId()))
+                            .filter(category -> category.getServer().equals(rawServer.getId()))
                             .forEach(category -> {
                                 final Set<String> javadocs = serverJavadocCategoriesJavadocs.stream()
-                                        .filter(javadoc -> javadoc.getServer().equals(server.getId()) && javadoc.getCategory().equals(category.getName()))
+                                        .filter(javadoc -> javadoc.getServer().equals(rawServer.getId()) && javadoc.getCategory().equals(category.getName()))
                                         .map(RawServerJavadocCategoriesJavadocs::getName)
                                         .collect(Collectors.toSet());
 
                                 categories.put(category.getName(), new JavadocCategory(category.getDescription(), javadocs));
                             });
 
-                    return new Server(server.getId(), server.getPrefix(), algorithm, server.getDefaultJavadoc(), roles, rules, categories);
+                    final Server server = creator.createInstance(rawServer.getId());
+                    server.setPrefix(rawServer.getPrefix());
+                    server.setAlgorithm(algorithm);
+                    server.setDefaultJavadoc(rawServer.getDefaultJavadoc());
+
+                    if (!roles.isEmpty()) {
+                        server.getRoles().clear();
+                    }
+
+                    server.getRoles().addAll(roles);
+
+                    if (!rules.isEmpty()) {
+                        server.getRules().clear();
+                    }
+
+                    server.getRules().putAll(rules);
+
+                    if (!categories.isEmpty()) {
+                        server.getJavadocCategories().clear();
+                    }
+
+                    server.getJavadocCategories().putAll(categories);
+
+                    return server;
                 }).collect(Collectors.toSet());
     }
 

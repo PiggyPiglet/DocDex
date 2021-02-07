@@ -30,4 +30,12 @@ public final class JavadocCategory {
     public Set<String> getJavadocs() {
         return javadocs;
     }
+
+    @Override
+    public String toString() {
+        return "JavadocCategory{" +
+                "description='" + description + '\'' +
+                ", javadocs=" + javadocs +
+                '}';
+    }
 }
