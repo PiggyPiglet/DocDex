@@ -166,7 +166,7 @@ public final class DocumentedObject {
 
         @NotNull
         public T name(@NotNull final String value) {
-            name = DataUtils.removeTypeParams(value);
+            name = DataUtils.removeTypeParams(value).replace("\r", "");
             return instance;
         }
 
