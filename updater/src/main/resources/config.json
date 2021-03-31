@@ -97,7 +97,7 @@
     },
     {
       "names": ["luckperms", "lp"],
-      "link": "http://172.18.0.1/docs/luckperms/overview-summary.html",
+      "link": "http://172.18.0.1/docs/luckperms/index.html",
       "actual_link": "https://docs.docdex.helpch.at/luckperms",
 
       "strategy": {
@@ -361,7 +361,7 @@
     },
     {
       "names": ["caffeine"],
-      "link": "http://172.18.0.1/docs/caffeine/overview-summary.html",
+      "link": "http://172.18.0.1/docs/caffeine/index.html",
       "actual_link": "https://docs.docdex.helpch.at/caffeine",
 
       "strategy": {

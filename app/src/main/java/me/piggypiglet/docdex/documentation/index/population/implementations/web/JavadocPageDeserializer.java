@@ -50,7 +50,7 @@ public final class JavadocPageDeserializer {
         final Set<DocumentedObject> objects = new HashSet<>();
 
         final DocumentedObject type = TypeDeserializer.deserialize(
-                document.selectFirst(".contentContainer > .description"),
+                document.selectFirst(".description"),
                 link,
                 document.selectFirst(".header > .title").previousElementSibling()
         );

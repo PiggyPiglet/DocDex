@@ -40,6 +40,13 @@ public final class TypeComponentSerializer {
         }
 
         final TypeMetadata metadata = (TypeMetadata) object.getMetadata();
+
+        if (metadata == null || component == null || !COMPONENT_GETTERS.containsKey(component)) {
+            System.out.println("Looks like either the metadata, component, or corresponding component value was null in TypeComponentSerializer.");
+            System.out.println(metadata);
+            System.out.println(component);
+        }
+
         final List<List<String>> pages = Lists.partition(new ArrayList<>(COMPONENT_GETTERS.get(component).apply(metadata)), 15);
 
         return pages.stream()

@@ -58,11 +58,15 @@ public final class WebCrawlPopulator implements IndexPopulator {
             return Collections.emptyMap();
         }
 
-        final Optional<Element> indexAnchor = mainDocument.select("ul.navList > li > a").stream()
+        final Optional<Element> indexAnchor = Stream.concat(
+                mainDocument.select("ul.navList > li > a").stream(),
+                mainDocument.select("ul.nav-list > li > a").stream()
+        )
                 .filter(element -> element.text().equalsIgnoreCase("index"))
                 .findAny();
 
         if (indexAnchor.isEmpty()) {
+            LOGGER.error("Couldn't find index anchor for {}.", javadocName);
             return Collections.emptyMap();
         }
 
