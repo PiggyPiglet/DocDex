@@ -40,35 +40,35 @@ public abstract class JavadocDownloader<S extends UpdateStrategy> {
 
         String path = strategy.getPath();
         path = path.endsWith(SEPARATOR + "") ? path.substring(0, path.length() - 1) : path;
-        final String jar = path + ".jar";
+        final String zip = path + ".zip";
 
         try {
             FileUtils.deleteDirectory(path);
-            Files.deleteIfExists(Paths.get(jar));
+            Files.deleteIfExists(Paths.get(zip));
         } catch (IOException exception) {
-            LOGGER.error("Something went wrong when deleting " + path + " and " + jar, exception);
+            LOGGER.error("Something went wrong when deleting " + path + " and " + zip, exception);
             return false;
         }
 
         for (final URI uri : uris) {
             try (InputStream input = uri.toURL().openStream();
                  ReadableByteChannel readable = Channels.newChannel(input);
-                 FileChannel output = FileChannel.open(Paths.get(jar), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+                 FileChannel output = FileChannel.open(Paths.get(zip), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
                          StandardOpenOption.WRITE)
             ) {
                 output.transferFrom(readable, 0, Long.MAX_VALUE);
-                LOGGER.info("Successfully downloaded {} to {}", uri, jar);
+                LOGGER.info("Successfully downloaded {} to {}", uri, zip);
                 break;
             } catch (IOException exception) {
-                LOGGER.info("Failed downloading {} to {}", uri, jar);
+                LOGGER.info("Failed downloading {} to {}", uri, zip);
             }
         }
 
         try {
-            ZipUtils.unzip(jar, path);
-            LOGGER.info("Successfully unzipped {} to {}", jar, path);
+            ZipUtils.unzip(zip, path);
+            LOGGER.info("Successfully unzipped {} to {}", zip, path);
         } catch (IOException exception) {
-            LOGGER.error("Something went wrong when unzipping " + jar + " to " + path, exception);
+            LOGGER.error("Something went wrong when unzipping " + zip + " to " + path, exception);
             return false;
         }
 

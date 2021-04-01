@@ -457,6 +457,17 @@
         "path": "/var/www/html/docs/processing",
         "artifact_link": "https://repo1.maven.org/maven2/org/processing/core"
       }
+    },
+    {
+      "names": ["minestom"],
+      "link": "http://172.18.0.1/docs/minestom/index.html",
+      "actual_link": "https://docs.docdex.helpch.at/minestom",
+
+      "strategy": {
+        "type": "DIRECT_ZIP",
+        "path": "/var/www/html/docs/minestom",
+        "link": "https://github.com/Minestom/Minestom/archive/refs/heads/javadoc.zip"
+      }
     }
   ]
 }

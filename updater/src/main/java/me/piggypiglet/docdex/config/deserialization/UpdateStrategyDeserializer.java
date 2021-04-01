@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import me.piggypiglet.docdex.config.UpdateStrategyType;
 import me.piggypiglet.docdex.config.strategies.UpdateStrategy;
+import me.piggypiglet.docdex.config.strategies.direct.DirectZipStrategy;
 import me.piggypiglet.docdex.config.strategies.maven.MavenLatestStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,9 @@ public final class UpdateStrategyDeserializer implements JsonDeserializer<Update
             case MAVEN_LATEST_RELEASE:
             case MAVEN_LATEST:
                 return context.deserialize(json, MavenLatestStrategy.class);
+
+            case DIRECT_ZIP:
+                return context.deserialize(json, DirectZipStrategy.class);
 
             default:
                 return null;
