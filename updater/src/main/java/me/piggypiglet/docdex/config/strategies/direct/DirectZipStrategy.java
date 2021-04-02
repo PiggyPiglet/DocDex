@@ -2,19 +2,17 @@ package me.piggypiglet.docdex.config.strategies.direct;
 
 import me.piggypiglet.docdex.config.strategies.UpdateStrategy;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class DirectZipStrategy implements UpdateStrategy {
-    private final String path;
-    private final String link;
-
-    public DirectZipStrategy(@NotNull final String path, @NotNull final String link) {
-        this.path = path;
-        this.link = link;
-    }
+    private String path;
+    private String zip;
+    private String link;
+    private String innerPath;
 
     @NotNull
     @Override
@@ -23,7 +21,18 @@ public final class DirectZipStrategy implements UpdateStrategy {
     }
 
     @NotNull
+    @Override
+    public String getZip() {
+        return zip;
+    }
+
+    @NotNull
     public String getLink() {
         return link;
+    }
+
+    @Nullable
+    public String getInnerPath() {
+        return innerPath;
     }
 }

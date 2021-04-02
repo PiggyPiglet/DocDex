@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -24,29 +23,20 @@ import java.util.Set;
 // https://www.piggypiglet.me
 // ------------------------------
 public abstract class JavadocDownloader<S extends UpdateStrategy> {
-    private static final char SEPARATOR = File.separatorChar;
-
     protected static final Logger LOGGER = LoggerFactory.getLogger("Downloader");
 
     @NotNull
     protected abstract Set<URI> provideLatestUris(@NotNull final S strategy);
 
-    public boolean download(@NotNull final S strategy)  {
-        final Set<URI> uris = provideLatestUris(strategy);
-
+    protected boolean download(@NotNull final Set<URI> uris, @NotNull final String zip)  {
         if (uris.isEmpty()) {
             return false;
         }
 
-        String path = strategy.getPath();
-        path = path.endsWith(SEPARATOR + "") ? path.substring(0, path.length() - 1) : path;
-        final String zip = path + ".zip";
-
         try {
-            FileUtils.deleteDirectory(path);
             Files.deleteIfExists(Paths.get(zip));
         } catch (IOException exception) {
-            LOGGER.error("Something went wrong when deleting " + path + " and " + zip, exception);
+            LOGGER.error("Something went wrong when deleting " + zip, exception);
             return false;
         }
 
@@ -64,7 +54,12 @@ public abstract class JavadocDownloader<S extends UpdateStrategy> {
             }
         }
 
+        return true;
+    }
+
+    protected boolean unzip(@NotNull final String zip, @NotNull final String path) {
         try {
+            FileUtils.deleteDirectory(path);
             ZipUtils.unzip(zip, path);
             LOGGER.info("Successfully unzipped {} to {}", zip, path);
         } catch (IOException exception) {
@@ -73,5 +68,16 @@ public abstract class JavadocDownloader<S extends UpdateStrategy> {
         }
 
         return true;
+    }
+
+    public boolean execute(@NotNull final S strategy) {
+        final String zip = strategy.getZip();
+        final String path = strategy.getPath();
+
+        if (download(provideLatestUris(strategy), zip)) {
+            return unzip(zip, path);
+        }
+
+        return false;
     }
 }

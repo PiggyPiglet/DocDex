@@ -36,6 +36,6 @@ public final class DownloadManager {
 
     @SuppressWarnings("unchecked")
     private <S extends UpdateStrategy> boolean download(@NotNull final JavadocDownloader<S> downloader, @NotNull final UpdateStrategy strategy) {
-        return downloader.download((S) strategy);
+        return downloader.execute((S) strategy);
     }
 }

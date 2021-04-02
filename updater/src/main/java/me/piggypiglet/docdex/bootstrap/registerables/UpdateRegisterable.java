@@ -48,7 +48,7 @@ public final class UpdateRegisterable extends Registerable {
         });
         updateManager.applyUpdates();
         LOGGER.info("Applied updates to config.json");
-//        pterodactylManager.deleteJavadocsAndStop(modifiedJavadocs);
+        pterodactylManager.deleteJavadocsAndStop(modifiedJavadocs);
         LOGGER.info("Deleting MongoDB collections for all updated javadocs.");
         System.exit(0);
     }

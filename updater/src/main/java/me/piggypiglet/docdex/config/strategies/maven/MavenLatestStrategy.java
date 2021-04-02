@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public final class MavenLatestStrategy implements UpdateStrategy {
     private UpdateStrategyType type;
     private String path;
+    private String zip;
     private String artifactLink;
 
     @NotNull
@@ -19,8 +20,15 @@ public final class MavenLatestStrategy implements UpdateStrategy {
     }
 
     @NotNull
+    @Override
     public String getPath() {
         return path;
+    }
+
+    @NotNull
+    @Override
+    public String getZip() {
+        return zip;
     }
 
     @NotNull

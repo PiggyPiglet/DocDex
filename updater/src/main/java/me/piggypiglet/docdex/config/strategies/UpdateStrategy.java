@@ -9,4 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public interface UpdateStrategy {
     @NotNull
     String getPath();
+
+    @NotNull
+    String getZip();
 }

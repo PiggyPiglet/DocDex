@@ -466,7 +466,8 @@
       "strategy": {
         "type": "DIRECT_ZIP",
         "path": "/var/www/html/docs/minestom",
-        "link": "https://github.com/Minestom/Minestom/archive/refs/heads/javadoc.zip"
+        "link": "https://github.com/Minestom/Minestom/archive/refs/heads/javadoc.zip",
+        "inner_path": "Minestom-javadoc"
       }
     }
   ]
