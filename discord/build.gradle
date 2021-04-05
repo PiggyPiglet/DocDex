@@ -16,7 +16,7 @@ dependencies {
     implementation "com.google.inject:guice:4.2.3"
     implementation "ch.qos.logback:logback-classic:1.2.3"
     implementation "com.kcthota:emoji4j:+"
-    implementation("net.dv8tion:JDA:4.2.0_223") {
+    implementation("net.dv8tion:JDA:4.2.1_253") {
         exclude module: 'opus-java'
     }
     implementation "net.jodah:expiringmap:0.5.9"
