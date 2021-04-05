@@ -9,6 +9,9 @@ repositories {
     maven {
         url = 'https://repo.aikar.co/content/groups/aikar'
     }
+    maven {
+        url = 'https://m2.dv8tion.net/releases'
+    }
 }
 
 dependencies {
