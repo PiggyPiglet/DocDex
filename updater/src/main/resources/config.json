@@ -15,7 +15,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/html/docs/jda",
-        "artifact_link": "https://dl.bintray.com/dv8fromtheworld/maven/net/dv8tion/JDA"
+        "artifact_link": "https://m2.dv8tion.net/releases/net/dv8tion/JDA"
       }
     },
     {
@@ -118,14 +118,25 @@
       }
     },
     {
-      "names": ["sponge"],
+      "names": ["sponge-7"],
+      "link": "http://172.18.0.1/docs/sponge-7/overview-summary.html",
+      "actual_link": "https://docs.docdex.helpch.at/sponge-7",
+
+      "strategy": {
+        "type": "MAVEN_LATEST_RELEASE",
+        "path": "/var/www/html/docs/sponge-7",
+        "artifact_link": "https://repo.spongepowered.org/maven/org/spongepowered/spongeapi"
+      }
+    },
+    {
+      "names": ["sponge", "sponge-8"],
       "link": "http://172.18.0.1/docs/sponge/overview-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/sponge",
 
       "strategy": {
-        "type": "MAVEN_LATEST_RELEASE",
+        "type": "MAVEN_LATEST",
         "path": "/var/www/html/docs/sponge",
-        "artifact_link": "https://repo.spongepowered.org/repository/maven-public/org/spongepowered/spongeapi"
+        "artifact_link": "https://repo.spongepowered.org/maven/org/spongepowered/spongeapi"
       }
     },
     {
