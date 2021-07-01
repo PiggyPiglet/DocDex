@@ -55,7 +55,7 @@ public final class MavenLatestUrlFetcher extends JavadocDownloader<MavenLatestSt
         }
 
         final String artifact = metadata.getArtifactId();
-        final String version = STRATEGY_VERSION_GETTERS.get(strategy.getType()).apply(metadata.getVersioning());
+        final String version = strategy.getVersion() == null ? STRATEGY_VERSION_GETTERS.get(strategy.getType()).apply(metadata.getVersioning()) : strategy.getVersion();
         final String javadocUri = finalUri + version + '/' + artifact + '-' + version + "-javadoc.jar";
 
         try {

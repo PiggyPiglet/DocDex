@@ -14,7 +14,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/jda",
+        "path": "/var/www/docs/jda",
         "artifact_link": "https://m2.dv8tion.net/releases/net/dv8tion/JDA"
       }
     },
@@ -25,7 +25,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/adventure",
+        "path": "/var/www/docs/adventure",
         "artifact_link": "https://repo1.maven.org/maven2/net/kyori/adventure-api"
       }
     },
@@ -36,7 +36,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/html/docs/bungeecord",
+        "path": "/var/www/docs/bungeecord",
         "artifact_link": "https://oss.sonatype.org/content/repositories/snapshots/net/md-5/bungeecord-api"
       }
     },
@@ -47,29 +47,29 @@
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/html/docs/bungeecord-chat",
+        "path": "/var/www/docs/bungeecord-chat",
         "artifact_link": "https://oss.sonatype.org/content/repositories/snapshots/net/md-5/bungeecord-chat"
       }
     },
     {
       "names": ["waterfall"],
-      "link": "http://172.18.0.1/docs/waterfall/overview-summary.html",
+      "link": "http://172.18.0.1/docs/waterfall/index.html",
       "actual_link": "https://docs.docdex.helpch.at/waterfall",
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/html/docs/waterfall",
+        "path": "/var/www/docs/waterfall",
         "artifact_link": "https://papermc.io/repo/repository/maven-public/io/github/waterfallmc/waterfall-api"
       }
     },
     {
       "names": ["waterfall-chat"],
-      "link": "http://172.18.0.1/docs/waterfall-chat/overview-summary.html",
+      "link": "http://172.18.0.1/docs/waterfall-chat/index.html",
       "actual_link": "https://docs.docdex.helpch.at/waterfall-chat",
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/html/docs/waterfall-chat",
+        "path": "/var/www/docs/waterfall-chat",
         "artifact_link": "https://papermc.io/repo/repository/maven-public/io/github/waterfallmc/waterfall-chat"
       }
     },
@@ -80,7 +80,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/gson",
+        "path": "/var/www/docs/gson",
         "artifact_link": "https://repo1.maven.org/maven2/com/google/code/gson/gson"
       }
     },
@@ -91,7 +91,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/guice",
+        "path": "/var/www/docs/guice",
         "artifact_link": "https://repo1.maven.org/maven2/com/google/inject/guice"
       }
     },
@@ -102,7 +102,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/luckperms",
+        "path": "/var/www/docs/luckperms",
         "artifact_link": "https://repo1.maven.org/maven2/net/luckperms/api"
       }
     },
@@ -113,29 +113,19 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/snakeyaml",
+        "path": "/var/www/docs/snakeyaml",
         "artifact_link": "https://repo1.maven.org/maven2/org/yaml/snakeyaml"
       }
     },
     {
-      "names": ["sponge-7"],
-      "link": "http://172.18.0.1/docs/sponge-7/overview-summary.html",
-      "actual_link": "https://docs.docdex.helpch.at/sponge-7",
-
-      "strategy": {
-        "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/sponge-7",
-        "artifact_link": "https://repo.spongepowered.org/maven/org/spongepowered/spongeapi"
-      }
-    },
-    {
-      "names": ["sponge", "sponge-8"],
-      "link": "http://172.18.0.1/docs/sponge/overview-summary.html",
-      "actual_link": "https://docs.docdex.helpch.at/sponge",
+      "names": ["sponge-8", "sponge"],
+      "link": "http://172.18.0.1/docs/sponge-8/index.html",
+      "actual_link": "https://docs.docdex.helpch.at/sponge-8",
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/html/docs/sponge",
+        "path": "/var/www/docs/sponge-8",
+        "version": "8.0.0-SNAPSHOT",
         "artifact_link": "https://repo.spongepowered.org/maven/org/spongepowered/spongeapi"
       }
     },
@@ -146,7 +136,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/html/docs/velocity",
+        "path": "/var/www/docs/velocity",
         "artifact_link": "https://nexus.velocitypowered.com/repository/maven-public/com/velocitypowered/velocity-api"
       }
     },
@@ -157,7 +147,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/worldedit",
+        "path": "/var/www/docs/worldedit",
         "artifact_link": "https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-core"
       }
     },
@@ -168,7 +158,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/worldguard",
+        "path": "/var/www/docs/worldguard",
         "artifact_link": "https://maven.enginehub.org/repo/com/sk89q/worldguard/worldguard-core"
       }
     },
@@ -179,7 +169,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-cli",
+        "path": "/var/www/docs/commons-cli",
         "artifact_link": "https://repo1.maven.org/maven2/commons-cli/commons-cli"
       }
     },
@@ -190,7 +180,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-codec",
+        "path": "/var/www/docs/commons-codec",
         "artifact_link": "https://repo1.maven.org/maven2/commons-codec/commons-codec"
       }
     },
@@ -201,7 +191,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-collections4",
+        "path": "/var/www/docs/commons-collections4",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-collections4"
       }
     },
@@ -212,7 +202,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-compress",
+        "path": "/var/www/docs/commons-compress",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-compress"
       }
     },
@@ -223,7 +213,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-configuration2",
+        "path": "/var/www/docs/commons-configuration2",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-configuration2"
       }
     },
@@ -234,7 +224,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-crypto",
+        "path": "/var/www/docs/commons-crypto",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-crypto"
       }
     },
@@ -245,7 +235,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-email",
+        "path": "/var/www/docs/commons-email",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-email"
       }
     },
@@ -256,7 +246,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-io",
+        "path": "/var/www/docs/commons-io",
         "artifact_link": "https://repo1.maven.org/maven2/commons-io/commons-io"
       }
     },
@@ -267,7 +257,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-lang3",
+        "path": "/var/www/docs/commons-lang3",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-lang3"
       }
     },
@@ -278,7 +268,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-logging",
+        "path": "/var/www/docs/commons-logging",
         "artifact_link": "https://repo1.maven.org/maven2/commons-logging/commons-logging"
       }
     },
@@ -289,7 +279,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/commons-text",
+        "path": "/var/www/docs/commons-text",
         "artifact_link": "https://repo1.maven.org/maven2/org/apache/commons/commons-text"
       }
     },
@@ -300,29 +290,29 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/guava",
+        "path": "/var/www/docs/guava",
         "artifact_link": "https://repo1.maven.org/maven2/com/google/guava/guava"
       }
     },
     {
       "names": ["fawe"],
-      "link": "http://172.18.0.1/docs/fawe/overview-summary.html",
+      "link": "http://172.18.0.1/docs/fawe/index.html",
       "actual_link": "https://docs.docdex.helpch.at/fawe",
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/fawe",
+        "path": "/var/www/docs/fawe",
         "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/intellectualsites/fawe/FAWE-Core"
       }
     },
     {
       "names": ["fawe-bukkit"],
-      "link": "http://172.18.0.1/docs/fawe-bukkit/overview-summary.html",
+      "link": "http://172.18.0.1/docs/fawe-bukkit/index.html",
       "actual_link": "https://docs.docdex.helpch.at/fawe-bukkit",
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/fawe-bukkit",
+        "path": "/var/www/docs/fawe-bukkit",
         "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/intellectualsites/fawe/FAWE-Bukkit"
       }
     },
@@ -333,7 +323,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/plotsquared",
+        "path": "/var/www/docs/plotsquared",
         "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Core"
       }
     },
@@ -344,7 +334,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/plotsquared-bukkit",
+        "path": "/var/www/docs/plotsquared-bukkit",
         "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Bukkit"
       }
     },
@@ -355,7 +345,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/javacord",
+        "path": "/var/www/docs/javacord",
         "artifact_link": "https://repo1.maven.org/maven2/org/javacord/javacord-api"
       }
     },
@@ -366,18 +356,18 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/antivpn",
+        "path": "/var/www/docs/antivpn",
         "artifact_link": "https://nexus.egg82.me/repository/maven-releases/me/egg82/antivpn-api"
       }
     },
     {
       "names": ["caffeine"],
-      "link": "http://172.18.0.1/docs/caffeine/index.html",
+      "link": "http://172.18.0.1/docs/caffeine/com.github.benmanes.caffeine/module-summary.html",
       "actual_link": "https://docs.docdex.helpch.at/caffeine",
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/caffeine",
+        "path": "/var/www/docs/caffeine",
         "artifact_link": "https://repo1.maven.org/maven2/com/github/ben-manes/caffeine/caffeine"
       }
     },
@@ -388,7 +378,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/helper",
+        "path": "/var/www/docs/helper",
         "artifact_link": "https://repo1.maven.org/maven2/me/lucko/helper"
       }
     },
@@ -399,7 +389,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/helper-sql",
+        "path": "/var/www/docs/helper-sql",
         "artifact_link": "https://repo1.maven.org/maven2/me/lucko/helper-sql"
       }
     },
@@ -410,7 +400,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/configurate-core",
+        "path": "/var/www/docs/configurate-core",
         "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-core"
       }
     },
@@ -421,7 +411,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/configurate-gson",
+        "path": "/var/www/docs/configurate-gson",
         "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-gson"
       }
     },
@@ -432,7 +422,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/configurate-json",
+        "path": "/var/www/docs/configurate-json",
         "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-json"
       }
     },
@@ -443,7 +433,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/configurate-yaml",
+        "path": "/var/www/docs/configurate-yaml",
         "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-yaml"
       }
     },
@@ -454,7 +444,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/configurate-hocon",
+        "path": "/var/www/docs/configurate-hocon",
         "artifact_link": "https://repo1.maven.org/maven2/org/spongepowered/configurate-hocon"
       }
     },
@@ -465,7 +455,7 @@
 
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/html/docs/processing",
+        "path": "/var/www/docs/processing",
         "artifact_link": "https://repo1.maven.org/maven2/org/processing/core"
       }
     },
@@ -476,7 +466,7 @@
 
       "strategy": {
         "type": "DIRECT_ZIP",
-        "path": "/var/www/html/docs/minestom",
+        "path": "/var/www/docs/minestom",
         "link": "https://github.com/Minestom/Minestom/archive/refs/heads/javadoc.zip",
         "inner_path": "Minestom-javadoc"
       }

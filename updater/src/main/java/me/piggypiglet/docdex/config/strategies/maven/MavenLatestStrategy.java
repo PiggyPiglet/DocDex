@@ -3,6 +3,7 @@ package me.piggypiglet.docdex.config.strategies.maven;
 import me.piggypiglet.docdex.config.UpdateStrategyType;
 import me.piggypiglet.docdex.config.strategies.UpdateStrategy;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
@@ -13,6 +14,7 @@ public final class MavenLatestStrategy implements UpdateStrategy {
     private String path;
     private String zip;
     private String artifactLink;
+    private String version;
 
     @NotNull
     public UpdateStrategyType getType() {
@@ -34,5 +36,10 @@ public final class MavenLatestStrategy implements UpdateStrategy {
     @NotNull
     public String getArtifactLink() {
         return artifactLink;
+    }
+
+    @Nullable
+    public String getVersion() {
+        return version;
     }
 }
