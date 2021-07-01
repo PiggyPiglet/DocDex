@@ -15,6 +15,7 @@ import java.util.function.Function;
 // https://www.piggypiglet.me
 // ------------------------------
 public final class EmbedUtils {
+    public static final int DEPRECATED_COLOUR = 14561585; // #DE3131
     public static final int COLOUR = 199061147;
     public static final String ICON = "https://cdn.piggypiglet.me/docdex/avatar.png";
 

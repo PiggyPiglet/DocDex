@@ -62,7 +62,7 @@ public final class BotCommandHandler {
 
     public void processCommand(@NotNull final User user, @NotNull final Message message) {
         final Server server = serverHelper.getServer(message);
-        final String rawMessage = message.getContentRaw().toLowerCase();
+        final String rawMessage = message.getContentStripped().toLowerCase();
 
         if (!rawMessage.startsWith(server.getPrefix())) {
             return;

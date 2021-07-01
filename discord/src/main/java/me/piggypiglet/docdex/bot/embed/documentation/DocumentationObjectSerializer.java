@@ -21,7 +21,7 @@ public final class DocumentationObjectSerializer {
                                        @NotNull final DocumentedObject object) {
         final EmbedBuilder builder = new EmbedBuilder();
 
-        builder.setColor(EmbedUtils.COLOUR);
+        builder.setColor(object.isDeprecated() ? EmbedUtils.DEPRECATED_COLOUR : EmbedUtils.COLOUR);
         builder.setTitle(DataUtils.getFqn(object), object.getLink().replace(" ", "%20"));
         builder.setFooter("Requested by: " + requester.getName() + " • " + javadoc);
 
