@@ -22,6 +22,7 @@ public final class TypeComponentSerializer {
         COMPONENT_GETTERS.put(TypeComponents.EXTENSIONS, TypeMetadata::getExtensions);
         COMPONENT_GETTERS.put(TypeComponents.IMPLEMENTATIONS, TypeMetadata::getImplementations);
         COMPONENT_GETTERS.put(TypeComponents.ALL_IMPLEMENTATIONS, TypeMetadata::getAllImplementations);
+        COMPONENT_GETTERS.put(TypeComponents.SUPER_INTERFACES, TypeMetadata::getSuperInterfaces);
         COMPONENT_GETTERS.put(TypeComponents.SUB_INTERFACES, TypeMetadata::getSubInterfaces);
         COMPONENT_GETTERS.put(TypeComponents.SUB_CLASSES, TypeMetadata::getSubClasses);
         COMPONENT_GETTERS.put(TypeComponents.IMPLEMENTING_CLASSES, TypeMetadata::getImplementingClasses);
