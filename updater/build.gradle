@@ -6,7 +6,7 @@ mainClassName = 'me.piggypiglet.docdex.bootstrap.DocDexBootstrap'
 
 repositories {
     maven {
-        url = "https://repo.piggypiglet.me/repository/maven-public/"
+        url = "https://repo.piggypiglet.me/releases"
     }
 }
 
