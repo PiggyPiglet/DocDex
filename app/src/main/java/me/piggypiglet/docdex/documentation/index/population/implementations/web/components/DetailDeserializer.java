@@ -1,7 +1,7 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components;
 
-import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature.NewSignatureDeserializer;
-import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature.OldSignatureDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature.NewSignatureDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature.OldSignatureDeserializer;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.detail.DocumentedDetailBuilder;
 import org.jetbrains.annotations.NotNull;

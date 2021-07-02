@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.method;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.method;
 
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.nodes.Element;

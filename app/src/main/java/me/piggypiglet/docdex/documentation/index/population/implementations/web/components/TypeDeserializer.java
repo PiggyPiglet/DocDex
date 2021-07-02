@@ -8,6 +8,7 @@ import me.piggypiglet.docdex.documentation.objects.type.DocumentedTypeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -140,14 +141,36 @@ public final class TypeDeserializer {
             builder.strippedDescription(descriptionBlock.text());
         });
 
-        description.select("dl").forEach(meta -> {
-            final String header = meta.selectFirst("dt").text().toLowerCase();
+        Optional.ofNullable(description.select("dl")).ifPresent(dls -> dls.forEach(dl -> {
+            final Elements elements = dl.children();
+            final Map<String, Set<Element>> meta = new HashMap<>();
 
-            Optional.ofNullable(HEADER_SETTERS.get(header)).ifPresent(setter ->
-                    setter.accept(builder, meta.select("dd a").stream()
-                            .map(DeserializationUtils::generateFqn)
-                            .collect(Collectors.toSet())));
-        });
+            Set<Element> dd = new HashSet<>();
+            for (final Element element : elements) {
+                final String tag = element.tagName();
+
+                if (tag.equalsIgnoreCase("dt")) {
+                    dd = new LinkedHashSet<>();
+                    meta.put(element.text(), dd);
+                }
+
+                if (tag.equalsIgnoreCase("dd")) {
+                    dd.add(element);
+                }
+            }
+
+            meta.forEach((label, ddElements) -> {
+                if (label.equalsIgnoreCase("since:")) {
+                    builder.since(ddElements.stream().map(Element::text).collect(Collectors.joining()));
+                }
+
+                ddElements.stream().findAny().ifPresent(element ->
+                        Optional.ofNullable(HEADER_SETTERS.get(label.toLowerCase())).ifPresent(setter ->
+                                setter.accept(builder, element.select("a").stream()
+                                        .map(DeserializationUtils::generateFqn)
+                                        .collect(Collectors.toSet()))));
+            });
+        }));
 
         Optional.ofNullable(description.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
             builder.deprecated(true);

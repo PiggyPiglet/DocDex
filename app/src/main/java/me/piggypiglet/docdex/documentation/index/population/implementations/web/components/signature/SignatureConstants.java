@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature;
 
 import java.util.regex.Pattern;
 

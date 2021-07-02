@@ -1,6 +1,6 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.field;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.field;
 
-import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.DetailDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.DetailDeserializer;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
 import me.piggypiglet.docdex.documentation.objects.detail.field.DocumentedFieldBuilder;

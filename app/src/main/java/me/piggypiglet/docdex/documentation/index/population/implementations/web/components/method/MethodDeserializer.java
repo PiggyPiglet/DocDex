@@ -1,6 +1,6 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.method;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.method;
 
-import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.DetailDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.DetailDeserializer;
 import me.piggypiglet.docdex.documentation.index.population.implementations.web.utils.DeserializationUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.DocumentedTypes;
@@ -97,6 +97,10 @@ public final class MethodDeserializer {
 
                     case "returns:":
                         builder.returnsDescription(String.join("", content));
+                        break;
+
+                    case "since:":
+                        builder.since(String.join("", content));
                         break;
                 }
             });

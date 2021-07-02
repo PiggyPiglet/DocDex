@@ -34,7 +34,8 @@ public final class SimpleObjectSerializer {
 
     private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
             "Description:", object -> HTML_CONVERTER.convert(object.getDescription()),
-            "Deprecation Message:", DocumentedObject::getDeprecationMessage
+            "Deprecation Message:", DocumentedObject::getDeprecationMessage,
+            "Since:", DocumentedObject::getSince
     );
 
     private static final Map<String, Function<TypeMetadata, Integer>> TYPE_NUMBER_GETTERS = Map.of(

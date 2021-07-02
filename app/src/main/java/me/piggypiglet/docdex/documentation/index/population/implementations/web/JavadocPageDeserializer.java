@@ -3,8 +3,8 @@ package me.piggypiglet.docdex.documentation.index.population.implementations.web
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.TypeDeserializer;
-import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.field.FieldDeserializer;
-import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.method.MethodDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.field.FieldDeserializer;
+import me.piggypiglet.docdex.documentation.index.population.implementations.web.components.method.MethodDeserializer;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
 import me.piggypiglet.docdex.documentation.objects.type.TypeMetadata;
 import me.piggypiglet.docdex.documentation.utils.DataUtils;

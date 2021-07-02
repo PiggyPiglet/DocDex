@@ -62,15 +62,15 @@ public final class BotCommandHandler {
 
     public void processCommand(@NotNull final User user, @NotNull final Message message) {
         final Server server = serverHelper.getServer(message);
-        final String rawMessage = message.getContentStripped().toLowerCase();
+        final String strippedMessage = message.getContentStripped().toLowerCase();
 
-        if (!rawMessage.startsWith(server.getPrefix())) {
+        if (!strippedMessage.startsWith(server.getPrefix())) {
             return;
         }
 
         final StringBuilder prefixBuilder = new StringBuilder(server.getPrefix().toLowerCase());
 
-        for (final char character : rawMessage.substring(server.getPrefix().length()).toCharArray()) {
+        for (final char character : strippedMessage.substring(server.getPrefix().length()).toCharArray()) {
             if (character != ' ') {
                 break;
             }
@@ -84,7 +84,7 @@ public final class BotCommandHandler {
 
         final BotCommand command = commands.stream()
                 .filter(possibleCommand -> possibleCommand.getMatches().stream().anyMatch(possibleMatch -> {
-                    final boolean matches = rawMessage.startsWith(prefix + possibleMatch);
+                    final boolean matches = strippedMessage.startsWith(prefix + possibleMatch);
 
                     if (matches) {
                         match.set(possibleMatch);

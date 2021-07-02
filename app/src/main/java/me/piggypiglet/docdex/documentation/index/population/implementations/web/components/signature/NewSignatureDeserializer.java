@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature;
 
 import me.piggypiglet.docdex.documentation.index.population.implementations.web.utils.DeserializationUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
@@ -8,7 +8,7 @@ import org.jsoup.nodes.Element;
 
 import java.util.Optional;
 
-import static me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature.SignatureConstants.SPACE_DELIMITER;
+import static me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature.SignatureConstants.SPACE_DELIMITER;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020

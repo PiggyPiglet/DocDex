@@ -1,4 +1,4 @@
-package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature;
+package me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature;
 
 import me.piggypiglet.docdex.documentation.index.population.implementations.web.utils.DeserializationUtils;
 import me.piggypiglet.docdex.documentation.objects.DocumentedObject;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static me.piggypiglet.docdex.documentation.index.population.implementations.web.components.details.signature.SignatureConstants.SPACE_DELIMITER;
+import static me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature.SignatureConstants.SPACE_DELIMITER;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020

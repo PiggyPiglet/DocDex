@@ -165,7 +165,7 @@ public abstract class DocumentationCommand extends BotCommand {
     @NotNull
     @Override
     protected List<String> args(final @NotNull Message message, final int start) {
-        return Arrays.asList(ARGUMENT_PATTERN.split(message.getContentRaw().substring(start).trim()));
+        return Arrays.asList(ARGUMENT_PATTERN.split(message.getContentStripped().substring(start).trim()));
     }
 
     private static void queueAndDelete(@NotNull final Supplier<MessageAction> messageSupplier, @NotNull final Message request) {

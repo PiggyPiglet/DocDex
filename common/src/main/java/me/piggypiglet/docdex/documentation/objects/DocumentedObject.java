@@ -23,6 +23,7 @@ public final class DocumentedObject {
     private final boolean deprecated;
     private final String deprecationMessage;
     private final Set<String> modifiers;
+    private final String since;
     @JsonAdapter(MetadataAdapter.class) private final Object metadata;
 
     private DocumentedObject(@NotNull final String link, @NotNull final DocumentedTypes type,
@@ -30,7 +31,7 @@ public final class DocumentedObject {
                              @NotNull final String description, @NotNull final String strippedDescription,
                              @NotNull final Set<String> annotations, final boolean deprecated,
                              @NotNull final String deprecationMessage, @NotNull final Set<String> modifiers,
-                             @NotNull final Object metadata) {
+                             @NotNull final String since, @NotNull final Object metadata) {
         this.link = link;
         this.type = type;
         this.packaj = packaj;
@@ -41,6 +42,7 @@ public final class DocumentedObject {
         this.deprecated = deprecated;
         this.deprecationMessage = deprecationMessage;
         this.modifiers = modifiers;
+        this.since = since;
         this.metadata = metadata;
     }
 
@@ -94,6 +96,11 @@ public final class DocumentedObject {
     }
 
     @NotNull
+    public String getSince() {
+        return since;
+    }
+
+    @NotNull
     public Object getMetadata() {
         return metadata;
     }
@@ -103,12 +110,12 @@ public final class DocumentedObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DocumentedObject object = (DocumentedObject) o;
-        return deprecated == object.deprecated && link.equals(object.link) && type == object.type && packaj.equals(object.packaj) && name.equals(object.name) && description.equals(object.description) && strippedDescription.equals(object.strippedDescription) && annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) && metadata.equals(object.metadata);
+        return deprecated == object.deprecated && link.equals(object.link) && type == object.type && packaj.equals(object.packaj) && name.equals(object.name) && description.equals(object.description) && strippedDescription.equals(object.strippedDescription) && annotations.equals(object.annotations) && deprecationMessage.equals(object.deprecationMessage) && modifiers.equals(object.modifiers) && since.equals(object.since) && metadata.equals(object.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(link, type, packaj, name, description, strippedDescription, annotations, deprecated, deprecationMessage, modifiers, metadata);
+        return Objects.hash(link, type, packaj, name, description, strippedDescription, annotations, deprecated, deprecationMessage, modifiers, since, metadata);
     }
 
     @Override
@@ -124,6 +131,7 @@ public final class DocumentedObject {
                 ", deprecated=" + deprecated +
                 ", deprecationMessage='" + deprecationMessage + '\'' +
                 ", modifiers=" + modifiers +
+                ", since=" + since +
                 ", metadata=" + metadata +
                 '}';
     }
@@ -143,6 +151,7 @@ public final class DocumentedObject {
         private boolean deprecated = false;
         private String deprecationMessage = "";
         private final Set<String> modifiers = new LinkedHashSet<>();
+        private String since = "";
 
         protected Builder() {}
 
@@ -219,13 +228,19 @@ public final class DocumentedObject {
         }
 
         @NotNull
+        public T since(@NotNull final String value) {
+            since = value;
+            return instance;
+        }
+
+        @NotNull
         public abstract DocumentedObject build();
 
         @NotNull
         protected final DocumentedObject build(@NotNull final Object metadata) {
             return new DocumentedObject(
                     link, type, packaj, name, description, strippedDescription, annotations,
-                    deprecated, deprecationMessage, modifiers, metadata
+                    deprecated, deprecationMessage, modifiers, since, metadata
             );
         }
 
@@ -276,6 +291,11 @@ public final class DocumentedObject {
         @NotNull
         public Set<String> getModifiers() {
             return modifiers;
+        }
+
+        @NotNull
+        public String getSince() {
+            return since;
         }
     }
 }
