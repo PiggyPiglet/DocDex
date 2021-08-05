@@ -302,7 +302,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/fawe",
-        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/intellectualsites/fawe/FAWE-Core"
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/fastasyncworldedit/FAWE-Core"
       }
     },
     {
@@ -313,7 +313,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/fawe-bukkit",
-        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/intellectualsites/fawe/FAWE-Bukkit"
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/fastasyncworldedit/FAWE-Bukkit"
       }
     },
     {
