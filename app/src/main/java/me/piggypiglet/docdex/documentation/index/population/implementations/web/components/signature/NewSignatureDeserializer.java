@@ -27,6 +27,7 @@ public final class NewSignatureDeserializer {
                 .ifPresent(builder::modifiers);
         Optional.ofNullable(signature.selectFirst(".annotations"))
                 .map(annotations -> annotations.select("a").stream())
+                .map(annotations -> annotations.filter(element -> element.text().startsWith("@")))
                 .map(annotations -> annotations.map(element -> element.text(element.text().substring(1))))
                 .map(annotations -> annotations.map(DeserializationUtils::generateFqn))
                 .ifPresent(annotations -> annotations.forEach(annotation -> builder.annotations('@' + annotation)));
