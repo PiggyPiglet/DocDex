@@ -16,7 +16,7 @@ public final class NewParameterDeserializer {
 
     @NotNull
     static String deserialize(@NotNull final Element details) {
-        return Optional.ofNullable(details.selectFirst(".memberSignature").selectFirst(".arguments"))
+        return Optional.ofNullable(details.selectFirst(".memberSignature, .member-signature").selectFirst(".arguments, .parameters"))
                 // substring because args span includes trailing )
                 .map(arguments -> arguments.text().substring(0, arguments.text().length() - 1))
                 .orElse("");

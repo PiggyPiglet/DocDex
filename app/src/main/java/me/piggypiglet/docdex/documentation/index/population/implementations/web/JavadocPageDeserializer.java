@@ -14,19 +14,21 @@ import org.jsoup.nodes.Element;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2020
 // https://www.piggypiglet.me
 // ------------------------------
 public final class JavadocPageDeserializer {
-    private static final Map<String, String> NEW_DETAIL_CLASSES = Map.of(
-            ".constructorDetails", "methods",
-            ".methodDetails", "methods",
-            ".constantDetails", "fields",
-            ".fieldDetails", "fields"
+    private static final Map<Set<String>, String> NEW_DETAIL_CLASSES = Map.of(
+            Set.of(".constructor-details", ".constructorDetails"), "methods",
+            Set.of(".method-details", ".methodDetails"), "methods",
+            Set.of(".constant-details", ".constantDetails"), "fields",
+            Set.of(".field-details", ".fieldDetails"), "fields"
     );
 
     private static final Map<String, String> OLD_DETAIL_HEADERS = Map.of(
@@ -56,8 +58,7 @@ public final class JavadocPageDeserializer {
         );
         objects.add(type);
 
-        // we pass the owner as a string here to ensure there's no cyclic dependencies during the population process.
-        final Element possibleElements = document.selectFirst(".methodDetails ul.blockList > li.blockList");
+        final Element possibleElements = document.selectFirst(".method-details, .methodDetails");
         final boolean old = possibleElements == null;
 
         final Multimap<String, Map.Entry<String, Element>> detailElements = HashMultimap.create();
@@ -76,10 +77,10 @@ public final class JavadocPageDeserializer {
                         });
                     });
         } else {
-            NEW_DETAIL_CLASSES.forEach((clazz, key) ->
-                    document.select(clazz + " ul.blockList > li.blockList").forEach(block ->
-                            detailElements.put(key, Map.entry(link + '#' + block.selectFirst(".detail > h3 > a").id(), block))
-                    )
+            NEW_DETAIL_CLASSES.forEach((classes, key) ->
+                document.select(classes.stream().map(clazz -> clazz + " > ul > li").collect(Collectors.joining(","))).forEach(block ->
+                            detailElements.put(key, Map.entry(link + '#' + Optional.ofNullable(block.selectFirst(".detail > h3 > a")).orElse(block.selectFirst(".detail")).id(), block))
+                )
             );
         }
 

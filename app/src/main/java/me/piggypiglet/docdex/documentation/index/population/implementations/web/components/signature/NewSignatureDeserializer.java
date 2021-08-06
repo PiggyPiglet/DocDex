@@ -20,7 +20,7 @@ public final class NewSignatureDeserializer {
     }
 
     public static <R extends DocumentedObject.Builder<R> & DocumentedDetailBuilder<R>> void deserialize(@NotNull final Element details, @NotNull final R builder) {
-        final Element signature = details.selectFirst(".memberSignature");
+        final Element signature = details.selectFirst(".memberSignature, .member-signature");
         Optional.ofNullable(signature.selectFirst(".modifiers"))
                 .map(Element::text)
                 .map(SPACE_DELIMITER::split)
@@ -30,7 +30,7 @@ public final class NewSignatureDeserializer {
                 .map(annotations -> annotations.map(element -> element.text(element.text().substring(1))))
                 .map(annotations -> annotations.map(DeserializationUtils::generateFqn))
                 .ifPresent(annotations -> annotations.forEach(annotation -> builder.annotations('@' + annotation)));
-        Optional.ofNullable(signature.selectFirst(".returnType")).ifPresent(returnType ->
+        Optional.ofNullable(signature.selectFirst(".returnType, .return-type")).ifPresent(returnType ->
                 builder.returns(returnType.text()));
     }
 }
