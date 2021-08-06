@@ -78,10 +78,11 @@ public final class WebCrawlPopulator implements IndexPopulator {
         }
 
         if (firstDocument.location().endsWith("index-1.html")) {
-            firstDocument.selectFirst(".contentContainer > h2.title").previousElementSiblings().select("a").stream()
+            firstDocument.selectFirst("h2.title").previousElementSiblings().select("a").stream()
                     .filter(a -> a.hasAttr("href"))
                     .map(a -> a.absUrl("href"))
                     .filter(url -> !url.endsWith("index-1.html"))
+                    .filter(url -> !url.contains("all"))
                     .map(WebCrawlPopulator::connect)
                     .forEach(documents::add);
         }
@@ -89,6 +90,7 @@ public final class WebCrawlPopulator implements IndexPopulator {
         final Set<DocumentedObject> objects = new HashSet<>();
         final Set<Map.Entry<String, String>> types = documents.stream().flatMap(document -> document.select("dl > dt").stream())
                 .map(element -> element.selectFirst("a"))
+                .filter(Objects::nonNull)
                 .filter(element -> TYPE_NAMES.stream().anyMatch(element.attr("title").toLowerCase()::startsWith))
                 .map(element -> Map.entry(element.absUrl("href"), element.attr("href")
                         .replace("../", "").replace("./", "")))

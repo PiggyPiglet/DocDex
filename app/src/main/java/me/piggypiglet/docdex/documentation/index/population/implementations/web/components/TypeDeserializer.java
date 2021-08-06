@@ -47,8 +47,8 @@ public final class TypeDeserializer {
         Optional.ofNullable(packaj).ifPresent(packageElement ->
                 builder.packaj(packageElement.text().replace("Package ", "")));
 
-        final Element pre = description.selectFirst("pre");
-        final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(pre.text()))
+        final Element pre = description.selectFirst("pre, div.type-signature");
+        final List<String> declaration = Arrays.stream(LINE_DELIMITER.split(pre.wholeText().trim()))
                 .filter(line -> !line.startsWith("@") && !line.endsWith(")"))
                 .collect(Collectors.toList());
         final Element span = pre.selectFirst("span");
