@@ -43,10 +43,10 @@ public final class DetailDeserializer {
             builder.strippedDescription(description.text());
         });
 
-        Optional.ofNullable(details.selectFirst(".deprecationBlock")).ifPresent(deprecationBlock -> {
+        Optional.ofNullable(details.selectFirst(".deprecationBlock, .deprecation-block")).ifPresent(deprecationBlock -> {
             builder.deprecated(true);
 
-            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment")).ifPresent(deprecationComment ->
+            Optional.ofNullable(deprecationBlock.selectFirst(".deprecationComment, .deprecation-comment")).ifPresent(deprecationComment ->
                     builder.deprecationMessage(deprecationComment.text()));
         });
     }

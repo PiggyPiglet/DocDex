@@ -64,6 +64,7 @@ public final class MongoStorage implements IndexStorage {
 
             if (object.getType() == DocumentedTypes.METHOD || object.getType() == DocumentedTypes.CONSTRUCTOR) {
                 final Map<ParameterTypes, String> params = key.getParams();
+
                 final String name = key.getName();
 
                 final String fullParams = '(' + params.get(ParameterTypes.FULL) + ')';
