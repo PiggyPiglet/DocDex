@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,6 +53,8 @@ public final class PterodactylManager {
 
                     try {
                         Files.delete(Paths.get(path));
+                    } catch (NoSuchFileException exception) {
+                        LOGGER.warn("No file exists at path: {}", path);
                     } catch (IOException exception) {
                         LOGGER.error("Something went wrong when deleting " + path, exception);
                         return false;

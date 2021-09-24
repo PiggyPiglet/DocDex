@@ -8,6 +8,35 @@
 
   "javadocs": [
     {
+      "names": [
+        "1.17.1",
+        "latest",
+        "spigot"
+      ],
+      "link": "https://docs.docdex.helpch.at/1.17.1",
+      "actual_link": "https://docs.docdex.helpch.at/1.17.1",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/docs/1.17.1",
+        "artifact_link": "https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/spigot-api"
+      }
+    },
+    {
+      "names": [
+        "paper-1.17",
+        "paper"
+      ],
+      "link": "https://docs.docdex.helpch.at/paper-1.17/index.html",
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.17",
+
+      "strategy": {
+        "type": "MAVEN_LATEST",
+        "path": "/var/www/docs/paper-1.17",
+        "artifact_link": "https://papermc.io/repo/repository/maven-snapshots/io/papermc/paper/paper-api"
+      }
+    },
+    {
       "names": ["jda"],
       "link": "https://docs.docdex.helpch.at/jda",
       "actual_link": "https://docs.docdex.helpch.at/jda",
@@ -142,7 +171,7 @@
     },
     {
       "names": ["worldedit"],
-      "link": "https://docs.docdex.helpch.at/worldedit/overview-summary.html",
+      "link": "https://docs.docdex.helpch.at/worldedit/index.html",
       "actual_link": "https://docs.docdex.helpch.at/worldedit",
 
       "strategy": {
@@ -153,7 +182,7 @@
     },
     {
       "names": ["worldguard"],
-      "link": "https://docs.docdex.helpch.at/worldguard/overview-summary.html",
+      "link": "https://docs.docdex.helpch.at/worldguard/index.html",
       "actual_link": "https://docs.docdex.helpch.at/worldguard",
 
       "strategy": {
@@ -318,7 +347,7 @@
     },
     {
       "names": ["plotsquared"],
-      "link": "https://docs.docdex.helpch.at/plotsquared/overview-summary.html",
+      "link": "https://docs.docdex.helpch.at/plotsquared/index.html",
       "actual_link": "https://docs.docdex.helpch.at/plotsquared",
 
       "strategy": {
@@ -329,7 +358,7 @@
     },
     {
       "names": ["plotsquared-bukkit"],
-      "link": "https://docs.docdex.helpch.at/plotsquared-bukkit/overview-summary.html",
+      "link": "https://docs.docdex.helpch.at/plotsquared-bukkit/index.html",
       "actual_link": "https://docs.docdex.helpch.at/plotsquared-bukkit",
 
       "strategy": {
