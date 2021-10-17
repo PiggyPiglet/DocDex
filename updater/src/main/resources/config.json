@@ -331,7 +331,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/fawe",
-        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/fastasyncworldedit/FAWE-Core"
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/fastasyncworldedit/FastAsyncWorldEdit-Core/"
       }
     },
     {
@@ -342,7 +342,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/fawe-bukkit",
-        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/fastasyncworldedit/FAWE-Bukkit"
+        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/fastasyncworldedit/FastAsyncWorldEdit-Bukkit/"
       }
     },
     {
@@ -353,7 +353,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/plotsquared",
-        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Core"
+        "artifact_link": "https://repo.maven.apache.org/maven2/com/plotsquared/PlotSquared-Core/"
       }
     },
     {
@@ -364,7 +364,7 @@
       "strategy": {
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/plotsquared-bukkit",
-        "artifact_link": "https://mvn.intellectualsites.com/content/groups/public/com/plotsquared/PlotSquared-Bukkit"
+        "artifact_link": "https://repo.maven.apache.org/maven2/com/plotsquared/PlotSquared-Bukkit/"
       }
     },
     {
