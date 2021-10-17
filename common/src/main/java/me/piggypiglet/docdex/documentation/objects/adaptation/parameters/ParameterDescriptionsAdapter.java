@@ -1,9 +1,12 @@
 package me.piggypiglet.docdex.documentation.objects.adaptation.parameters;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.primitives.Ints;
 import com.google.gson.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,7 +20,7 @@ public final class ParameterDescriptionsAdapter implements JsonSerializer<Map<St
     public JsonElement serialize(@NotNull final Map<String, String> src, @NotNull final Type typeOfSrc,
                                  @NotNull final JsonSerializationContext context) {
         return context.serialize(src.entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey().replace("$", "!"), Map.Entry::getValue)));
+                .collect(ImmutableMap.toImmutableMap(entry -> entry.getKey().replace("$", "!"), Map.Entry::getValue)));
     }
 
     @SuppressWarnings("unchecked")
@@ -26,6 +29,6 @@ public final class ParameterDescriptionsAdapter implements JsonSerializer<Map<St
     public Map<String, String> deserialize(@NotNull final JsonElement json, @NotNull final Type typeOfT,
                                            @NotNull final JsonDeserializationContext context) {
         return ((Map<String, String>) context.deserialize(json, typeOfT)).entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey().replace("!", "$"), Map.Entry::getValue));
+                .collect(ImmutableMap.toImmutableMap(entry -> entry.getKey().replace("!", "$"), Map.Entry::getValue));
     }
 }
