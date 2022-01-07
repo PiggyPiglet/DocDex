@@ -9,8 +9,6 @@ import org.jsoup.nodes.Element;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static me.piggypiglet.docdex.documentation.index.population.implementations.web.components.signature.SignatureConstants.SPACE_DELIMITER;
 
@@ -19,8 +17,6 @@ import static me.piggypiglet.docdex.documentation.index.population.implementatio
 // https://www.piggypiglet.me
 // ------------------------------
 public final class OldSignatureDeserializer {
-    private static final Pattern ANNOTATION_PATTERN = Pattern.compile("@.+?(?=\\n|(?<!,) )");
-
     private OldSignatureDeserializer() {
         throw new AssertionError("This class cannot be instantiated.");
     }
@@ -29,19 +25,46 @@ public final class OldSignatureDeserializer {
                                                                                                         @NotNull final String name) {
         final Element pre = details.selectFirst("pre");
         String replacedPre = pre.text()
-                .replace(name + '(', "\\")
-                .replace(name + "\u200b(", "\\");
+                .replace(' ' + name + '(', "汉")
+                .replace('\u00a0' + name + '(', "汉")
+                .replace(' ' + name + '\u200b' + '(', "汉")
+                .replace('\u00a0' + name + '\u200b' + '(', "汉");
 
-        if (!replacedPre.contains("\\")) {
-            replacedPre = replacedPre.replace(' ' + name, "\\")
-                    .replace('\u00a0' + name, "\\");
+        if (!replacedPre.contains("汉")) {
+            replacedPre = replacedPre.replace(' ' + name, "汉")
+                    .replace('\u00a0' + name, "汉");
         }
 
-        final Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(replacedPre.substring(0, replacedPre.lastIndexOf('\\')));
         final Set<String> annotations = new HashSet<>();
 
-        while (annotationMatcher.find()) {
-            annotations.add(annotationMatcher.group());
+        boolean isAnnotation = false;
+        int count = 0;
+        StringBuilder annotationBuilder = new StringBuilder();
+        for (int i = 0; i < replacedPre.length(); ++i) {
+            final char character = replacedPre.charAt(i);
+
+            if (character == '汉') {
+                break;
+            }
+
+            if (character != '@' && !isAnnotation) {
+                continue;
+            }
+
+            isAnnotation = true;
+
+            if (character == '(') {
+                ++count;
+            }
+
+            annotationBuilder.append(character);
+
+            if ((character == ')' && --count == 0)
+                    || ((count == 0 && !Character.isJavaIdentifierPart(character) && character != '@'))) {
+                isAnnotation = false;
+                annotations.add(annotationBuilder.toString().trim());
+                annotationBuilder.setLength(0);
+            }
         }
 
         final AtomicReference<String> preTextReference = new AtomicReference<>(pre.text());
@@ -66,7 +89,21 @@ public final class OldSignatureDeserializer {
                             ));
                         }));
 
-        final String preText = preTextReference.get().trim();
+        annotations.forEach(annotation -> {
+            if (builder.getAnnotations().stream()
+                    .noneMatch(storedAnnotation -> storedAnnotation.toLowerCase().replace("@", "").contains(annotation.toLowerCase().replace("@", "")))) {
+                builder.annotations(annotation);
+            }
+        });
+
+        String preText = replacedPre;
+
+        for (final String annotation : annotations) {
+            preText = preText.replace(annotation, "");
+        }
+
+        preText = preText.trim();
+
         final String[] preSplit = SPACE_DELIMITER.split(preText);
         final String lowerName = name.toLowerCase();
 

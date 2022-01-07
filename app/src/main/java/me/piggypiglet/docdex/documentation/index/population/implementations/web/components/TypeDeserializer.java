@@ -58,6 +58,7 @@ public final class TypeDeserializer {
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(StreamUtils.distinctByKey(Element::text))
+                .filter(element -> !element.parent().tagName().equalsIgnoreCase("sup"))
                 .collect(Collectors.toMap(Element::text, DeserializationUtils::generateFqn));
 
         for (int i = 0; i < declaration.size(); ++i) {
@@ -167,6 +168,7 @@ public final class TypeDeserializer {
                 ddElements.stream().findAny().ifPresent(element ->
                         Optional.ofNullable(HEADER_SETTERS.get(label.toLowerCase())).ifPresent(setter ->
                                 setter.accept(builder, element.select("a").stream()
+                                        .filter(anchor -> !anchor.parent().tagName().equalsIgnoreCase("sup"))
                                         .map(DeserializationUtils::generateFqn)
                                         .collect(Collectors.toSet()))));
             });

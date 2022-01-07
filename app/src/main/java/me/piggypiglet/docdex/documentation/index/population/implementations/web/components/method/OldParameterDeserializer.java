@@ -14,8 +14,10 @@ public final class OldParameterDeserializer {
 
     static String deserialize(@NotNull final Element details, @NotNull final String name) {
         final String pre = details.selectFirst("pre").text()
-                .replace(name + '(', "\\")
-                .replace(name + '\u200b' + '(', "\\");
-        return pre.substring(pre.indexOf('\\') + 1, pre.lastIndexOf(')'));
+                .replace(' ' + name + '(', "汉")
+                .replace('\u00a0' + name + '(', "汉")
+                .replace(' ' + name + '\u200b' + '(', "汉")
+                .replace('\u00a0' + name + '\u200b' + '(', "汉");
+        return pre.substring(pre.indexOf('汉') + 1, pre.lastIndexOf(')'));
     }
 }

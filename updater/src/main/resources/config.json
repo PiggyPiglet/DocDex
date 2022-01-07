@@ -9,30 +9,30 @@
   "javadocs": [
     {
       "names": [
-        "1.17.1",
+        "1.18.1",
         "latest",
         "spigot"
       ],
-      "link": "https://docs.docdex.helpch.at/1.17.1",
-      "actual_link": "https://docs.docdex.helpch.at/1.17.1",
+      "link": "https://docs.docdex.helpch.at/1.18.1",
+      "actual_link": "https://docs.docdex.helpch.at/1.18.1",
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/docs/1.17.1",
+        "path": "/var/www/docs/1.18.1",
         "artifact_link": "https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/spigot-api"
       }
     },
     {
       "names": [
-        "paper-1.17",
+        "paper-1.18",
         "paper"
       ],
-      "link": "https://docs.docdex.helpch.at/paper-1.17/index.html",
-      "actual_link": "https://docs.docdex.helpch.at/paper-1.17",
+      "link": "https://docs.docdex.helpch.at/paper-1.18/index.html",
+      "actual_link": "https://docs.docdex.helpch.at/paper-1.18",
 
       "strategy": {
         "type": "MAVEN_LATEST",
-        "path": "/var/www/docs/paper-1.17",
+        "path": "/var/www/docs/paper-1.18",
         "artifact_link": "https://papermc.io/repo/repository/maven-snapshots/io/papermc/paper/paper-api"
       }
     },
@@ -60,7 +60,7 @@
     },
     {
       "names": ["bungeecord", "bungee"],
-      "link": "https://docs.docdex.helpch.at/bungeecord/overview-summary.html",
+      "link": "https://docs.docdex.helpch.at/bungeecord",
       "actual_link": "https://docs.docdex.helpch.at/bungeecord",
 
       "strategy": {
@@ -71,7 +71,7 @@
     },
     {
       "names": ["bungeecord-chat", "bungee-chat"],
-      "link": "https://docs.docdex.helpch.at/bungeecord-chat/overview-summary.html",
+      "link": "https://docs.docdex.helpch.at/bungeecord-chat",
       "actual_link": "https://docs.docdex.helpch.at/bungeecord-chat",
 
       "strategy": {

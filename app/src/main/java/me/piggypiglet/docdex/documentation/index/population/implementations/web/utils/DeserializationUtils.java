@@ -24,7 +24,7 @@ public final class DeserializationUtils {
 
     @NotNull
     public static String killChars(@NotNull final String string, final char prefix,
-                                    final char suffix) {
+                                   final char suffix) {
         final StringBuilder builder = new StringBuilder();
 
         int count = 0;

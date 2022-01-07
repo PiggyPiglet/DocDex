@@ -13,8 +13,8 @@ repositories {
 dependencies {
     implementation project(":common")
     implementation "me.piggypiglet:TimeAPI:1.9"
-    implementation "org.apache.maven:maven-repository-metadata:3.6.3"
-    implementation "org.jsoup:jsoup:1.13.1"
+    implementation "org.apache.maven:maven-repository-metadata:3.8.1"
+    implementation "org.jsoup:jsoup:1.14.3"
 }
 
 shadowJar {

@@ -12,7 +12,12 @@
 
   "javadocs": [
     {
-      "names": ["jdk", "jdk11"],
+      "names": ["jdk", "jdk17"],
+      "link": "http://localhost/docs/jdk17/index.html",
+      "actual_link": "https://docs.oracle.com/en/java/javase/17/docs/api"
+    },
+    {
+      "names": ["jdk11"],
       "link": "http://localhost/docs/jdk11/index.html",
       "actual_link": "https://docs.oracle.com/en/java/javase/11/docs/api"
     },
