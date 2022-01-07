@@ -60,7 +60,7 @@
     },
     {
       "names": ["bungeecord", "bungee"],
-      "link": "https://docs.docdex.helpch.at/bungeecord",
+      "link": "https://docs.docdex.helpch.at/bungeecord/index.html",
       "actual_link": "https://docs.docdex.helpch.at/bungeecord",
 
       "strategy": {
@@ -71,7 +71,7 @@
     },
     {
       "names": ["bungeecord-chat", "bungee-chat"],
-      "link": "https://docs.docdex.helpch.at/bungeecord-chat",
+      "link": "https://docs.docdex.helpch.at/bungeecord-chat/index.html",
       "actual_link": "https://docs.docdex.helpch.at/bungeecord-chat",
 
       "strategy": {
@@ -376,17 +376,6 @@
         "type": "MAVEN_LATEST_RELEASE",
         "path": "/var/www/docs/javacord",
         "artifact_link": "https://repo1.maven.org/maven2/org/javacord/javacord-api"
-      }
-    },
-    {
-      "names": ["antivpn"],
-      "link": "https://docs.docdex.helpch.at/antivpn/overview-summary.html",
-      "actual_link": "https://docs.docdex.helpch.at/antivpn",
-
-      "strategy": {
-        "type": "MAVEN_LATEST_RELEASE",
-        "path": "/var/www/docs/antivpn",
-        "artifact_link": "https://nexus.egg82.me/repository/maven-releases/me/egg82/antivpn-api"
       }
     },
     {
