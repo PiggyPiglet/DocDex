@@ -105,25 +105,18 @@ public final class OldSignatureDeserializer {
         preText = preText.trim();
 
         final String[] preSplit = SPACE_DELIMITER.split(preText);
-        final String lowerName = name.toLowerCase();
 
-        int lastModifierIndex = 0;
-        for (int i = 0; i < preSplit.length; ++i) {
-            final String lowerPreSplit = preSplit[i].toLowerCase();
-            final boolean isMethod = lowerPreSplit.startsWith(lowerName + '(') ||
-                    lowerPreSplit.startsWith(lowerName + "\u200b(");
-            final boolean isField = preSplit[i].equalsIgnoreCase(lowerName) &&
-                    i == preSplit.length - 1;
+        for (final String part : preSplit) {
+            if (part.isBlank()) {
+                continue;
+            }
 
-            if (isMethod || isField) {
-                builder.returns(preSplit[i - 1]);
-                lastModifierIndex = i - 2;
+            if (part.contains("汉")) {
+                builder.returns(part.substring(0, part.indexOf('汉')));
                 break;
             }
-        }
 
-        for (int i = 0; i <= lastModifierIndex; ++i) {
-            builder.modifiers(preSplit[i]);
+            builder.modifiers(part);
         }
     }
 }
