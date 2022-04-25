@@ -86,7 +86,7 @@ public final class SimpleObjectSerializer {
     private static String formatEntrySet(@NotNull final Set<Map.Entry<String, String>> set) {
         return set.stream()
                 .filter(entry -> !entry.getValue().isBlank())
-                .map(entry -> entry.getKey() + " - " + entry.getValue())
+                .map(entry -> '`' + entry.getKey() + "` - " + entry.getValue())
                 .collect(Collectors.joining("\n"));
     }
 
