@@ -1,5 +1,6 @@
 package me.piggypiglet.docdex.bot.embed.documentation;
 
+import com.google.common.collect.ImmutableMap;
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
@@ -32,25 +33,26 @@ public final class SimpleObjectSerializer {
     private static final int MAX_DESCRIPTION_CHARS = 950;
     private static final String ADDENDUM = "...\n\n*This description has been shortened as it was too long*.";
 
-    private static final Map<String, Function<DocumentedObject, Object>> GETTERS = Map.of(
+    private static final Map<String, Function<DocumentedObject, Object>> GETTERS = ImmutableMap.of(
             "Description:", object -> HTML_CONVERTER.convert(object.getDescription()),
             "Deprecation Message:", DocumentedObject::getDeprecationMessage,
             "Since:", DocumentedObject::getSince
     );
 
-    private static final Map<String, Function<TypeMetadata, Integer>> TYPE_NUMBER_GETTERS = Map.of(
-            "extensions", type -> type.getExtensions().size(),
-            "implementations", type -> type.getImplementations().size(),
-            "all implementations", type -> type.getAllImplementations().size(),
-            "super interfaces", type -> type.getSuperInterfaces().size(),
-            "sub interfaces", type -> type.getSubInterfaces().size(),
-            "sub classes", type -> type.getSubClasses().size(),
-            "implementing classes", type -> type.getImplementingClasses().size(),
-            "methods", type -> type.getMethods().size(),
-            "fields", type -> type.getFields().size()
-    );
+    private static final Map<String, Function<TypeMetadata, Integer>> TYPE_NUMBER_GETTERS =
+            ImmutableMap.<String, Function<TypeMetadata, Integer>>builder()
+                    .put("extensions", type -> type.getExtensions().size())
+                    .put("implementations", type -> type.getImplementations().size())
+                    .put("all implementations", type -> type.getAllImplementations().size())
+                    .put("super interfaces", type -> type.getSuperInterfaces().size())
+                    .put("sub interfaces", type -> type.getSubInterfaces().size())
+                    .put("sub classes", type -> type.getSubClasses().size())
+                    .put("implementing classes", type -> type.getImplementingClasses().size())
+                    .put("methods", type -> type.getMethods().size())
+                    .put("fields", type -> type.getFields().size())
+                    .build();
 
-    private static final Map<String, Function<MethodMetadata, String>> METHOD_GETTERS = Map.of(
+    private static final Map<String, Function<MethodMetadata, String>> METHOD_GETTERS = ImmutableMap.of(
             "Returns:", MethodMetadata::getReturnsDescription,
             "Parameters:", metadata -> formatEntrySet(metadata.getParameterDescriptions().entrySet()),
             "Throws:", metadata -> formatEntrySet(metadata.getThrows())
